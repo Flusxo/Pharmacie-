@@ -8,9 +8,15 @@
     "frontend"
   ],
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@types/node": "^26.6.5",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
     "tsx": "^4.23.15",
-    "typescript": "~5.9"
+    "typescript": "~5.9",
+    "typescript-eslint": "^8.72.0"
   },
   "engines": {
     "node": ">=20"
@@ -18,6 +24,11 @@
   "scripts": {
     "db:reset": "npm run reset -w db",
     "db:migrate": "npm run migrate -w db",
-    "db:start": "npm run start -w db"
-  }
+    "db:test": "tsx db/scripts/test-db.ts",
+    "build": "npm run typecheck -w db && npm run build -w backend",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "npm run test -w backend"
+  },
+  "type": "module"
 }

@@ -7,9 +7,7 @@ const MIGRATIONS_DIR = path.join(ROOT, 'db', 'migrations');
 
 /** Applies every numbered .sql file once, in order, each in its own transaction. */
 export async function migrate(client: pg.ClientBase): Promise<string[]> {
-  await client.query(
-    `CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())`,
-  );
+  await client.query(`CREATE TABLE IF NOT EXISTS schema_migrations (name text PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now())`);
   const files = fs
     .readdirSync(MIGRATIONS_DIR)
     .filter((f) => /^\d+_.+\.sql$/.test(f))

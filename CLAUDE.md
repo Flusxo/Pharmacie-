@@ -3,14 +3,17 @@
 Read this file and `docs/PROGRESS.md` first. Record every choice in `docs/DECISIONS.md`.
 
 ## Product
+
 PharmaLink (brand **counter.**) connects patients, doctors, pharmacies and staff.
+
 - Patient searches a medicine, sees nearby pharmacies that have it (list + map), chooses one, sends a request, follows the order.
 - Doctor (verified by staff) links to patients (patient must confirm), sends a request for a confirmed patient; the patient then chooses the pharmacy.
 - Pharmacy (verified) manages stock, accepts/refuses requests it was chosen for, moves orders through statuses.
 - Staff (admin / support / moderator) verify doctors & pharmacies, manage users, medicines, orders, reports.
-Feels like a modern delivery app, but it is NOT an online medicine shop.
+  Feels like a modern delivery app, but it is NOT an online medicine shop.
 
 ## Hard rules (in code AND tests)
+
 1. Only pharmacies sell. Never "Buy now" / "Add to cart". Use "Request from a pharmacy".
 2. Free choice: the system proposes pharmacies with stock; the patient chooses. Doctor requests never reach a pharmacy until the patient chooses.
 3. `requires_prescription` items need a prescription note from the patient OR a confirmed doctor link. Pharmacy confirms before preparing.
@@ -21,6 +24,7 @@ Feels like a modern delivery app, but it is NOT an online medicine shop.
 8. No secret in source or git. Map key + JWT secret only in the ignored root `.env`.
 
 ## Stack
+
 - npm workspaces: `db/` (migrations, seed, Postgres bootstrap), `backend/` (Express API), `frontend/` (React app). `e2e/` Playwright.
 - PostgreSQL 16 + pgcrypto, unaccent, pg_trgm.
   - **App database = hosted Neon** (`DATABASE_URL` in root `.env`, with `sslmode=require` → TLS, cert verified; see `db/src/pgconfig.ts` + `backend/src/pgconfig.ts`, keep in sync).
@@ -33,6 +37,7 @@ Feels like a modern delivery app, but it is NOT an online medicine shop.
 - ONE root `.env`; Vite `envDir: '..'`. Frontend calls relative `/api` (Vite proxy). Never hard-code `localhost:4000` in frontend code.
 
 ## Commands
+
 ```
 cp .env.example .env
 npm install
@@ -46,6 +51,7 @@ npm run e2e           # Playwright (needs `npx playwright install chromium` once
 ```
 
 ## Working agreements
+
 - Work in phases; commit after each phase whose checks pass. `npm run dev` must never be broken.
 - No destructive git (`stash -u`, `reset --hard`, `clean -fd`) without telling the user. Never delete node_modules + lockfile together; use `npm ci`.
 - No placeholder code (`...`, `TODO: implement`) in UI/logic. Unfinished = removed or "Coming soon".

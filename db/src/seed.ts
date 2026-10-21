@@ -65,10 +65,14 @@ export async function seed(c: pg.ClientBase): Promise<void> {
   }
   for (const d of DOCTORS) {
     await addUser(userId.doctor(d.key), email(d.key), 'doctor', d.verified ? 'active' : 'pending', d.verified ? 60 * 24 * 60 : 60 * 24);
-    await c.query(
-      `INSERT INTO doctors (user_id, first_name, last_name, rpps, speciality, verified) VALUES ($1,$2,$3,$4,$5,$6)`,
-      [userId.doctor(d.key), d.first, d.last, d.rpps, d.speciality, d.verified],
-    );
+    await c.query(`INSERT INTO doctors (user_id, first_name, last_name, rpps, speciality, verified) VALUES ($1,$2,$3,$4,$5,$6)`, [
+      userId.doctor(d.key),
+      d.first,
+      d.last,
+      d.rpps,
+      d.speciality,
+      d.verified,
+    ]);
   }
   for (const p of PATIENTS) {
     await addUser(userId.patient(p.key), email(p.key), 'patient', 'active');
@@ -83,7 +87,19 @@ export async function seed(c: pg.ClientBase): Promise<void> {
     await c.query(
       `INSERT INTO pharmacies (user_id, name, finess, address, city, phone, latitude, longitude, verified, opening_hours, on_duty)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-      [id, ph.name, ph.finess, ph.address, ph.city, ph.phone, ph.lat, ph.lon, ph.verified, JSON.stringify(openingHours(ph.late)), JSON.stringify(ph.onDuty)],
+      [
+        id,
+        ph.name,
+        ph.finess,
+        ph.address,
+        ph.city,
+        ph.phone,
+        ph.lat,
+        ph.lon,
+        ph.verified,
+        JSON.stringify(openingHours(ph.late)),
+        JSON.stringify(ph.onDuty),
+      ],
     );
   }
 
@@ -139,10 +155,30 @@ export async function seed(c: pg.ClientBase): Promise<void> {
   // Orders: Alice's order at "preparing" + 10 more in varied statuses.
   const FLOW = ['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'];
   const orders: OrderSeed[] = [
-    { key: 'o1', patient: 'alice', pharmacy: 'tournon', status: 'preparing', items: [[0, 2], [8, 1]], minutesAgo: 25 },
+    {
+      key: 'o1',
+      patient: 'alice',
+      pharmacy: 'tournon',
+      status: 'preparing',
+      items: [
+        [0, 2],
+        [8, 1],
+      ],
+      minutesAgo: 25,
+    },
     { key: 'o2', patient: 'bruno', pharmacy: 'valence', status: 'delivered', items: [[4, 1]], minutesAgo: 60 * 72 },
     { key: 'o3', patient: 'camille', pharmacy: 'romans', status: 'ready', items: [[5, 1]], minutesAgo: 90 },
-    { key: 'o4', patient: 'david', pharmacy: 'lyon1', status: 'out_for_delivery', items: [[2, 1], [6, 1]], minutesAgo: 120 },
+    {
+      key: 'o4',
+      patient: 'david',
+      pharmacy: 'lyon1',
+      status: 'out_for_delivery',
+      items: [
+        [2, 1],
+        [6, 1],
+      ],
+      minutesAgo: 120,
+    },
     { key: 'o5', patient: 'emma', pharmacy: 'vienne', status: 'accepted', items: [[10, 1]], minutesAgo: 10 },
     { key: 'o6', patient: 'alice', pharmacy: 'tournon', status: 'delivered', items: [[7, 1]], minutesAgo: 60 * 24 * 10 },
     { key: 'o7', patient: 'bruno', pharmacy: 'etoile', status: 'cancelled', items: [[3, 1]], minutesAgo: 60 * 24 * 5 },
@@ -185,7 +221,16 @@ export async function seed(c: pg.ClientBase): Promise<void> {
     const last = new Date(acceptedAt.getTime() + (steps.length - 1) * 6 * 60_000);
     await c.query(
       `INSERT INTO orders (id, request_id, pharmacy_id, patient_id, status, share_token, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-      [orderId, reqId, userId.pharmacy(o.pharmacy), userId.patient(o.patient), o.status, sid(`share:${o.key}`).replace(/-/g, ''), acceptedAt, last],
+      [
+        orderId,
+        reqId,
+        userId.pharmacy(o.pharmacy),
+        userId.patient(o.patient),
+        o.status,
+        sid(`share:${o.key}`).replace(/-/g, ''),
+        acceptedAt,
+        last,
+      ],
     );
     for (const [si, st] of steps.entries()) {
       await c.query(`INSERT INTO order_status_history (order_id, status, changed_at, changed_by) VALUES ($1,$2,$3,$4)`, [
@@ -203,8 +248,16 @@ export async function seed(c: pg.ClientBase): Promise<void> {
     `INSERT INTO requests (id, patient_id, source, status, idempotency_key, created_at, updated_at) VALUES ($1,$2,'patient','sent_to_pharmacy','seed-incoming1',$3,$3)`,
     [incoming, userId.patient('bruno'), ago(3)],
   );
-  await c.query(`INSERT INTO request_items (id, request_id, medicine_id, quantity) VALUES ($1,$2,$3,1)`, [sid('item:incoming1:0'), incoming, medicineId(5)]);
-  await c.query(`INSERT INTO request_pharmacies (request_id, pharmacy_id, sent_at) VALUES ($1,$2,$3)`, [incoming, userId.pharmacy('tournon'), ago(3)]);
+  await c.query(`INSERT INTO request_items (id, request_id, medicine_id, quantity) VALUES ($1,$2,$3,1)`, [
+    sid('item:incoming1:0'),
+    incoming,
+    medicineId(5),
+  ]);
+  await c.query(`INSERT INTO request_pharmacies (request_id, pharmacy_id, sent_at) VALUES ($1,$2,$3)`, [
+    incoming,
+    userId.pharmacy('tournon'),
+    ago(3),
+  ]);
 
   await c.query(
     `INSERT INTO notifications (user_id, kind, body, link, created_at) VALUES ($1,'order_status','Update on your request: your order is being prepared.',$2,$3)`,

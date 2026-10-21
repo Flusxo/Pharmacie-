@@ -3,16 +3,18 @@
 Each entry: what was chosen and why.
 
 ## Infrastructure
+
 - **2026-10-21: app database moved to hosted Neon** (user's choice). `pgConfig()` turns `sslmode=require|verify-ca|verify-full` into `ssl: { rejectUnauthorized: true }` and strips `sslmode`/`channel_binding` from the string so pg's own parsing does not override it. Hosted databases are never created or started by our scripts; we only wait up to 30 s and explain what to check.
 - **Tests never use `DATABASE_URL`** (they wipe their DB). They use `TEST_DATABASE_URL`, default the bundled PostgreSQL 16 on `localhost:5433/pharmalink_test`; `testDatabaseUrl()` refuses to run if it equals `DATABASE_URL`.
 - **Project moved** from the app's temporary folder to `C:\Users\Fujitsu\Documents\Pharmacie-app`: the temporary path was so long that git and PostgreSQL's `initdb.exe` hit the Windows 260-character limit.
-- *(Superseded for the app DB by Neon, see above; still used for tests.)* **Bundled PostgreSQL 16 via npm `embedded-postgres`**. The machine had neither Docker nor PostgreSQL; this package ships real PostgreSQL 16.14 binaries (with pgcrypto, unaccent, pg_trgm) so no system install is needed. It listens on **5433** (not 5432) so it never collides with a locally installed PostgreSQL. Routes A (Docker) and B (local install) still work by setting `EMBEDDED_PG=false`.
+- _(Superseded for the app DB by Neon, see above; still used for tests.)_ **Bundled PostgreSQL 16 via npm `embedded-postgres`**. The machine had neither Docker nor PostgreSQL; this package ships real PostgreSQL 16.14 binaries (with pgcrypto, unaccent, pg_trgm) so no system install is needed. It listens on **5433** (not 5432) so it never collides with a locally installed PostgreSQL. Routes A (Docker) and B (local install) still work by setting `EMBEDDED_PG=false`.
 - `db:reset`, `dev` and `test` start the bundled server when nothing answers at `DATABASE_URL`; `db:reset` and `test` stop it again when they started it, `dev` keeps it for its lifetime.
 - Backend tests use a separate database `pharmalink_test` on the same server, reset before the run.
 - Deterministic seed: UUIDs derived from md5 of a key; bcrypt hash uses a fixed demo salt; inventory comes from a seeded PRNG. Timestamps are relative to "now" so expiry windows behave.
 - Search normalisation via an IMMUTABLE `f_norm()` wrapper around `unaccent` so it can be indexed with trigram GIN.
 
 ## Domain
+
 - **Substitution** happens at the request stage: while a request is `sent_to_pharmacy`, the chosen pharmacy may propose a generic for one item; the request moves to `awaiting_patient_approval`. Approving swaps the item and returns the request to `sent_to_pharmacy` (same pharmacy); declining keeps the original item.
 - **Partial stock**: the options endpoint returns full-stock pharmacies first plus "partially available" ones with the missing items listed. Choosing a partial pharmacy requires `acceptPartial: true`; the missing items are marked `excluded` and are never prepared.
 - **Cancellation**: patient cancels directly while the request is `received`/`sent_to_pharmacy`, and while the order is still `accepted`. From `preparing` onward the patient files a cancellation request (`cancel_requested_at`) that the pharmacy approves; cancelling returns the stock.

@@ -1,0 +1,102 @@
+import type { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import { config } from '../config.js';
+import { one } from '../db.js';
+import { HttpError, forbidden, unauthorized } from '../errors.js';
+
+export type Role = 'patient' | 'doctor' | 'pharmacy' | 'staff';
+export type StaffRole = 'admin' | 'support' | 'moderator';
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: Role;
+  status: 'pending' | 'active' | 'suspended';
+  staffRole: StaffRole | null;
+  verified: boolean;
+}
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: AuthUser;
+  }
+}
+
+export function signToken(user: { id: string; role: Role }): string {
+  return jwt.sign({ sub: user.id, role: user.role }, config.JWT_SECRET, {
+    expiresIn: config.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'],
+  });
+}
+
+/** Reads the Bearer token if present and loads the user. Never fails on a missing token. */
+export async function authenticate(req: Request, _res: Response, next: NextFunction): Promise<void> {
+  const header = req.headers.authorization;
+  if (!header?.startsWith('Bearer ')) return next();
+  let sub: string;
+  try {
+    const payload = jwt.verify(header.slice(7), config.JWT_SECRET) as jwt.JwtPayload;
+    sub = String(payload.sub);
+  } catch {
+    throw new HttpError(401, 'Your session has expired. Please log in again.', 'session_expired');
+  }
+  const row = await one<{
+    id: string;
+    email: string;
+    role: Role;
+    status: AuthUser['status'];
+    staff_role: StaffRole | null;
+    doctor_verified: boolean | null;
+    pharmacy_verified: boolean | null;
+  }>(
+    `SELECT u.id, u.email, u.role, u.status, s.staff_role, d.verified AS doctor_verified, p.verified AS pharmacy_verified
+       FROM users u
+       LEFT JOIN staff s ON s.user_id = u.id
+       LEFT JOIN doctors d ON d.user_id = u.id
+       LEFT JOIN pharmacies p ON p.user_id = u.id
+      WHERE u.id = $1 AND u.deleted_at IS NULL`,
+    [sub],
+  );
+  if (!row) throw new HttpError(401, 'Your session has expired. Please log in again.', 'session_expired');
+  if (row.status === 'suspended') throw new HttpError(401, 'This account is suspended. Contact support.', 'account_suspended');
+  req.user = {
+    id: row.id,
+    email: row.email,
+    role: row.role,
+    status: row.status,
+    staffRole: row.staff_role,
+    verified: row.role === 'doctor' ? !!row.doctor_verified : row.role === 'pharmacy' ? !!row.pharmacy_verified : true,
+  };
+  next();
+}
+
+export function requireAuth(req: Request, _res: Response, next: NextFunction): void {
+  if (!req.user) throw unauthorized();
+  next();
+}
+
+/** Role gate. Doctors and pharmacies must also be verified and active. */
+export function requireRole(...roles: Role[]) {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    if (!req.user) throw unauthorized();
+    if (!roles.includes(req.user.role)) throw forbidden();
+    if ((req.user.role === 'doctor' || req.user.role === 'pharmacy') && (!req.user.verified || req.user.status !== 'active')) {
+      throw new HttpError(
+        403,
+        'Waiting for staff approval. You can use this feature once your account is verified.',
+        'pending_verification',
+      );
+    }
+    next();
+  };
+}
+
+export function requireStaff(...staffRoles: StaffRole[]) {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    if (!req.user) throw unauthorized();
+    if (req.user.role !== 'staff' || !req.user.staffRole) throw forbidden();
+    if (staffRoles.length && !staffRoles.includes(req.user.staffRole)) {
+      throw forbidden(`Your staff role (${req.user.staffRole}) cannot do this.`);
+    }
+    next();
+  };
+}

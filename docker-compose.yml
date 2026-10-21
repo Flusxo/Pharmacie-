@@ -7,11 +7,11 @@ services:
       POSTGRES_PASSWORD: pharmalink
       POSTGRES_DB: pharmalink
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - pharmalink_pg:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pharmalink -d pharmalink"]
+      test: ['CMD-SHELL', 'pg_isready -U pharmalink -d pharmalink']
       interval: 3s
       timeout: 3s
       retries: 20
