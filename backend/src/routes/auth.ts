@@ -160,7 +160,7 @@ authRouter.post('/register/pharmacy', registerLimiter, async (req, res) => {
 });
 
 authRouter.post('/login', loginLimiter, async (req, res) => {
-  const body = z.object({ email: emailField, password: z.string().min(1, 'is required').max(200) }).parse(req.body);
+  const body = z.object({ email: emailField, password: z.string({ error: 'is required' }).min(1, 'is required').max(200) }).parse(req.body);
   const u = await one<{
     id: string;
     password_hash: string;

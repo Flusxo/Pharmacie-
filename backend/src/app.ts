@@ -26,7 +26,7 @@ export function createApp(): Express {
       log('info', 'request', {
         requestId,
         method: req.method,
-        path: req.baseUrl + (req.route?.path ?? req.path),
+        path: req.originalUrl.split('?')[0],
         status: res.statusCode,
         ms: Number((process.hrtime.bigint() - start) / 1_000_000n),
         role: req.user?.role,
