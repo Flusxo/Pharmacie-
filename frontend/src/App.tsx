@@ -15,6 +15,9 @@ import { MedicineDetailsPage } from './pages/patient/MedicineDetails';
 import { RequestDetailsPage, RequestsPage } from './pages/patient/Requests';
 import { OrderTrackingPage, SharedTrackingPage } from './pages/patient/OrderTracking';
 import { MapPage } from './pages/patient/MapPage';
+import { PharmacyDashboard } from './pages/pharmacy/PharmacyDashboard';
+import { DoctorDashboard } from './pages/doctor/DoctorDashboard';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { ProfilePage } from './pages/Profile';
 import { LegalPage, NotFoundPage, RootRedirect, WaitingPage } from './pages/Misc';
 
@@ -134,6 +137,30 @@ export function AppRoutes() {
           element={
             <RequireRole roles={['patient']}>
               <MapPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/pharmacy"
+          element={
+            <RequireRole roles={['pharmacy']}>
+              <PharmacyDashboard />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/doctor"
+          element={
+            <RequireRole roles={['doctor']}>
+              <DoctorDashboard />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <RequireRole roles={['staff']}>
+              <AdminDashboard />
             </RequireRole>
           }
         />

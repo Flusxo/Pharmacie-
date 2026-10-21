@@ -31,10 +31,16 @@ test.describe('map (section 10)', () => {
     expect(tileRequests, 'no default tile server may be contacted').toEqual([]);
 
     // Radius slider: 30 km shows more pharmacies than 15 km.
-    await expect(page.getByTestId('map-list-item')).toHaveCount(1);
+    // Other spec files may verify extra pharmacies in the shared e2e database, so check names, not totals.
+    const list = page.getByTestId('map-list-item');
+    await expect(list.filter({ hasText: 'Pharmacie du Rhône' })).toHaveCount(1);
+    await expect(list.filter({ hasText: 'Pharmacie Victor Hugo' })).toHaveCount(0);
     await page.getByLabel(/Rayon/).fill('30');
-    await expect(page.getByTestId('map-list-item')).toHaveCount(4); // Tournon, Valence, Romans, Étoile
-    await expect(map.locator('.leaflet-marker-icon[title^="Pharmacie"]')).toHaveCount(4);
+    for (const name of ['Pharmacie du Rhône', 'Pharmacie Victor Hugo', 'Pharmacie de la Tour Jacquemart', 'Pharmacie de l’Étoile']) {
+      await expect(list.filter({ hasText: name })).toHaveCount(1);
+    }
+    // One pin per listed pharmacy.
+    await expect(map.locator('.leaflet-marker-icon[title^="Pharmacie"]')).toHaveCount(await list.count());
 
     // Pin -> list highlight.
     await map.locator('.leaflet-marker-icon[title="Pharmacie Victor Hugo"]').click();

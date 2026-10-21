@@ -1,6 +1,8 @@
 import type { MessageKey } from './fr';
+import { enDash } from './en.dash';
 
 export const en: Record<MessageKey, string> = {
+  ...enDash,
   'app.notice': 'Prototype only. Not for real medical use. Demo data.',
   'app.skip': 'Skip to content',
   'nav.home': 'Home',

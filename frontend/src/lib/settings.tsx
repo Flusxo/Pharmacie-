@@ -1,12 +1,15 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 export type ThemePref = 'system' | 'light' | 'dark';
+export type GraphicsPref = 'auto' | 'high' | 'medium' | 'low' | 'off';
 interface Settings {
   theme: ThemePref;
   resolvedTheme: 'light' | 'dark';
   setTheme: (t: ThemePref) => void;
   reduceMotion: boolean;
   setReduceMotion: (v: boolean) => void;
+  graphics: GraphicsPref;
+  setGraphics: (g: GraphicsPref) => void;
 }
 const Ctx = createContext<Settings | null>(null);
 
@@ -28,6 +31,7 @@ function write(key: string, v: string): void {
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemePref>(() => read<ThemePref>('counter.theme', 'system'));
   const [reduceMotion, setReduceMotionState] = useState<boolean>(() => read<string>('counter.reduceMotion', 'false') === 'true');
+  const [graphics, setGraphicsState] = useState<GraphicsPref>(() => read<GraphicsPref>('counter.graphics', 'auto'));
   const [systemDark, setSystemDark] = useState(
     () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches,
   );
@@ -61,8 +65,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         setReduceMotionState(v);
         write('counter.reduceMotion', String(v));
       },
+      graphics,
+      setGraphics: (g) => {
+        setGraphicsState(g);
+        write('counter.graphics', g);
+      },
     }),
-    [theme, resolvedTheme, reduceMotion],
+    [theme, resolvedTheme, reduceMotion, graphics],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

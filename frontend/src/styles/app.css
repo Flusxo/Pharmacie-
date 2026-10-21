@@ -1054,3 +1054,55 @@ table.table {
   width: 100%;
   accent-color: var(--green-900);
 }
+
+/* ---------- Dashboards ---------- */
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  border-left: 4px solid var(--line);
+}
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+.kpi-ok {
+  border-left-color: var(--green-500);
+}
+.kpi-warn {
+  border-left-color: var(--amber);
+}
+.kpi-bad {
+  border-left-color: var(--red);
+}
+.kpi-info {
+  border-left-color: var(--blue);
+}
+.plain-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.input.input-sm {
+  min-height: 36px;
+  padding: 6px 10px;
+  width: 92px;
+}
+.row-low td {
+  background: color-mix(in srgb, var(--amber) 8%, transparent);
+}
+.check.switch {
+  align-items: center;
+  font-weight: 600;
+}
+.incoming-card {
+  border-left: 4px solid var(--blue);
+}
+.paper-plane {
+  font-size: 48px;
+  color: var(--brand);
+}

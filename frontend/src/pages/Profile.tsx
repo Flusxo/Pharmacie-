@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { ApiError, api, getToken } from '../lib/api';
 import { useAuth } from '../lib/auth';
-import { useSettings, type ThemePref } from '../lib/settings';
+import { useSettings, type GraphicsPref, type ThemePref } from '../lib/settings';
 import { useToast } from '../lib/toast';
 
 interface DoctorLink {
@@ -16,7 +16,7 @@ interface DoctorLink {
 
 export function ProfilePage() {
   const { t, lang, setLang } = useI18n();
-  const { theme, setTheme, reduceMotion, setReduceMotion } = useSettings();
+  const { theme, setTheme, reduceMotion, setReduceMotion, graphics, setGraphics } = useSettings();
   const { user, refresh, logout } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
@@ -58,17 +58,58 @@ export function ProfilePage() {
   if (!user) return null;
   return (
     <div className="stack" style={{ gap: 20, maxWidth: 760, margin: '0 auto' }}>
-      <h1>{t('profile.title')}</h1>
-      <p className="muted">
-        {user.displayName} · {user.email}
-      </p>
+      <h1>{t('acc.title')}</h1>
+      <section className="card stack" aria-labelledby="acc-id" data-testid="account-identity">
+        <h2 id="acc-id">{t('acc.identity')}</h2>
+        <dl className="grid cols-2" style={{ margin: 0 }}>
+          <div>
+            <dt className="muted small">{t('dash.name')}</dt>
+            <dd style={{ margin: 0 }}>{user.displayName}</dd>
+          </div>
+          <div>
+            <dt className="muted small">{t('dash.email')}</dt>
+            <dd style={{ margin: 0 }}>{user.email}</dd>
+          </div>
+          {user.doctor && (
+            <>
+              <div>
+                <dt className="muted small">{t('acc.rpps')}</dt>
+                <dd style={{ margin: 0 }}>{user.doctor.rpps}</dd>
+              </div>
+              <div>
+                <dt className="muted small">{t('acc.speciality')}</dt>
+                <dd style={{ margin: 0 }}>{user.doctor.speciality}</dd>
+              </div>
+            </>
+          )}
+          {user.pharmacy && (
+            <div>
+              <dt className="muted small">{t('acc.address')}</dt>
+              <dd style={{ margin: 0 }}>{user.pharmacy.address}</dd>
+            </div>
+          )}
+          {user.staff && (
+            <div>
+              <dt className="muted small">{t('acc.staffRole')}</dt>
+              <dd style={{ margin: 0 }}>{user.staff.staffRole}</dd>
+            </div>
+          )}
+          {user.patient?.address && (
+            <div>
+              <dt className="muted small">{t('acc.address')}</dt>
+              <dd style={{ margin: 0 }}>{user.patient.address}</dd>
+            </div>
+          )}
+        </dl>
+      </section>
       {error && (
         <div className="alert error" role="alert">
           {error}
         </div>
       )}
 
-      <section className="card stack">
+      <section className="card stack" aria-labelledby="acc-prefs">
+        <h2 id="acc-prefs">{t('acc.preferences')}</h2>
         <div className="grid cols-2">
           <div className="field">
             <label htmlFor="lang">{t('profile.language')}</label>
@@ -83,6 +124,22 @@ export function ProfilePage() {
               <option value="system">{t('profile.themeSystem')}</option>
               <option value="light">{t('profile.themeLight')}</option>
               <option value="dark">{t('profile.themeDark')}</option>
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="graphics">{t('acc.graphics')}</label>
+            <select
+              id="graphics"
+              className="input"
+              value={graphics}
+              onChange={(e) => setGraphics(e.target.value as GraphicsPref)}
+              data-testid="graphics-quality"
+            >
+              <option value="auto">{t('acc.graphicsAuto')}</option>
+              <option value="high">{t('acc.graphicsHigh')}</option>
+              <option value="medium">{t('acc.graphicsMedium')}</option>
+              <option value="low">{t('acc.graphicsLow')}</option>
+              <option value="off">{t('acc.graphicsOff')}</option>
             </select>
           </div>
         </div>

@@ -20,6 +20,7 @@ export interface User {
   doctor?: { firstName: string; lastName: string; rpps: string; speciality: string; verified: boolean; rejectionReason: string | null };
   pharmacy?: {
     name: string;
+    finess: string;
     address: string;
     city: string;
     latitude: number;

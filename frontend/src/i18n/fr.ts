@@ -1,5 +1,8 @@
 /** French (default). Every key here must exist in en.ts (checked by a test). */
+import { frDash } from './fr.dash';
+
 export const fr = {
+  ...frDash,
   'app.notice': 'Prototype uniquement. Pas pour un usage médical réel. Données de démonstration.',
   'app.skip': 'Aller au contenu',
   'nav.home': 'Accueil',

@@ -4,19 +4,8 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-Phases 1–7 are done and committed (last session stopped on 2026-10-21 because of the user's usage limit). Working tree is clean.
-
-Do this, in order:
-
-1. **Read "Known issues / To fix" below, including the "Reported by the user" list**, and fix what the user reported first (especially anything about the map).
-2. **Phase 8 — Dashboards** (nothing written yet). Doctor, pharmacy and staff currently land on `/doctor`, `/pharmacy`, `/admin`, which show the 404 page. All backend routes already exist and are tested (see `/api/docs`):
-   - Pharmacy (`/pharmacy`): tabs Incoming requests (accept / refuse with countdown to `answerBy`, propose generic), Current orders (status control offering only the valid next status from `NEXT_STATUS`, "prescription checked" box before preparing, approve/decline cancellation requests), Inventory (inline stock edit, add medicine via search, CSV upload with preview + per-row errors, low-stock filter, history, "mark all out of stock" switch), Daily summary.
-   - Doctor (`/doctor`): patients with confirmation state, link a patient by email, new request form (medicine search + instructions) for confirmed patients, templates, history.
-   - Admin (`/admin`): KPI cards, verification queue (approve / reject with reason), users (filters, suspend / reactivate with reason), pharmacies, doctors, medicines (CRUD with image URL), orders, reports (resolve), audit log, pharmacy performance. Show only the actions the staff role allows (admin / moderator / support).
-   - Add all UI text to `frontend/src/i18n/fr.ts` and `en.ts`.
-   - Playwright (`e2e/cycle.spec.ts`): patient requests → chooses Tournon → pharmacy accepts in its dashboard and moves Preparing → Ready → Out for delivery → Delivered while the patient's tracking page updates; dr.martin creates a request for Alice in the doctor dashboard; admin verifies the pending Pharmacie Démo; support cannot see verify buttons.
-   - Then commit "Phase 8" only if `npm run build`, `npm run lint`, `npm test` and `npm run e2e` all pass.
-3. Then Phase 9 (images + 3D) and 10 (animation) — only after Phases 6–8 pass (user's rule). The separate 3D/animation brief is in the conversation history; its summary: Scene3D wrapper with quality tiers (Auto/High/Medium/Low/Off), local procedural HDR in `public/hdr/`, MedicineModel3D per form with fallbacks (no WebGL, low memory, < 30 fps for 2 s, reduced motion), home hero counter scene, delivery/shelf/loader scenes, `src/motion.ts` tokens + framer-motion, screenshots in `docs/screenshots/`, `docs/ASSETS.md`.
+Working through the user's 7-step list (second session, 2026-10-21). Step 1 (Phase 8 dashboards + account pages) is done and committed.
+Next, in order: **Step 2 map** (tiles from the user's `VITE_MAP_TILE_URL`, "no pharmacy in range" message, location fallback), **Step 3 site-wide 3D** (Phase 9), **Step 4 animations** (Phase 10), **Step 5 pack-label fix + design pass**, **Step 6 extras** (Phase 11), **Step 7 README + final checks** (Phase 12). Commit after each step only when build, lint and that step's tests pass.
 
 How to run things: `npm run dev` (API :4000 + web :5173 on Neon), `npm test` (local PG :5433, never Neon), `npm run e2e` (own DB `pharmalink_e2e`, servers :4100/:5174/:5175, cleans up after itself).
 The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECISIONS.md`.
@@ -66,18 +55,22 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Fixes found while testing: the fallback message used to cover popups (clicks blocked); the patient dot used to sit on top of the nearest pharmacy pin; a sticky top bar could hide focused elements → `scroll-padding-top` added.
   - Test infrastructure: `npm run e2e` is now `scripts/e2e.ts` (starts DB + API + 2 frontends, runs Playwright, stops everything). The bundled PostgreSQL for tests is started/stopped with its own `pg_ctl` in a separate process (`db/scripts/test-pg.ts`, `db/src/pgctl.ts`), because the package's Windows stop force-kills and left an orphan holding port 5433.
   - NOT verified: a real MapTiler key (none available). Only a stand-in tile host was tested.
-- [ ] Phase 8 — Dashboards
+- [x] Phase 8 — Dashboards and account pages (user step 1)
+  - Pharmacy `/pharmacy` (`pages/pharmacy/PharmacyDashboard.tsx`): Incoming requests (patient "First L.", stock per item, Rx and doctor badges, live countdown ring to the 30-min deadline, accept, refuse with optional reason, propose a generic), Current orders (only the valid next status is offered + cancel; "prescription checked" required before preparing an Rx order; approve/decline patient cancellation; show finished orders), Inventory (inline edit of quantity/price/threshold, add a medicine via search, low-stock filter, history per medicine, remove, CSV upload/paste with preview, per-row errors, apply only when error-free), Daily summary KPIs, "mark all out of stock" switch. Auto-refresh every 10–15 s.
+  - Doctor `/doctor`: patients with confirmed/pending state (pending → masked email only; never an address), link by email, unlink, new request (confirmed patients only, medicine search, quantities, instructions, start from a template, save as template), templates list, request history.
+  - Staff `/admin`: KPI cards, verification queue (approve / reject with required reason), users (search + role/status filters, suspend/reactivate with reason; staff accounts only for admins; never yourself), create staff (admin only), pharmacies, doctors, medicines (search, add/edit with image URL, soft-delete with reason), orders (status filter), reports (resolve with resolution), audit log, pharmacy performance. Buttons shown only when the staff role allows them (the API also enforces it).
+  - Account page `/profile` ("Mon compte") for every role: identity (name, email, RPPS/speciality, pharmacy address, staff role, patient address), language, theme, Graphics quality (Auto/High/Medium/Low/Off, used by the 3D in step 3), Reduce animations, email notifications, change password, report a problem; patients also: doctor links, export my data, delete my account. Pending doctors/pharmacies see "En attente de validation". Notifications bell for every role. Real 404 page for unknown routes.
+  - Verified by Playwright (`e2e/cycle.spec.ts`, 5 tests, real API + frontend): Alice requests Dafalgan → Pharmacie du Rhône (in a second browser window) sees "Alice M." with a countdown and accepts → Alice's request page shows "Voir la commande" → the pharmacy moves Preparing, Ready, Out for delivery, Delivered and Alice's tracking page updates to each status by itself; delivered orders have no more status buttons. Dr Martin sees Camille as "En attente de confirmation", no address on the page, only Alice and Bruno selectable, sends a request for Alice; the API refuses Camille (403). Support sees the queue but no "Valider" button. Pending Démo pharmacy sees the waiting screen → admin approves (audit row visible) → "Vérifier à nouveau" → its dashboard. Doctor and pharmacy have the bell and an account page with Graphics quality and Reduce animations; unknown route → "Page introuvable".
 - [ ] Phase 9 — Images and 3D (+ the separate 3D/animation brief: Scene3D, quality tiers, product viewer, hero, scenes, motion system)
 - [ ] Phase 10 — Design and animation polish
 - [ ] Phase 11 — Extras
 - [ ] Phase 12 — Quality and documentation
 
-## Last check results (2026-10-21, after Phase 7)
+## Last check results (2026-10-21, after Phase 8 / step 1)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 6 files / 95 tests + frontend 2 files / 15 tests passed (backend on the bundled PG16 `localhost:5433/pharmalink_test`, never Neon). Vitest now exits cleanly (no 10 s hang).
-- `npm run e2e`: 10 Playwright tests passed (4 patient + 6 map); all test ports released afterwards, no PostgreSQL left running.
-- `npm audit`: 0 vulnerabilities (last checked after Phase 6).
+- `npm test`: backend 95 + frontend 15 tests passed (local PG :5433, never Neon).
+- `npm run e2e`: 15 Playwright tests passed (5 cycle + 6 map + 4 patient); test ports released afterwards.
 
 ## Known issues / To fix
 
@@ -89,7 +82,6 @@ Map (the user saw tiles or pins not showing):
 
 Other known issues:
 
-- **Phase 8 not started**: doctor, pharmacy and staff accounts log in but land on a 404 page (`/doctor`, `/pharmacy`, `/admin`). Biggest gap.
 - PackImage (generated pack drawings): some labels overlap the green cross (syrup/"Hélicidine") or are slightly clipped (inhaler dosage); the pen drawing is rough. To polish in Phase 9.
 - Phases 9 (3D), 10 (animations: confetti on delivery, page transitions, etc.), 11 (printable order slip, onboarding tour, optional TOTP) and 12 (README, final docs, full acceptance checklist) are not done.
 - No README yet (Phase 12) — setup instructions live in `CLAUDE.md` for now.
@@ -100,7 +92,14 @@ Other known issues:
 
 ### Reported by the user (to fill in next session)
 
-- (The user will report issues here. Start the next session by asking for / reading them and fixing them before Phase 8.)
+Reported on 2026-10-21 (second session), to be fixed in this order:
+
+1. Doctor, pharmacy and staff accounts log in but land on "page not found". There is no account page. → Step 1 (Phase 8 dashboards + Account page for every role).
+2. The map has no tiles (`VITE_MAP_TILE_URL` is empty; the user will paste a MapTiler address into `.env` and restart). → Step 2.
+3. There is no big 3D anywhere (not on the whole site background) and no animations. → Steps 3 and 4.
+4. Some generated pack drawings have clipped labels. → Step 5.
+
+Note: the user referred to "section 11b of claude_code_master_prompt.md"; that file is not in the repository, so the 3D work follows section 11 of the master prompt plus the separate 3D/animation brief (quality tiers, fallbacks, lazy loading, screenshots).
 
 ## Simulated
 
@@ -112,5 +111,5 @@ Other known issues:
 
 ## Not done yet
 
-- Phase 8 onward (see above). Doctor, pharmacy and staff dashboards do not exist yet.
+- Steps 2–7 of the user's list (see Next step).
 - Optional TOTP for professionals (Phase 11) is not started.
