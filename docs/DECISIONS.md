@@ -49,3 +49,9 @@ Each entry: what was chosen and why.
 - **Tile test without a real key**: e2e runs a second frontend (:5175) with `VITE_MAP_TILE_URL=https://tiles.e2e.test/{z}/{x}/{y}.png`; Playwright answers that host with a PNG (200) or a 403. A real MapTiler key is not tested.
 - **Simulated courier**: moves in a straight line from the pharmacy to the patient over 8 minutes after "out for delivery", stops at 95 % until "delivered". No real routing.
 - **Test PostgreSQL via pg_ctl** in a separate process: embedded-postgres stops with `taskkill /f /t` on Windows (orphaned helpers kept port 5433 open) and registers exit hooks that delayed Vitest by 10 s.
+
+## Map (user step 2)
+
+- **Bare MapTiler key accepted** in `VITE_MAP_TILE_URL`: the user pasted only the key; expanding it to MapTiler's streets-v2 raster URL keeps "tiles only from VITE_MAP_TILE_URL" and "MapTiler only", and avoids a confusing failure.
+- **Tile status probe**: one `fetch` of the tile under the map centre, because MapTiler answers a bad key with 403 + a PNG that Leaflet treats as loaded.
+- **E2E env isolation** via `FRONTEND_ENV_DIR` (Windows drops empty env vars, so overriding with "" does not work).

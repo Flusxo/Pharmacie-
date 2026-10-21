@@ -293,6 +293,15 @@ export const en: Record<MessageKey, string> = {
   'map.you': 'Your location',
   'map.radius': 'Radius: {km} km',
   'map.notConfigured': 'Map tiles are not configured. Set VITE_MAP_TILE_URL in .env. Pins still work.',
+  'map.tilesFailed': 'Map tiles cannot be loaded (invalid MapTiler key, origin not allowed or no network). Pins still work.',
+  'map.keyRejected':
+    'MapTiler rejects the key (error 403 "Invalid key"). Check the key in VITE_MAP_TILE_URL and add http://localhost:5173 to the key’s "Allowed HTTP origins", then restart npm run dev. Pins still work.',
+  'map.problemSubdomains': 'VITE_MAP_TILE_URL contains {s}: MapTiler does not use subdomains. Remove {s} and restart npm run dev.',
+  'map.problemStyle': 'VITE_MAP_TILE_URL points to a style.json: use the raster URL …/256/{z}/{x}/{y}.png?key=… and restart npm run dev.',
+  'map.problemInvalid':
+    'VITE_MAP_TILE_URL is not a valid tile URL (https://…{z}/{x}/{y}…). Fix .env and restart npm run dev. Pins still work.',
+  'map.noneInRange': 'No pharmacy within this radius.',
+  'map.increaseRadius': 'Widen to 30 km',
   'map.medicineFilter': 'Medicine (to see stock)',
   'map.allPharmacies': 'All verified pharmacies',
   'map.stockFor': 'Stock of {name}',

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { I18nProvider } from '../i18n';
 import { SettingsProvider } from '../lib/settings';
 import PharmacyMap, { MAP_ATTRIBUTION } from '../components/map/PharmacyMap';
+import { resolveTileUrl } from '../lib/tiles';
 
 const pharmacies = [
   { id: 'a', name: 'Pharmacie du Rhône', address: '12 Quai Farconnet', latitude: 45.0672, longitude: 4.8329, inStock: true, quantity: 12 },
@@ -42,5 +43,23 @@ describe('PharmacyMap (section 10)', () => {
     expect(MAP_ATTRIBUTION).toContain('maptiler.com/copyright');
     // The only tile URL comes from the prop / VITE_MAP_TILE_URL; nothing else is hard-coded.
     expect(PharmacyMap.toString()).not.toMatch(/tile\.openstreetmap|basemaps\.cartocdn/);
+  });
+});
+
+describe('resolveTileUrl (VITE_MAP_TILE_URL)', () => {
+  it('accepts a full MapTiler raster URL as-is', () => {
+    const u = 'https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=abc';
+    expect(resolveTileUrl(u)).toEqual({ url: u, problem: null, fromKey: false });
+  });
+  it('expands a bare MapTiler key into the MapTiler raster URL', () => {
+    const r = resolveTileUrl('AbCdEf0123456789wxyz');
+    expect(r.fromKey).toBe(true);
+    expect(r.url).toBe('https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=AbCdEf0123456789wxyz');
+  });
+  it('reports empty, {s} subdomains, style.json and malformed values', () => {
+    expect(resolveTileUrl('').problem).toBe('empty');
+    expect(resolveTileUrl('https://{s}.tile.example/{z}/{x}/{y}.png').problem).toBe('subdomains');
+    expect(resolveTileUrl('https://api.maptiler.com/maps/streets-v2/style.json?key=abc').problem).toBe('style');
+    expect(resolveTileUrl('api.maptiler.com/maps/streets').problem).toBe('invalid');
   });
 });

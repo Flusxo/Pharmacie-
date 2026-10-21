@@ -4,6 +4,8 @@ import { apiAs, loginWithDemo } from './helpers';
 // A valid 1×1 PNG, served for every tile of the test tile host.
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=', 'base64');
 const WITH_TILES = 'http://localhost:5175';
+// Real tile servers (MapTiler) answer with CORS headers; the stand-in host does the same.
+const CORS = { 'Access-Control-Allow-Origin': '*' };
 
 async function loginAlice(page: Page, origin = '') {
   if (origin) {
@@ -20,7 +22,9 @@ test.describe('map (section 10)', () => {
   test('without a tile key: clear message, attribution, pins and list still work and stay in sync', async ({ page }) => {
     const tileRequests: string[] = [];
     page.on('request', (r) => {
-      if (/tile|openstreetmap|cartocdn|maptiler/i.test(r.url())) tileRequests.push(r.url());
+      const external = !r.url().startsWith('http://localhost');
+      if (external && (r.resourceType() === 'image' || /openstreetmap|cartocdn|maptiler/i.test(r.url())))
+        tileRequests.push(new URL(r.url()).hostname);
     });
     await loginAlice(page);
     await page.goto('/map');
@@ -51,7 +55,9 @@ test.describe('map (section 10)', () => {
   });
 
   test('with a tile URL: tile requests return 200, no fallback, pins render', async ({ page }) => {
-    await page.route('https://tiles.e2e.test/**', (route) => route.fulfill({ status: 200, contentType: 'image/png', body: PNG }));
+    await page.route('https://tiles.e2e.test/**', (route) =>
+      route.fulfill({ status: 200, contentType: 'image/png', body: PNG, headers: CORS }),
+    );
     const statuses: number[] = [];
     page.on('response', (r) => {
       if (r.url().startsWith('https://tiles.e2e.test/')) statuses.push(r.status());
@@ -68,12 +74,36 @@ test.describe('map (section 10)', () => {
   });
 
   test('with a tile URL whose tiles fail (e.g. invalid key): fallback with Retry, pins still there', async ({ page }) => {
-    await page.route('https://tiles.e2e.test/**', (route) => route.fulfill({ status: 403, body: 'Invalid key' }));
+    await page.route('https://tiles.e2e.test/**', (route) => route.fulfill({ status: 403, body: 'Invalid key', headers: CORS }));
     await loginAlice(page, WITH_TILES);
     await page.goto(`${WITH_TILES}/map`);
     const map = page.getByTestId('map');
     await expect(map.getByTestId('map-fallback')).toBeVisible();
     await expect(map.locator('.leaflet-marker-icon[title^="Pharmacie"]').first()).toBeVisible();
+  });
+
+  test('a rejected key answered with 403 + an "Invalid key" image (like MapTiler) is detected: tiles hidden, clear message', async ({
+    page,
+  }) => {
+    await page.route('https://tiles.e2e.test/**', (route) =>
+      route.fulfill({ status: 403, contentType: 'image/png', body: PNG, headers: CORS }),
+    );
+    await loginAlice(page, WITH_TILES);
+    await page.goto(`${WITH_TILES}/map`);
+    const map = page.getByTestId('map');
+    await expect(map.getByTestId('map-fallback')).toContainText('MapTiler refuse la clé');
+    await expect(map.locator('.leaflet-tile')).toHaveCount(0);
+    await expect(map.locator('.leaflet-marker-icon[title^="Pharmacie"]').first()).toBeVisible();
+  });
+
+  test('no pharmacy in range: clear message and a one-click wider radius', async ({ page }) => {
+    await loginWithDemo(page, 'David — Lyon');
+    await expect(page).toHaveURL(/\/home$/);
+    await page.goto('/map');
+    await page.getByLabel(/Rayon/).fill('1');
+    await expect(page.getByTestId('none-in-range')).toHaveText('Aucune pharmacie dans ce rayon.');
+    await page.getByRole('button', { name: 'Élargir à 30 km' }).click();
+    await expect(page.getByTestId('map-list-item').filter({ hasText: 'Pharmacie des Terreaux' })).toBeVisible();
   });
 
   test('location permission denied: the app explains and offers the address field', async ({ page }) => {

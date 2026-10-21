@@ -84,11 +84,14 @@ export function PharmacyListMap({
   stockMode,
   radiusKm,
   onChoose,
+  onWiden,
 }: {
   pharmacies: NearbyPharmacy[];
   stockMode: boolean;
   radiusKm?: number;
   onChoose?: (id: string) => void;
+  /** Offered when nothing is in range. */
+  onWiden?: () => void;
 }) {
   const { t, locale } = useI18n();
   const { place } = usePlace();
@@ -103,7 +106,16 @@ export function PharmacyListMap({
   return (
     <div className="map-layout">
       <div className="card map-list" aria-label={pharmacies.length === 1 ? t('map.listOne') : t('map.list', { n: pharmacies.length })}>
-        {pharmacies.length === 0 && <Empty>{t('med.noPharmacies')}</Empty>}
+        {pharmacies.length === 0 && (
+          <Empty>
+            <p data-testid="none-in-range">{t('map.noneInRange')}</p>
+            {onWiden && (
+              <button type="button" className="btn secondary small" onClick={onWiden}>
+                {t('map.increaseRadius')}
+              </button>
+            )}
+          </Empty>
+        )}
         {pharmacies.map((p) => (
           <button
             key={p.id}
@@ -213,6 +225,7 @@ export function MapPage() {
         <CardSkeleton lines={6} />
       ) : (
         <PharmacyListMap
+          onWiden={radius < 30 ? () => setRadius(30) : undefined}
           pharmacies={pharmacies}
           stockMode={!!medicine}
           radiusKm={radius}

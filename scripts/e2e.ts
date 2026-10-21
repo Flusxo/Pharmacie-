@@ -83,6 +83,8 @@ try {
       FRONTEND_PORT: String(port),
       API_PROXY_TARGET: `http://localhost:${API_PORT}`,
       VITE_MAP_TILE_URL: tileUrl,
+      // A folder with no .env: the developer's real map key must never reach the tests.
+      FRONTEND_ENV_DIR: path.join(ROOT, 'e2e'),
     });
   vite(WEB_PORT, '');
   vite(WEB_TILES_PORT, E2E_TILE_URL);

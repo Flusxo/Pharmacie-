@@ -293,6 +293,18 @@ export const fr = {
   'map.you': 'Votre position',
   'map.radius': 'Rayon : {km} km',
   'map.notConfigured': 'Le fond de carte n’est pas configuré. Renseignez VITE_MAP_TILE_URL dans .env. Les repères fonctionnent quand même.',
+  'map.tilesFailed':
+    'Les tuiles de carte ne se chargent pas (clé MapTiler invalide, origine non autorisée ou pas de réseau). Les repères fonctionnent quand même.',
+  'map.keyRejected':
+    'MapTiler refuse la clé (erreur 403 « Invalid key »). Vérifiez la clé dans VITE_MAP_TILE_URL et ajoutez http://localhost:5173 aux « Allowed HTTP origins » de la clé, puis redémarrez npm run dev. Les repères fonctionnent quand même.',
+  'map.problemSubdomains':
+    'VITE_MAP_TILE_URL contient {s} : MapTiler n’utilise pas de sous-domaines. Retirez {s} puis redémarrez npm run dev.',
+  'map.problemStyle':
+    'VITE_MAP_TILE_URL pointe vers un style.json : utilisez l’URL raster …/256/{z}/{x}/{y}.png?key=… puis redémarrez npm run dev.',
+  'map.problemInvalid':
+    'VITE_MAP_TILE_URL n’est pas une URL de tuiles valide (https://…{z}/{x}/{y}…). Corrigez .env puis redémarrez npm run dev. Les repères fonctionnent quand même.',
+  'map.noneInRange': 'Aucune pharmacie dans ce rayon.',
+  'map.increaseRadius': 'Élargir à 30 km',
   'map.medicineFilter': 'Médicament (pour voir le stock)',
   'map.allPharmacies': 'Toutes les pharmacies vérifiées',
   'map.stockFor': 'Stock de {name}',

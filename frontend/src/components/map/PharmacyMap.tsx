@@ -12,9 +12,19 @@ import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from
 import { useI18n } from '../../i18n';
 import { formatKm } from '../../lib/format';
 import { useReducedMotion } from '../../lib/settings';
+import { resolveTileUrl } from '../../lib/tiles';
 
 export const MAP_ATTRIBUTION =
   '© <a href="https://www.maptiler.com/copyright/" target="_blank" rel="noreferrer">MapTiler</a> © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>';
+
+/** URL of the tile that contains a point, used to check the provider's real HTTP status. */
+export function probeTileUrl(template: string, lat: number, lon: number, z: number): string {
+  const n = 2 ** z;
+  const x = Math.floor(((lon + 180) / 360) * n);
+  const r = (lat * Math.PI) / 180;
+  const y = Math.floor(((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * n);
+  return template.replace('{z}', String(z)).replace('{x}', String(x)).replace('{y}', String(y)).replace('{r}', '');
+}
 
 export interface MapPharmacy {
   id: string;
@@ -118,16 +128,41 @@ export default function PharmacyMap({
 }: Props) {
   const { t, locale } = useI18n();
   const reduced = useReducedMotion();
-  const configured = tileUrl.trim() !== '';
+  const tiles = useMemo(() => resolveTileUrl(tileUrl), [tileUrl]);
+  const configured = tiles.url !== '';
   const [tileState, setTileState] = useState<'loading' | 'ok' | 'failed'>('loading');
   const [attempt, setAttempt] = useState(0);
   const loaded = useRef(0);
   const markers = useRef(new Map<string, L.Marker>());
 
+  const [failure, setFailure] = useState<'key' | 'other' | null>(null);
   useEffect(() => {
     loaded.current = 0;
     setTileState('loading');
+    setFailure(null);
   }, [attempt, tileUrl]);
+
+  // Some providers (MapTiler included) answer a bad key with HTTP 403 AND an "Invalid key" picture, which
+  // Leaflet counts as a loaded tile. Probe one tile's real status so a rejected key is reported clearly.
+  useEffect(() => {
+    if (!tiles.url) return;
+    const ctrl = new AbortController();
+    void fetch(probeTileUrl(tiles.url, center.lat, center.lon, zoom), { signal: ctrl.signal })
+      .then((r) => {
+        if (!r.ok) {
+          setFailure(r.status === 401 || r.status === 403 ? 'key' : 'other');
+          setTileState('failed');
+        }
+      })
+      .catch((e: Error) => {
+        if (e.name !== 'AbortError') {
+          setFailure('other');
+          setTileState('failed');
+        }
+      });
+    return () => ctrl.abort();
+    // Probe once per URL / retry, not on every pan.
+  }, [tiles.url, attempt]);
 
   // Open the popup of the selected pharmacy (selection from the list).
   useEffect(() => {
@@ -143,16 +178,17 @@ export default function PharmacyMap({
     <div className="map-wrap" style={{ height }} data-testid="map">
       <MapContainer center={c} zoom={zoom} style={{ height: '100%', width: '100%' }} attributionControl={false} scrollWheelZoom keyboard>
         <AttributionAlways />
-        {configured && (
+        {configured && tileState !== 'failed' && (
           <TileLayer
             key={attempt}
-            url={tileUrl}
+            url={tiles.url}
             tileSize={256}
             crossOrigin
             eventHandlers={{
               tileload: () => {
                 loaded.current += 1;
-                setTileState('ok');
+                // A late tile event must never hide a failure already detected by the probe.
+                setTileState((st) => (st === 'failed' ? st : 'ok'));
               },
               tileerror: () => {
                 if (loaded.current === 0) setTileState('failed');
@@ -231,7 +267,19 @@ export default function PharmacyMap({
       </MapContainer>
       {showMessage && (
         <div className="map-message" role="status" data-testid="map-fallback">
-          <p>{t('map.notConfigured')}</p>
+          <p>
+            {tileState === 'failed'
+              ? t(failure === 'key' ? 'map.keyRejected' : 'map.tilesFailed')
+              : t(
+                  tiles.problem === 'subdomains'
+                    ? 'map.problemSubdomains'
+                    : tiles.problem === 'style'
+                      ? 'map.problemStyle'
+                      : tiles.problem === 'invalid'
+                        ? 'map.problemInvalid'
+                        : 'map.notConfigured',
+                )}
+          </p>
           <button type="button" className="btn secondary small" onClick={() => setAttempt((a) => a + 1)}>
             {t('common.retry')}
           </button>

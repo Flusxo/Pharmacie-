@@ -4,12 +4,14 @@ import react from '@vitejs/plugin-react';
 
 // One root .env (envDir '..'); only VITE_* variables reach the browser.
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '..', '');
+  // E2E runs point FRONTEND_ENV_DIR at a folder without .env, so the developer's keys never leak into tests.
+  const envDir = process.env.FRONTEND_ENV_DIR || '..';
+  const env = loadEnv(mode, envDir, '');
   // The browser always calls the relative /api path; Vite forwards it to the API.
   const apiTarget = process.env.API_PROXY_TARGET || `http://localhost:${env.PORT || 4000}`;
   const proxy = { '/api': { target: apiTarget, changeOrigin: false } };
   return {
-    envDir: '..',
+    envDir,
     plugins: [react()],
     server: { port: Number(process.env.FRONTEND_PORT || 5173), strictPort: true, proxy },
     preview: { port: Number(process.env.FRONTEND_PORT || 4173), strictPort: true, proxy },

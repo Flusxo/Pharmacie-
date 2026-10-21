@@ -4,8 +4,8 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-Working through the user's 7-step list (second session, 2026-10-21). Step 1 (Phase 8 dashboards + account pages) is done and committed.
-Next, in order: **Step 2 map** (tiles from the user's `VITE_MAP_TILE_URL`, "no pharmacy in range" message, location fallback), **Step 3 site-wide 3D** (Phase 9), **Step 4 animations** (Phase 10), **Step 5 pack-label fix + design pass**, **Step 6 extras** (Phase 11), **Step 7 README + final checks** (Phase 12). Commit after each step only when build, lint and that step's tests pass.
+Working through the user's 7-step list (second session, 2026-10-21). Steps 1 (Phase 8 dashboards + account pages) and 2 (map) are done and committed.
+Next, in order: **Step 3 site-wide 3D** (Phase 9), **Step 4 animations** (Phase 10), **Step 5 pack-label fix + design pass**, **Step 6 extras** (Phase 11), **Step 7 README + final checks** (Phase 12). Commit after each step only when build, lint and that step's tests pass.
 
 How to run things: `npm run dev` (API :4000 + web :5173 on Neon), `npm test` (local PG :5433, never Neon), `npm run e2e` (own DB `pharmalink_e2e`, servers :4100/:5174/:5175, cleans up after itself).
 The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECISIONS.md`.
@@ -66,17 +66,24 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
 - [ ] Phase 11 — Extras
 - [ ] Phase 12 — Quality and documentation
 
-## Last check results (2026-10-21, after Phase 8 / step 1)
+- [x] User step 2 — Map tiles and pins
+  - **Finding**: the user's `VITE_MAP_TILE_URL` contains a bare 20-character key (not a URL), and **MapTiler rejects that key**: HTTP 403 "Invalid key" for every tile, with or without a browser origin (checked with a direct request, status only). MapTiler sends that error as a PNG picture saying "Invalid key", which Leaflet counts as a loaded tile, so before this fix the map showed "Invalid key" pictures and no warning. **The user must paste a valid key** (MapTiler Account → API keys). Real tiles are therefore still NOT verified.
+  - Fixes: `frontend/src/lib/tiles.ts` accepts a full raster URL or a bare MapTiler key (expanded to the MapTiler streets-v2 raster URL, still the only tile source); reports `{s}` subdomains, `style.json` links and malformed values with a specific message. The map probes one tile's real HTTP status: 401/403 → tiles hidden + "MapTiler refuse la clé (403 Invalid key)… add http://localhost:5173 to Allowed HTTP origins… restart npm run dev"; other failures → "tiles cannot be loaded". A failure, once detected, can no longer be hidden by a late tile event (race found by repeating the test). "Aucune pharmacie dans ce rayon" + "Élargir à 30 km" when nothing is in range. Location denied → message + BAN address field (already there, re-tested).
+  - E2E isolation fix: on Windows an empty environment variable is removed, so the "no key" test frontend used to read the developer's real key from `.env`. E2E frontends now read env from `e2e/` (`FRONTEND_ENV_DIR`), never the root `.env`.
+  - Verified: in the browser on the user's running dev server, /map now shows the key-rejected message, no "Invalid key" tiles, 1 pin and the attribution. Vitest (`map.test.tsx`, 6 tests): resolver (full URL, bare key, empty, `{s}`, style.json, malformed), fallback text. Playwright (`map.spec.ts`, 8 tests): no key → message + attribution + no external tile request; stand-in tiles 200 → tiles shown; 403 text → message; 403 + image (MapTiler behaviour) → tiles hidden + key message (repeated 5×, stable); no pharmacy in range → message → widen → Terreaux listed; geolocation denied; details popup; tracking map.
+  - README started with the map-key section (where to get the key, full URL or bare key, restart, Allowed HTTP origins, keys are public).
+
+## Last check results (2026-10-21, after step 2)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 95 + frontend 15 tests passed (local PG :5433, never Neon).
-- `npm run e2e`: 15 Playwright tests passed (5 cycle + 6 map + 4 patient); test ports released afterwards.
+- `npm test`: backend 95 + frontend 18 tests passed (local PG :5433, never Neon).
+- `npm run e2e`: 17 Playwright tests passed (5 cycle + 8 map + 4 patient); test ports released afterwards.
 
 ## Known issues / To fix
 
 Map (the user saw tiles or pins not showing):
 
-- **Tiles**: with `VITE_MAP_TILE_URL` empty (current `.env`) there are NO tiles by design; the map shows a plain background plus the message "Le fond de carte n’est pas configuré… / Map tiles are not configured. Set VITE_MAP_TILE_URL in .env. Pins still work." To get tiles: put a MapTiler raster URL in the root `.env` (`https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=YOUR_KEY`, no `{s}`), then **restart `npm run dev`** (Vite reads `.env` only at startup). A real MapTiler key has never been tested (none available). If tiles still fail with a key, the same message appears after the first failed tile: check the key, its "Allowed HTTP origins" (must include `http://localhost:5173`), and the browser Network tab for 403/401.
+- **Tiles (still not working for the user)**: the key in `.env` is rejected by MapTiler (403 Invalid key, verified). Paste a valid key or the full URL `https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=…`, restart `npm run dev`. The app now says exactly this on the map.
 - **Pins**: pins come from the API. If none show: (1) the API is not running or the database is unreachable (check `http://localhost:5173/api/health`); (2) the location used is far from the demo pharmacies (all near Tournon / Valence / Romans / Lyon / Vienne) — check "Position utilisée" and the radius (Home uses 25 km, /map starts at 15 km, max 30); (3) the user is not logged in as a patient. Not reproduced in my checks: pins showed on /map, details and home.
 - The Home mini map has no list sync and no radius control (by design: it links to /map).
 
