@@ -4,8 +4,8 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-Phases 2–4 are done and committed. Next: Phase 5 — admin routes (stats, users with filters, verification queue approve/reject with reason, suspend/reactivate with reason, create staff (admin only), medicines CRUD, orders, reports list/resolve, audit log, pharmacy performance) with sub-role enforcement and an audit row for every staff action, plus tests (moderator verifies but cannot create staff; support reads but cannot suspend or verify).
-Design notes for the missing parts are in `docs/DECISIONS.md`.
+The backend (Phases 1–5) is done and committed. Next: Phase 6 — the frontend (`frontend/` workspace: Vite + React 18 + TS, `envDir: '..'`, `/api` proxy to :4000, auth context, protected routes, i18n fr/en, login/register with role tabs + staff link + dev-only demo panel, Patient Home, Search, Medicine Details, request flow, Order Tracking), then Playwright for the patient flow. Add a root `npm run dev` (backend + frontend together, clear message if a port is busy) and add the frontend to `build`, `lint` and `test`.
+The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECISIONS.md`.
 
 ## Phases
 
@@ -32,7 +32,12 @@ Design notes for the missing parts are in `docs/DECISIONS.md`.
     - Privacy: a patient cannot read another patient's request/order (404); the share link shows status only and returns 410 after delivery + 2 h.
     - Email subjects never contain medicine names. Inventory CSV preview with per-row errors; apply refused while errors exist; valid CSV applied with history; low-stock filter; pause switch hides the pharmacy; daily summary; export my data; delete account (anonymised, login refused), refused while an order is in progress.
   - Verified by hand on Neon (curl, then `npm run db:reset` to restore demo data): Alice → Zyrtec request → options (Pharmacie du Rhône 0.3 km first) → choose → Tournon incoming shows "Alice M." → accept → accepted→ready refused (409) → preparing OK. Logs contain no medicine names, emails or addresses.
-- [ ] Phase 5 — Admin and staff
+- [x] Phase 5 — Admin and staff (backend/src/routes/admin.ts)
+  - Permissions: every staff role views; verify/reject, suspend/reactivate and medicines CRUD = admin + moderator; staff accounts only touched by admin; resolve reports = any staff; create staff = admin only. No impersonation route exists.
+  - Verified by tests (backend/test/admin.test.ts, 19 tests): admin/support/moderator can read all 10 admin lists; user filters work and expose no password hashes; patients and pharmacies get 403; support cannot verify, suspend, create staff or edit medicines; moderator verifies the pending Pharmacie Démo → it can work and appears in nearby search; a newly registered doctor is blocked (403) until an admin approves, then works; rejecting needs a reason, which the doctor sees in /me; suspension needs a reason, blocks the token (401) and login (403 "suspended"), reactivation restores it; moderator cannot suspend staff; nobody can suspend themselves; admin creates a support account that can log in; medicines create (bad image URL rejected) / update / soft-delete with reason; reports filed by any user and resolved by support; every staff write leaves an audit row, with a reason where required; performance table.
+  - Bug found and fixed by these tests: PATCH on a medicine used to blank `description` and `ageNote` (zod defaults kept by `.partial()`).
+  - Verified by hand on Neon (curl, read-only): moderator stats and verification queue (Dr Bernard, Dr Petit, Pharmacie Démo); `/api/docs` returns 200; OpenAPI lists 72 paths; no error logs.
+  - `npm audit`: 0 vulnerabilities.
 - [ ] Phase 6 — Frontend foundation and patient flow
 - [ ] Phase 7 — Map
 - [ ] Phase 8 — Dashboards
@@ -41,10 +46,11 @@ Design notes for the missing parts are in `docs/DECISIONS.md`.
 - [ ] Phase 11 — Extras
 - [ ] Phase 12 — Quality and documentation
 
-## Last check results (2026-10-21, after Phase 4)
+## Last check results (2026-10-21, after Phase 5)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: 6 files, 76 tests passed, on the bundled PG16 `localhost:5433/pharmalink_test` (never Neon).
+- `npm test`: 6 files, 95 tests passed, on the bundled PG16 `localhost:5433/pharmalink_test` (never Neon).
+- `npm audit`: 0 vulnerabilities.
 
 ## Simulated
 
@@ -56,4 +62,5 @@ Design notes for the missing parts are in `docs/DECISIONS.md`.
 
 ## Not done yet
 
-- Phase 5 onward (see above). The frontend does not exist yet.
+- Phase 6 onward (see above). The frontend does not exist yet, so there is no `npm run dev` yet (the API alone runs with `npx tsx backend/src/server.ts`).
+- Optional TOTP for professionals (Phase 11) is not started.
