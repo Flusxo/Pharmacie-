@@ -15,6 +15,13 @@ Each entry: what was chosen and why.
 
 ## Domain
 
+- **Doctor patient list**: confirmed links show name and birth date (never address/phone); pending links show only a masked email. A doctor's request history disappears from the doctor's view if the link is removed.
+- **Pharmacy prescription confirmation** is an explicit `prescriptionChecked: true` flag, required to move an order containing a prescription item to "preparing".
+- **Account deletion** is refused while an order is in progress; otherwise personal fields are anonymised, links and notifications removed, open requests cancelled, orders kept without personal data, share links disabled.
+- **Concurrency**: accept locks the request row (`FOR UPDATE`), then each inventory row in medicine-id order (avoids deadlocks). Identical requests from one patient are serialised with `pg_advisory_xact_lock` before the 2-minute idempotency check.
+- **CSV stock upload**: header `cip13,quantity,price_eur[,low_stock_threshold]`, comma or semicolon (semicolon allows decimal commas, as French Excel exports). Applying is all-or-nothing and refused while any row has an error.
+- **Login lockout** returns the same generic "Invalid email or password." message as any other failure, so the response never reveals whether an account exists or is locked.
+
 - **Substitution** happens at the request stage: while a request is `sent_to_pharmacy`, the chosen pharmacy may propose a generic for one item; the request moves to `awaiting_patient_approval`. Approving swaps the item and returns the request to `sent_to_pharmacy` (same pharmacy); declining keeps the original item.
 - **Partial stock**: the options endpoint returns full-stock pharmacies first plus "partially available" ones with the missing items listed. Choosing a partial pharmacy requires `acceptPartial: true`; the missing items are marked `excluded` and are never prepared.
 - **Cancellation**: patient cancels directly while the request is `received`/`sent_to_pharmacy`, and while the order is still `accepted`. From `preparing` onward the patient files a cancellation request (`cancel_requested_at`) that the pharmacy approves; cancelling returns the stock.
