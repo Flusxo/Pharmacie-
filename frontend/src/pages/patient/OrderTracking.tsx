@@ -1,0 +1,222 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useI18n } from '../../i18n';
+import type { MessageKey } from '../../i18n/fr';
+import { ApiError, api } from '../../lib/api';
+import { useToast } from '../../lib/toast';
+import { formatDateTime, formatPrice, formatTime } from '../../lib/format';
+import type { OrderDetails, OrderStatus } from '../../lib/types';
+import { PackImage } from '../../components/PackImage';
+import { CardSkeleton, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
+import { IconCheck } from '../../components/Icons';
+
+export const STEPS = ['sent', 'accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'] as const;
+
+/** Index of the current step (0 = request sent). */
+export function stepIndex(status: OrderStatus): number {
+  return status === 'cancelled' ? -1 : STEPS.indexOf(status as (typeof STEPS)[number]);
+}
+
+export function OrderStepper({
+  status,
+  history,
+  createdAt,
+}: {
+  status: OrderStatus;
+  history: { status: OrderStatus; changedAt: string }[];
+  createdAt: string;
+}) {
+  const { t, locale } = useI18n();
+  const idx = stepIndex(status);
+  return (
+    <ol className="stepper" aria-label={t('order.title')}>
+      {STEPS.map((s, i) => {
+        const at = s === 'sent' ? createdAt : history.find((h) => h.status === s)?.changedAt;
+        const state = i < idx || (i === idx && s === 'delivered') ? 'done' : i === idx ? 'current done' : '';
+        return (
+          <li key={s} className={state} aria-current={i === idx ? 'step' : undefined}>
+            <span className="dot">{i <= idx ? <IconCheck width={16} height={16} /> : i + 1}</span>
+            <span className="stack" style={{ gap: 0 }}>
+              <strong style={{ color: i <= idx ? 'var(--ink)' : 'var(--muted)' }}>{t(`order.step.${s}` as MessageKey)}</strong>
+              {at && i <= idx && <span className="muted small">{formatTime(at, locale)}</span>}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+export function OrderTrackingPage() {
+  const { id = '' } = useParams();
+  const { t, locale } = useI18n();
+  const toast = useToast();
+  const [order, setOrder] = useState<OrderDetails | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const last = useRef<OrderStatus | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      const r = await api<{ order: OrderDetails }>(`/patient/orders/${id}`);
+      if (last.current && last.current !== r.order.status) {
+        toast(t('order.statusChanged', { status: t(`status.${r.order.status}` as MessageKey) }));
+      }
+      last.current = r.order.status;
+      setOrder(r.order);
+      setError(null);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : t('common.error'));
+    }
+  }, [id, t, toast]);
+
+  useEffect(() => {
+    void load();
+    const timer = setInterval(() => void load(), 10_000);
+    return () => clearInterval(timer);
+  }, [load]);
+
+  if (!order) return error ? <ErrorBox message={error} /> : <CardSkeleton lines={6} />;
+
+  const total = order.items.filter((i) => !i.excluded).reduce((s, i) => s + (i.priceEur ?? 0) * i.quantity, 0);
+  const cancel = async () => {
+    setBusy(true);
+    try {
+      await api(`/patient/orders/${id}/cancel`, { method: 'POST' });
+      await load();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : t('common.error'));
+    } finally {
+      setBusy(false);
+    }
+  };
+  const share = async () => {
+    if (!order.shareToken) return;
+    const url = `${window.location.origin}/track/${order.shareToken}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      window.prompt(t('order.share'), url);
+    }
+    toast(t('order.shareCopied'));
+  };
+
+  return (
+    <div className="stack" style={{ gap: 20 }} data-testid="order-tracking">
+      <Link to="/requests" className="small">
+        ← {t('requests.title')}
+      </Link>
+      <div className="row between">
+        <h1 style={{ margin: 0 }}>{t('order.title')}</h1>
+        <span data-testid="order-status">
+          <StatusBadge status={order.status} />
+        </span>
+      </div>
+      <p className="muted small">
+        {formatDateTime(order.createdAt, locale)} · {t('order.refresh')}
+      </p>
+      {error && <ErrorBox message={error} />}
+      {order.status === 'cancelled' && <div className="alert error">{t('order.cancelledBanner')}</div>}
+      {order.cancelRequestedAt && order.status !== 'cancelled' && <div className="alert warn">{t('order.cancelRequested')}</div>}
+
+      <div className="grid cols-2" style={{ alignItems: 'start' }}>
+        <section className="card">
+          <OrderStepper status={order.status} history={order.history} createdAt={order.createdAt} />
+        </section>
+        <section className="card stack">
+          <h2>{t('order.pharmacy')}</h2>
+          <strong>{order.pharmacy.name}</strong>
+          <span className="muted">{order.pharmacy.address}</span>
+          {order.pharmacy.phone && <a href={`tel:${order.pharmacy.phone.replace(/\s/g, '')}`}>{order.pharmacy.phone}</a>}
+          <div className="alert info small">
+            <strong>{t('order.simulated')}</strong> — {t('order.simulatedText')}
+          </div>
+        </section>
+      </div>
+
+      <section className="card stack">
+        <h2>{t('order.items')}</h2>
+        {order.items.map((i) => (
+          <div key={i.id} className="row between" style={{ opacity: i.excluded ? 0.5 : 1 }}>
+            <span className="row" style={{ gap: 12 }}>
+              <span style={{ width: 52 }}>
+                <PackImage name={i.name} dosage={i.dosage} form={i.form} category={i.category} />
+              </span>
+              <span className="stack" style={{ gap: 2 }}>
+                <strong>
+                  {i.quantity} × {i.name}
+                </strong>
+                <RxBadge rx={i.requiresPrescription} />
+              </span>
+            </span>
+            <span>{i.excluded ? t('requests.excluded') : formatPrice((i.priceEur ?? 0) * i.quantity, locale)}</span>
+          </div>
+        ))}
+        <div className="row between">
+          <span className="muted">{t('order.total')}</span>
+          <strong>{formatPrice(total, locale)}</strong>
+        </div>
+      </section>
+
+      <div className="row">
+        {order.shareToken && order.status !== 'cancelled' && (
+          <button type="button" className="btn secondary" onClick={() => void share()}>
+            {t('order.share')}
+          </button>
+        )}
+        {order.status === 'accepted' && (
+          <button type="button" className="btn secondary" disabled={busy} onClick={() => void cancel()}>
+            {t('order.cancel')}
+          </button>
+        )}
+        {['preparing', 'ready', 'out_for_delivery'].includes(order.status) && !order.cancelRequestedAt && (
+          <button type="button" className="btn secondary" disabled={busy} onClick={() => void cancel()}>
+            {t('order.askCancel')}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** Public, read-only tracking from a share link (no personal data). */
+export function SharedTrackingPage() {
+  const { token = '' } = useParams();
+  const { t } = useI18n();
+  const [order, setOrder] = useState<{
+    status: OrderStatus;
+    pharmacyName: string;
+    pharmacyCity: string;
+    history: { status: OrderStatus; changedAt: string }[];
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    const load = () =>
+      api<{ order: NonNullable<typeof order> }>(`/share/${token}`)
+        .then((r) => setOrder(r.order))
+        .catch((e) =>
+          setError(e instanceof ApiError && e.status === 410 ? t('track.expired') : e instanceof ApiError ? e.message : t('common.error')),
+        );
+    void load();
+    const timer = setInterval(load, 10_000);
+    return () => clearInterval(timer);
+  }, [token, t]);
+  return (
+    <div className="card stack" style={{ maxWidth: 560, margin: '0 auto' }}>
+      <h1>{t('track.title')}</h1>
+      {error && <div className="alert warn">{error}</div>}
+      {order && (
+        <>
+          <div className="row between">
+            <strong>
+              {order.pharmacyName} · {order.pharmacyCity}
+            </strong>
+            <StatusBadge status={order.status} />
+          </div>
+          <OrderStepper status={order.status} history={order.history} createdAt={order.history[0]?.changedAt ?? new Date().toISOString()} />
+          <p className="muted small">{t('order.simulated')}</p>
+        </>
+      )}
+    </div>
+  );
+}

@@ -4,7 +4,7 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-The backend (Phases 1–5) is done and committed. Next: Phase 6 — the frontend (`frontend/` workspace: Vite + React 18 + TS, `envDir: '..'`, `/api` proxy to :4000, auth context, protected routes, i18n fr/en, login/register with role tabs + staff link + dev-only demo panel, Patient Home, Search, Medicine Details, request flow, Order Tracking), then Playwright for the patient flow. Add a root `npm run dev` (backend + frontend together, clear message if a port is busy) and add the frontend to `build`, `lint` and `test`.
+Phases 1–6 are done and committed. Next: Phase 7 — the map (master prompt section 10, exactly): Leaflet + react-leaflet, tiles ONLY from `VITE_MAP_TILE_URL` (no OSM/CARTO default), in-map fallback message with Retry when empty or tiles fail, "© MapTiler © OpenStreetMap contributors" attribution, green/grey pins, pulsing patient dot, radius slider 1–30 km, list ↔ map sync, simulated delivery marker on the tracking page. Then re-add the "Carte" nav entry and the "Open the map" button on Home (removed for Phase 6 so nothing linked to a missing page). Then Phase 8 dashboards (doctor, pharmacy and staff currently land on `/doctor`, `/pharmacy`, `/admin`, which do not exist yet → 404 page).
 The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECISIONS.md`.
 
 ## Phases
@@ -38,7 +38,12 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Bug found and fixed by these tests: PATCH on a medicine used to blank `description` and `ageNote` (zod defaults kept by `.partial()`).
   - Verified by hand on Neon (curl, read-only): moderator stats and verification queue (Dr Bernard, Dr Petit, Pharmacie Démo); `/api/docs` returns 200; OpenAPI lists 72 paths; no error logs.
   - `npm audit`: 0 vulnerabilities.
-- [ ] Phase 6 — Frontend foundation and patient flow
+- [x] Phase 6 — Frontend foundation and patient flow (`frontend/`, `scripts/dev.mjs`, `e2e/`)
+  - Built: Vite 8 + React 18.3 + TS, React Router 7.18 (6.x has published advisories), `envDir: '..'`, `/api` proxy, strict ports; auth context + protected routes per role; settings (theme system/light/dark, reduce animations); location context (saved address → device geolocation → BAN address/postcode search, default Tournon; never blocks); i18n fr (default) / en; toasts; notifications bell (unread count, mark read); Login (Patient/Médecin/Pharmacie tabs, "Connexion équipe" link → /login/staff, dev-only demo panel), Register (patient/doctor/pharmacy, BAN address), forgot/reset password, Waiting-for-approval, Patient Home (greeting, search with keyboard suggestions, categories with counts, recent orders, around you, location control), Search (filters, availability "En stock dans N pharmacies proches", Rx badge, did-you-mean, pagination), Medicine Details (generated pack image, info, "Pourquoi faut-il une ordonnance ?", nearby pharmacies with stock/price/open state, generics), request flow sheet (pharmacy → confirm → sent; prescription checkbox; "counter. ne vend rien"), My requests + request details (choose pharmacy for doctor requests incl. partial with confirmation, waiting/refused, substitution approve/decline, cancel), Order tracking (6-step stepper, auto-refresh 10 s, toast on status change, "Suivi simulé", share link, cancel / ask to cancel), public shared tracking page, Profile/settings (language, theme, reduce animations, email notifications, doctor links, change password, report a problem, export data, delete account), Terms/Privacy placeholders ("bientôt disponible"), 404.
+  - `npm run dev` starts API :4000 + frontend :5173 (and the bundled PG only if DATABASE_URL is local); refuses to start if a port is busy and names the process. Verified: web 200, `/api/health` through the proxy = ok on Neon; login page and Patient Home checked in the browser.
+  - Verified by Playwright (`npm run e2e`, 4 tests, real API on :4100 + real frontend on :5174, own local DB `pharmalink_e2e`): Alice logs in via the demo panel → Home → search "para" (Paracétamol) and "dolliprane" (Doliprane 1000 mg) → details (Pharmacie du Rhône first) → request sheet → sent → request page "En attente…"; Tournon (via API) sees "Alice M." and accepts; tracking page shows "Acceptée" then updates by itself to "En préparation" and "Prête"; no buy/cart wording on visited pages. Prescription medicine: "Envoyer" disabled until the prescription checkbox is ticked. Wrong password → "Invalid email or password.". Staff link → admin logs in.
+  - Verified by Vitest (frontend, 12 tests): no buy/cart wording and no hard-coded `localhost:4000` anywhere in `src`; prototype notice text fr/en; no placeholder code; fr/en keys and `{placeholders}` identical; `4,50 €`, DD/MM/YYYY in Europe/Paris; open/closed/on-duty logic; PackImage label + fallback when a real image fails; login tabs, staff link, demo panel fill; stepper mapping.
+  - Production bundle checked: no API host, no secret names, no Neon host, no demo emails or demo password.
 - [ ] Phase 7 — Map
 - [ ] Phase 8 — Dashboards
 - [ ] Phase 9 — Images and 3D (+ the separate 3D/animation brief: Scene3D, quality tiers, product viewer, hero, scenes, motion system)
@@ -46,10 +51,11 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
 - [ ] Phase 11 — Extras
 - [ ] Phase 12 — Quality and documentation
 
-## Last check results (2026-10-21, after Phase 5)
+## Last check results (2026-10-21, after Phase 6)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: 6 files, 95 tests passed, on the bundled PG16 `localhost:5433/pharmalink_test` (never Neon).
+- `npm test`: backend 6 files / 95 tests + frontend 1 file / 12 tests passed (backend on the bundled PG16 `localhost:5433/pharmalink_test`, never Neon).
+- `npm run e2e`: 4 Playwright tests passed (own DB `pharmalink_e2e` on :5433).
 - `npm audit`: 0 vulnerabilities.
 
 ## Simulated
@@ -62,5 +68,5 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
 
 ## Not done yet
 
-- Phase 6 onward (see above). The frontend does not exist yet, so there is no `npm run dev` yet (the API alone runs with `npx tsx backend/src/server.ts`).
+- Phase 7 onward (see above). Doctor, pharmacy and staff dashboards do not exist yet (Phase 8).
 - Optional TOTP for professionals (Phase 11) is not started.

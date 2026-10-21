@@ -30,3 +30,14 @@ Each entry: what was chosen and why.
 - **Shareable tracking link** uses a random token; it shows only status, pharmacy name/city and step times, and stops working 2 hours after delivery (or on cancellation).
 - **On-duty** (pharmacie de garde) is stored as weekday keys on which the pharmacy is open 24 h.
 - Medicine brand names in the seed are French-realistic (e.g. Doliprane) because the acceptance demo requires them. 3D shelf/background props use fictional brand names only.
+
+## Frontend (Phase 6)
+
+- **React Router 7.18** instead of 6.x: 6.x has two published advisories (open redirect, SSR deserialisation); 7 still supports React 18.
+- **One React copy**: React 18.3.1 is pinned at the workspace root as well, because peer dependencies had hoisted React 19 and the app crashed with "Invalid hook call".
+- **Plain CSS variables** (allowed by the brief) rather than Tailwind: one stylesheet `frontend/src/styles/app.css` with the section-12 tokens, dark theme via `data-theme`.
+- **Fonts bundled locally** (`@fontsource-variable/fraunces`, `inter`), never loaded from a CDN at runtime.
+- **Location**: saved patient address first, then device geolocation (session only) or a BAN address/postcode; default Tournon-sur-Rhône so the app is never blocked.
+- **Request flow** creates the request and immediately sends it to the chosen pharmacy (two API calls). If the second call fails (stock changed), the request stays "received" and the patient can choose another pharmacy from the request page.
+- **Demo accounts panel** and the demo password exist only in development builds (`import.meta.env.DEV`); the production bundle is checked to contain neither.
+- **E2E isolation**: Playwright starts its own API (:4100) and frontend (:5174) on a fresh local database `pharmalink_e2e`, so it never touches Neon or a running `npm run dev`.

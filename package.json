@@ -9,11 +9,14 @@
   ],
   "devDependencies": {
     "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.64.1",
     "@types/node": "^26.6.5",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.13.0",
     "prettier": "^3.9.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "tsx": "^4.23.15",
     "typescript": "~5.9",
     "typescript-eslint": "^8.72.0"
@@ -25,10 +28,12 @@
     "db:reset": "npm run reset -w db",
     "db:migrate": "npm run migrate -w db",
     "db:test": "tsx db/scripts/test-db.ts",
-    "build": "npm run typecheck -w db && npm run build -w backend",
+    "build": "npm run typecheck -w db && npm run build -w backend && npm run build -w frontend",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "npm run test -w backend"
+    "test": "npm run test -w backend && npm run test -w frontend",
+    "dev": "node scripts/dev.mjs",
+    "e2e": "playwright test"
   },
   "type": "module"
 }

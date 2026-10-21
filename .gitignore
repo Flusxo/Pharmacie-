@@ -10,3 +10,5 @@ test-results
 playwright-report
 logs
 *.log
+.dev.log
+.api.log
