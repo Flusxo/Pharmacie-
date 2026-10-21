@@ -50,7 +50,7 @@ test.describe('patient flow (real API + real frontend)', () => {
     // Tracking page updates by itself (10 s refresh) after each status change.
     await page.goto(`/orders/${orderId}`);
     await expect(page.getByTestId('order-status')).toHaveText('Acceptée');
-    await expect(page.getByText('Suivi simulé')).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Suivi simulé' })).toBeVisible();
     for (const [status, label] of [
       ['preparing', 'En préparation'],
       ['ready', 'Prête'],

@@ -9,6 +9,7 @@ import { formatDate, formatKm } from '../../lib/format';
 import type { NearbyPharmacy, OrderSummary, RequestSummary } from '../../lib/types';
 import { SearchBox } from '../../components/SearchBox';
 import { LocationControl } from '../../components/LocationControl';
+import { LazyMap } from '../../components/map/LazyMap';
 import { PackImage } from '../../components/PackImage';
 import { CardSkeleton, Empty, OpenBadge, StatusBadge } from '../../components/ui';
 
@@ -136,9 +137,15 @@ export function HomePage() {
         </section>
 
         <section className="card stack" aria-labelledby="around">
-          <h2 id="around" style={{ margin: 0 }}>
-            {t('home.aroundYou')}
-          </h2>
+          <div className="row between">
+            <h2 id="around" style={{ margin: 0 }}>
+              {t('home.aroundYou')}
+            </h2>
+            <Link to="/map" className="btn secondary small">
+              {t('home.openMap')}
+            </Link>
+          </div>
+          <LazyMap center={place} radiusKm={RADIUS_KM} pharmacies={nearby ?? []} height={220} />
           {nearby === null ? (
             <CardSkeleton />
           ) : nearby.length === 0 ? (

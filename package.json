@@ -33,7 +33,7 @@
     "format": "prettier --write .",
     "test": "npm run test -w backend && npm run test -w frontend",
     "dev": "node scripts/dev.mjs",
-    "e2e": "playwright test"
+    "e2e": "tsx scripts/e2e.ts"
   },
   "type": "module"
 }

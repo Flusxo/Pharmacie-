@@ -41,3 +41,11 @@ Each entry: what was chosen and why.
 - **Request flow** creates the request and immediately sends it to the chosen pharmacy (two API calls). If the second call fails (stock changed), the request stays "received" and the patient can choose another pharmacy from the request page.
 - **Demo accounts panel** and the demo password exist only in development builds (`import.meta.env.DEV`); the production bundle is checked to contain neither.
 - **E2E isolation**: Playwright starts its own API (:4100) and frontend (:5174) on a fresh local database `pharmalink_e2e`, so it never touches Neon or a running `npm run dev`.
+
+## Map and test infrastructure (Phase 7)
+
+- **Leaflet is lazy-loaded** (`LazyMap`), so the first page does not download it (separate ~158 kB chunk).
+- **Fallback message at the bottom of the map** with `pointer-events: none` except on Retry, so it never blocks pins or popups. The attribution control is always added, even without tiles.
+- **Tile test without a real key**: e2e runs a second frontend (:5175) with `VITE_MAP_TILE_URL=https://tiles.e2e.test/{z}/{x}/{y}.png`; Playwright answers that host with a PNG (200) or a 403. A real MapTiler key is not tested.
+- **Simulated courier**: moves in a straight line from the pharmacy to the patient over 8 minutes after "out for delivery", stops at 95 % until "delivered". No real routing.
+- **Test PostgreSQL via pg_ctl** in a separate process: embedded-postgres stops with `taskkill /f /t` on Windows (orphaned helpers kept port 5433 open) and registers exit hooks that delayed Vitest by 10 s.

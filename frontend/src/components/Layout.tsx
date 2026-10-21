@@ -6,7 +6,7 @@ import { useSettings } from '../lib/settings';
 import { api } from '../lib/api';
 import type { Notification } from '../lib/types';
 import { formatDateTime } from '../lib/format';
-import { IconBell, IconDashboard, IconHome, IconList, IconLogout, IconMoon, IconSearch, IconSun, IconUser } from './Icons';
+import { IconBell, IconDashboard, IconHome, IconList, IconLogout, IconMap, IconMoon, IconSearch, IconSun, IconUser } from './Icons';
 
 export function PrototypeNotice() {
   const { t } = useI18n();
@@ -175,6 +175,7 @@ export function Layout() {
       ? [
           { to: '/home', label: t('nav.home'), icon: <IconHome /> },
           { to: '/search', label: t('nav.search'), icon: <IconSearch /> },
+          { to: '/map', label: t('nav.map'), icon: <IconMap /> },
           { to: '/requests', label: t('nav.requests'), icon: <IconList /> },
           { to: '/profile', label: t('nav.profile'), icon: <IconUser /> },
         ]

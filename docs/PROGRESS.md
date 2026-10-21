@@ -4,7 +4,21 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-Phases 1–6 are done and committed. Next: Phase 7 — the map (master prompt section 10, exactly): Leaflet + react-leaflet, tiles ONLY from `VITE_MAP_TILE_URL` (no OSM/CARTO default), in-map fallback message with Retry when empty or tiles fail, "© MapTiler © OpenStreetMap contributors" attribution, green/grey pins, pulsing patient dot, radius slider 1–30 km, list ↔ map sync, simulated delivery marker on the tracking page. Then re-add the "Carte" nav entry and the "Open the map" button on Home (removed for Phase 6 so nothing linked to a missing page). Then Phase 8 dashboards (doctor, pharmacy and staff currently land on `/doctor`, `/pharmacy`, `/admin`, which do not exist yet → 404 page).
+Phases 1–7 are done and committed (last session stopped on 2026-10-21 because of the user's usage limit). Working tree is clean.
+
+Do this, in order:
+
+1. **Read "Known issues / To fix" below, including the "Reported by the user" list**, and fix what the user reported first (especially anything about the map).
+2. **Phase 8 — Dashboards** (nothing written yet). Doctor, pharmacy and staff currently land on `/doctor`, `/pharmacy`, `/admin`, which show the 404 page. All backend routes already exist and are tested (see `/api/docs`):
+   - Pharmacy (`/pharmacy`): tabs Incoming requests (accept / refuse with countdown to `answerBy`, propose generic), Current orders (status control offering only the valid next status from `NEXT_STATUS`, "prescription checked" box before preparing, approve/decline cancellation requests), Inventory (inline stock edit, add medicine via search, CSV upload with preview + per-row errors, low-stock filter, history, "mark all out of stock" switch), Daily summary.
+   - Doctor (`/doctor`): patients with confirmation state, link a patient by email, new request form (medicine search + instructions) for confirmed patients, templates, history.
+   - Admin (`/admin`): KPI cards, verification queue (approve / reject with reason), users (filters, suspend / reactivate with reason), pharmacies, doctors, medicines (CRUD with image URL), orders, reports (resolve), audit log, pharmacy performance. Show only the actions the staff role allows (admin / moderator / support).
+   - Add all UI text to `frontend/src/i18n/fr.ts` and `en.ts`.
+   - Playwright (`e2e/cycle.spec.ts`): patient requests → chooses Tournon → pharmacy accepts in its dashboard and moves Preparing → Ready → Out for delivery → Delivered while the patient's tracking page updates; dr.martin creates a request for Alice in the doctor dashboard; admin verifies the pending Pharmacie Démo; support cannot see verify buttons.
+   - Then commit "Phase 8" only if `npm run build`, `npm run lint`, `npm test` and `npm run e2e` all pass.
+3. Then Phase 9 (images + 3D) and 10 (animation) — only after Phases 6–8 pass (user's rule). The separate 3D/animation brief is in the conversation history; its summary: Scene3D wrapper with quality tiers (Auto/High/Medium/Low/Off), local procedural HDR in `public/hdr/`, MedicineModel3D per form with fallbacks (no WebGL, low memory, < 30 fps for 2 s, reduced motion), home hero counter scene, delivery/shelf/loader scenes, `src/motion.ts` tokens + framer-motion, screenshots in `docs/screenshots/`, `docs/ASSETS.md`.
+
+How to run things: `npm run dev` (API :4000 + web :5173 on Neon), `npm test` (local PG :5433, never Neon), `npm run e2e` (own DB `pharmalink_e2e`, servers :4100/:5174/:5175, cleans up after itself).
 The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECISIONS.md`.
 
 ## Phases
@@ -44,19 +58,49 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified by Playwright (`npm run e2e`, 4 tests, real API on :4100 + real frontend on :5174, own local DB `pharmalink_e2e`): Alice logs in via the demo panel → Home → search "para" (Paracétamol) and "dolliprane" (Doliprane 1000 mg) → details (Pharmacie du Rhône first) → request sheet → sent → request page "En attente…"; Tournon (via API) sees "Alice M." and accepts; tracking page shows "Acceptée" then updates by itself to "En préparation" and "Prête"; no buy/cart wording on visited pages. Prescription medicine: "Envoyer" disabled until the prescription checkbox is ticked. Wrong password → "Invalid email or password.". Staff link → admin logs in.
   - Verified by Vitest (frontend, 12 tests): no buy/cart wording and no hard-coded `localhost:4000` anywhere in `src`; prototype notice text fr/en; no placeholder code; fr/en keys and `{placeholders}` identical; `4,50 €`, DD/MM/YYYY in Europe/Paris; open/closed/on-duty logic; PackImage label + fallback when a real image fails; login tabs, staff link, demo panel fill; stepper mapping.
   - Production bundle checked: no API host, no secret names, no Neon host, no demo emails or demo password.
-- [ ] Phase 7 — Map
+- [x] Phase 7 — Map (`frontend/src/components/map/PharmacyMap.tsx`, lazy-loaded via `LazyMap.tsx`; `pages/patient/MapPage.tsx`)
+  - Built per section 10: Leaflet 1.9 + react-leaflet 4; tiles ONLY from `VITE_MAP_TILE_URL` (no OSM/CARTO default anywhere); empty URL or failing tiles → in-map message "Map tiles are not configured. Set VITE_MAP_TILE_URL in .env. Pins still work." (French version in fr) with a Retry button, placed at the bottom of the map so it never blocks pins or popups; attribution "© MapTiler © OpenStreetMap contributors" always visible with links; green pins = in stock, grey = not; pulsing blue patient dot (not clickable, so it never hides a pin) + dashed radius ring; radius slider 1–30 km; list ↔ map sync (pin click highlights and scrolls the list item; list click flies the map and opens the popup); popup with name, address, distance, stock and "Choisir cette pharmacie" (opens the request sheet). Maps on: /map (with a medicine filter for stock mode), Medicine Details, Home "Autour de vous" mini map, Order tracking ("Suivi simulé": pharmacy, delivery address, simulated courier moving along the route while "out for delivery").
+  - Verified by Playwright (`e2e/map.spec.ts`, 6 tests): no key → message + Retry + attribution, no request to any default tile server, radius 15 → 1 pharmacy / 30 → 4, pin ↔ list sync both ways; with a tile URL (stand-in host answered by Playwright) → tile requests return 200, tiles shown, no message; tiles failing with 403 ("invalid key") → message, pins still there; geolocation denied → explanation + address field, app keeps working; medicine details → green and grey pins, popup "Choisir" opens the request sheet; tracking page shows courier and delivery-address markers.
+  - Verified by Vitest (`frontend/src/test/map.test.tsx`, 3 tests): exact fallback text, Retry, attribution text, pins rendered without tiles, no default tile server in the code.
+  - Checked in the browser on the real dev server (Neon): /map shows the message, the radius ring, the pin and the list.
+  - Fixes found while testing: the fallback message used to cover popups (clicks blocked); the patient dot used to sit on top of the nearest pharmacy pin; a sticky top bar could hide focused elements → `scroll-padding-top` added.
+  - Test infrastructure: `npm run e2e` is now `scripts/e2e.ts` (starts DB + API + 2 frontends, runs Playwright, stops everything). The bundled PostgreSQL for tests is started/stopped with its own `pg_ctl` in a separate process (`db/scripts/test-pg.ts`, `db/src/pgctl.ts`), because the package's Windows stop force-kills and left an orphan holding port 5433.
+  - NOT verified: a real MapTiler key (none available). Only a stand-in tile host was tested.
 - [ ] Phase 8 — Dashboards
 - [ ] Phase 9 — Images and 3D (+ the separate 3D/animation brief: Scene3D, quality tiers, product viewer, hero, scenes, motion system)
 - [ ] Phase 10 — Design and animation polish
 - [ ] Phase 11 — Extras
 - [ ] Phase 12 — Quality and documentation
 
-## Last check results (2026-10-21, after Phase 6)
+## Last check results (2026-10-21, after Phase 7)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 6 files / 95 tests + frontend 1 file / 12 tests passed (backend on the bundled PG16 `localhost:5433/pharmalink_test`, never Neon).
-- `npm run e2e`: 4 Playwright tests passed (own DB `pharmalink_e2e` on :5433).
-- `npm audit`: 0 vulnerabilities.
+- `npm test`: backend 6 files / 95 tests + frontend 2 files / 15 tests passed (backend on the bundled PG16 `localhost:5433/pharmalink_test`, never Neon). Vitest now exits cleanly (no 10 s hang).
+- `npm run e2e`: 10 Playwright tests passed (4 patient + 6 map); all test ports released afterwards, no PostgreSQL left running.
+- `npm audit`: 0 vulnerabilities (last checked after Phase 6).
+
+## Known issues / To fix
+
+Map (the user saw tiles or pins not showing):
+
+- **Tiles**: with `VITE_MAP_TILE_URL` empty (current `.env`) there are NO tiles by design; the map shows a plain background plus the message "Le fond de carte n’est pas configuré… / Map tiles are not configured. Set VITE_MAP_TILE_URL in .env. Pins still work." To get tiles: put a MapTiler raster URL in the root `.env` (`https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=YOUR_KEY`, no `{s}`), then **restart `npm run dev`** (Vite reads `.env` only at startup). A real MapTiler key has never been tested (none available). If tiles still fail with a key, the same message appears after the first failed tile: check the key, its "Allowed HTTP origins" (must include `http://localhost:5173`), and the browser Network tab for 403/401.
+- **Pins**: pins come from the API. If none show: (1) the API is not running or the database is unreachable (check `http://localhost:5173/api/health`); (2) the location used is far from the demo pharmacies (all near Tournon / Valence / Romans / Lyon / Vienne) — check "Position utilisée" and the radius (Home uses 25 km, /map starts at 15 km, max 30); (3) the user is not logged in as a patient. Not reproduced in my checks: pins showed on /map, details and home.
+- The Home mini map has no list sync and no radius control (by design: it links to /map).
+
+Other known issues:
+
+- **Phase 8 not started**: doctor, pharmacy and staff accounts log in but land on a 404 page (`/doctor`, `/pharmacy`, `/admin`). Biggest gap.
+- PackImage (generated pack drawings): some labels overlap the green cross (syrup/"Hélicidine") or are slightly clipped (inhaler dosage); the pen drawing is rough. To polish in Phase 9.
+- Phases 9 (3D), 10 (animations: confetti on delivery, page transitions, etc.), 11 (printable order slip, onboarding tour, optional TOTP) and 12 (README, final docs, full acceptance checklist) are not done.
+- No README yet (Phase 12) — setup instructions live in `CLAUDE.md` for now.
+- The seeded incoming request (Bruno → Tournon) expires 30 minutes after `npm run db:reset` (the expiry job runs every minute while the API runs). Re-run `npm run db:reset` before a demo.
+- Search: "para" also matches "paraffine" (Dexeryl) as a lower-ranked substring result. Paracetamol results come first; acceptable but could be tightened.
+- The JWT is stored in `localStorage` (simple for a prototype; an httpOnly cookie would be safer against XSS).
+- `npm run dev` port checks and process names were tested on Windows only.
+
+### Reported by the user (to fill in next session)
+
+- (The user will report issues here. Start the next session by asking for / reading them and fixing them before Phase 8.)
 
 ## Simulated
 
@@ -68,5 +112,5 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
 
 ## Not done yet
 
-- Phase 7 onward (see above). Doctor, pharmacy and staff dashboards do not exist yet (Phase 8).
+- Phase 8 onward (see above). Doctor, pharmacy and staff dashboards do not exist yet.
 - Optional TOTP for professionals (Phase 11) is not started.

@@ -8,6 +8,7 @@ import { formatKm, formatPrice } from '../../lib/format';
 import type { Medicine, NearbyPharmacy } from '../../lib/types';
 import { PackImage } from '../../components/PackImage';
 import { RequestSheet } from '../../components/RequestSheet';
+import { LazyMap } from '../../components/map/LazyMap';
 import { LocationControl } from '../../components/LocationControl';
 import { CardSkeleton, Empty, ErrorBox, OpenBadge, RxBadge } from '../../components/ui';
 import { AvailabilityText, MedicineCard } from './Search';
@@ -139,6 +140,16 @@ export function MedicineDetailsPage() {
               </div>
             ))}
           </div>
+        )}
+        {pharmacies && pharmacies.length > 0 && (
+          <LazyMap
+            center={place}
+            radiusKm={30}
+            pharmacies={pharmacies}
+            stockMode
+            onChoose={(pid) => setSheet({ pharmacyId: pid })}
+            height={380}
+          />
         )}
       </section>
 

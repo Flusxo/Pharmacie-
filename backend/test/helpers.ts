@@ -1,8 +1,12 @@
+import { afterAll } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../src/app.js';
+import { pool } from '../src/db.js';
 import { isLocalUrl, resetDatabase } from '../../db/src/index.js';
 
 export const app = createApp();
+// Close the connection pool after each test file so Vitest can exit cleanly.
+afterAll(() => pool.end());
 export const api = () => request(app);
 export const PASSWORD = 'Password123!';
 

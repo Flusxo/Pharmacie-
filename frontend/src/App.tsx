@@ -14,6 +14,7 @@ import { SearchPage } from './pages/patient/Search';
 import { MedicineDetailsPage } from './pages/patient/MedicineDetails';
 import { RequestDetailsPage, RequestsPage } from './pages/patient/Requests';
 import { OrderTrackingPage, SharedTrackingPage } from './pages/patient/OrderTracking';
+import { MapPage } from './pages/patient/MapPage';
 import { ProfilePage } from './pages/Profile';
 import { LegalPage, NotFoundPage, RootRedirect, WaitingPage } from './pages/Misc';
 
@@ -125,6 +126,14 @@ export function AppRoutes() {
           element={
             <RequireRole roles={['patient', 'doctor', 'pharmacy', 'staff']}>
               <ProfilePage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/map"
+          element={
+            <RequireRole roles={['patient']}>
+              <MapPage />
             </RequireRole>
           }
         />

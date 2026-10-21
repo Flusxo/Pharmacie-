@@ -9,6 +9,63 @@ import type { OrderDetails, OrderStatus } from '../../lib/types';
 import { PackImage } from '../../components/PackImage';
 import { CardSkeleton, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { IconCheck } from '../../components/Icons';
+import { LazyMap } from '../../components/map/LazyMap';
+import { useReducedMotion } from '../../lib/settings';
+
+const SIMULATED_RIDE_MS = 8 * 60_000;
+
+/** Simulated courier position: at the pharmacy, then along the straight route, then at the patient. */
+export function courierProgress(order: Pick<OrderDetails, 'status' | 'history'>, now = Date.now()): number {
+  if (order.status === 'delivered') return 1;
+  if (order.status !== 'out_for_delivery') return 0;
+  const left = order.history.find((h) => h.status === 'out_for_delivery')?.changedAt;
+  if (!left) return 0;
+  return Math.max(0, Math.min(0.95, (now - new Date(left).getTime()) / SIMULATED_RIDE_MS));
+}
+
+function DeliveryMap({ order }: { order: OrderDetails }) {
+  const { t } = useI18n();
+  const reduced = useReducedMotion();
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    if (order.status !== 'out_for_delivery' || reduced) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [order.status, reduced]);
+  const from: [number, number] = [order.pharmacy.latitude, order.pharmacy.longitude];
+  const dest =
+    order.destination.latitude != null && order.destination.longitude != null
+      ? ([order.destination.latitude, order.destination.longitude] as [number, number])
+      : null;
+  const p = courierProgress(order, now);
+  const courier: [number, number] = dest ? [from[0] + (dest[0] - from[0]) * p, from[1] + (dest[1] - from[1]) * p] : from;
+  return (
+    <section className="card stack" aria-labelledby="sim-map">
+      <div className="row between">
+        <h2 id="sim-map" style={{ margin: 0 }}>
+          {t('order.simulated')}
+        </h2>
+        <span className="badge info">{t('order.simulated')}</span>
+      </div>
+      <LazyMap
+        center={{ lat: from[0], lon: from[1] }}
+        showPatient={false}
+        route={dest ? [from, dest] : undefined}
+        extraMarkers={[
+          { id: 'pharmacy', lat: from[0], lon: from[1], kind: 'pharmacy', label: `${t('map.pharmacyMarker')} — ${order.pharmacy.name}` },
+          ...(dest ? [{ id: 'home', lat: dest[0], lon: dest[1], kind: 'home' as const, label: t('map.homeMarker') }] : []),
+          ...(order.status !== 'cancelled'
+            ? [{ id: 'courier', lat: courier[0], lon: courier[1], kind: 'courier' as const, label: t('map.courierMarker') }]
+            : []),
+        ]}
+        height={300}
+      />
+      <p className="muted small" style={{ margin: 0 }}>
+        {t('order.simulatedText')}
+      </p>
+    </section>
+  );
+}
 
 export const STEPS = ['sent', 'accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'] as const;
 
@@ -133,6 +190,8 @@ export function OrderTrackingPage() {
           </div>
         </section>
       </div>
+
+      <DeliveryMap order={order} />
 
       <section className="card stack">
         <h2>{t('order.items')}</h2>

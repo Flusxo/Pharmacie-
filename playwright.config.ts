@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// End-to-end tests against the real API and frontend, on their own local database (see scripts/e2e-servers.ts).
+// End-to-end tests against the real API and frontend. Run them with `npm run e2e` (scripts/e2e.ts starts
+// the database and servers, runs Playwright, then stops everything cleanly).
 export default defineConfig({
   testDir: './e2e',
   timeout: 90_000,
@@ -17,12 +18,4 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: {
-    command: 'npx tsx scripts/e2e-servers.ts',
-    url: 'http://localhost:5174/api/health',
-    reuseExistingServer: false,
-    timeout: 180_000,
-    stdout: 'ignore',
-    stderr: 'pipe',
-  },
 });

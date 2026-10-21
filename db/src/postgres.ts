@@ -7,6 +7,8 @@
  */
 import path from 'node:path';
 import fs from 'node:fs';
+import net from 'node:net';
+import { execFileSync } from 'node:child_process';
 import pg from 'pg';
 import EmbeddedPostgres from 'embedded-postgres';
 import { ROOT, databaseUrl, embeddedEnabled } from './env.js';
@@ -19,6 +21,17 @@ export interface PgHandle {
 
 const DATA_DIR = path.join(ROOT, 'db', '.pgdata');
 const noop: PgHandle = { started: false, stop: async () => {} };
+
+function portInUse(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const s = net.connect({ port, host: '127.0.0.1' });
+    s.once('connect', () => {
+      s.destroy();
+      resolve(true);
+    });
+    s.once('error', () => resolve(false));
+  });
+}
 
 async function canConnect(url: string): Promise<'ok' | 'no-db' | 'down'> {
   const client = new pg.Client({ ...pgConfig(url), connectionTimeoutMillis: isLocalUrl(url) ? 1500 : 10_000 });
@@ -58,6 +71,25 @@ export async function createDatabaseIfMissing(url: string): Promise<void> {
   }
 }
 
+/**
+ * Clean shutdown. On Windows the package's stop() force-kills the process tree, which can orphan
+ * PostgreSQL helper processes that keep the port open. pg_ctl "fast" mode shuts down properly.
+ */
+async function stopEmbedded(ep: EmbeddedPostgres): Promise<void> {
+  if (process.platform === 'win32') {
+    try {
+      // Module name in a variable: the package only exists on Windows installs.
+      const winPkg = '@embedded-postgres/windows-x64';
+      const { pg_ctl } = (await import(winPkg)) as { pg_ctl: string };
+      execFileSync(pg_ctl, ['stop', '-D', DATA_DIR, '-m', 'fast', '-w', '-t', '30'], { stdio: 'ignore' });
+      return;
+    } catch {
+      // fall back to the package's own stop
+    }
+  }
+  await ep.stop();
+}
+
 async function startEmbedded(url: string): Promise<PgHandle> {
   const u = new URL(url);
   const ep = new EmbeddedPostgres({
@@ -78,12 +110,12 @@ async function startEmbedded(url: string): Promise<PgHandle> {
   } catch (err) {
     throw new Error(
       `Could not start the bundled PostgreSQL on port ${u.port}. Is another program using that port? ` +
-        `(Windows: netstat -ano | findstr :${u.port}; macOS/Linux: lsof -i :${u.port}). Details: ${(err as Error).message}`,
+        `(Windows: netstat -ano | findstr :${u.port}; macOS/Linux: lsof -i :${u.port}). Details: ${err instanceof Error ? err.message : String(err ?? 'unknown error')}`,
     );
   }
   await createDatabaseIfMissing(url);
   console.log(`[db] Bundled PostgreSQL 16 running on port ${u.port}.`);
-  return { started: true, stop: () => ep.stop() };
+  return { started: true, stop: () => stopEmbedded(ep) };
 }
 
 export async function ensurePostgres(url = databaseUrl()): Promise<PgHandle> {
@@ -94,7 +126,16 @@ export async function ensurePostgres(url = databaseUrl()): Promise<PgHandle> {
     return noop;
   }
 
-  if (isLocalUrl(url) && embeddedEnabled()) return startEmbedded(url);
+  if (isLocalUrl(url) && embeddedEnabled()) {
+    const port = Number(new URL(url).port || 5432);
+    if (await portInUse(port)) {
+      throw new Error(
+        `Port ${port} is in use but PostgreSQL does not answer there. A previous PostgreSQL may be stuck: ` +
+          `stop it (Windows: netstat -ano | findstr :${port}, then taskkill /PID <pid> /F; macOS/Linux: lsof -i :${port}, then kill <pid>) and retry.`,
+      );
+    }
+    return startEmbedded(url);
+  }
 
   const deadline = Date.now() + 30_000;
   process.stdout.write(`[db] Waiting for PostgreSQL at ${safeHost(url)}`);

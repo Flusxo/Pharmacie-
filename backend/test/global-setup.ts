@@ -1,17 +1,21 @@
-import { ensurePostgres, resetDatabase, testDatabaseUrl, isLocalUrl } from '../../db/src/index.js';
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { testDatabaseUrl } from '../../db/src/env.js';
 
-let stop: (() => Promise<void>) | undefined;
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const run = (...args: string[]) =>
+  execFileSync(process.execPath, [path.join(ROOT, 'node_modules', 'tsx', 'dist', 'cli.mjs'), path.join(ROOT, 'db', 'scripts', 'test-pg.ts'), ...args], {
+    encoding: 'utf8',
+  }).trim();
 
-export async function setup(): Promise<void> {
-  const url = testDatabaseUrl();
-  if (!isLocalUrl(url) && process.env.ALLOW_REMOTE_TEST_DB !== 'true') {
-    throw new Error('Refusing to run tests against a non-local database. Tests wipe their database.');
-  }
-  const handle = await ensurePostgres(url);
-  stop = handle.stop;
-  await resetDatabase(url);
+let started = false;
+
+/** Starts (or reuses) the local test PostgreSQL in a separate process and resets the test database. */
+export function setup(): void {
+  started = run('up', testDatabaseUrl()).endsWith('started');
 }
 
-export async function teardown(): Promise<void> {
-  await stop?.();
+export function teardown(): void {
+  if (started) run('down');
 }
