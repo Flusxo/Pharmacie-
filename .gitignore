@@ -1,0 +1,12 @@
+node_modules
+dist
+.env
+.env.local
+*.tsbuildinfo
+coverage
+db/.pgdata
+db/.pgdata-*
+test-results
+playwright-report
+logs
+*.log

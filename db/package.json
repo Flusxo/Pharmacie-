@@ -1,0 +1,22 @@
+{
+  "name": "@pharmalink/db",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "reset": "tsx src/cli.ts reset",
+    "migrate": "tsx src/cli.ts migrate",
+    "start": "tsx src/cli.ts start",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.3",
+    "embedded-postgres": "16.14.0-beta.17",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5"
+  }
+}

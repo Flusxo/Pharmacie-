@@ -1,0 +1,23 @@
+{
+  "name": "pharmalink",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "db",
+    "backend",
+    "frontend"
+  ],
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "db:reset": "npm run reset -w db",
+    "db:migrate": "npm run migrate -w db",
+    "db:start": "npm run start -w db"
+  }
+}

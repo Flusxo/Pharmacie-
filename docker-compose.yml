@@ -1,0 +1,19 @@
+# Route A (optional): PostgreSQL 16 in Docker. Set EMBEDDED_PG=false in .env, then `docker compose up -d`.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: pharmalink
+      POSTGRES_PASSWORD: pharmalink
+      POSTGRES_DB: pharmalink
+    ports:
+      - "5433:5432"
+    volumes:
+      - pharmalink_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pharmalink -d pharmalink"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  pharmalink_pg:
