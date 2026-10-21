@@ -1,10 +1,11 @@
 import pg from 'pg';
 import { migrate } from './migrate.js';
 import { seed } from './seed.js';
+import { pgConfig } from './pgconfig.js';
 
 /** Drop everything, migrate, seed. Used by `npm run db:reset` and by the backend tests. */
 export async function resetDatabase(url: string): Promise<void> {
-  const client = new pg.Client({ connectionString: url });
+  const client = new pg.Client(pgConfig(url));
   await client.connect();
   try {
     await client.query('SET client_min_messages TO WARNING');
@@ -23,7 +24,7 @@ export async function resetDatabase(url: string): Promise<void> {
 }
 
 export async function counts(url: string): Promise<Record<string, number>> {
-  const client = new pg.Client({ connectionString: url });
+  const client = new pg.Client(pgConfig(url));
   await client.connect();
   try {
     const r = await client.query(`SELECT

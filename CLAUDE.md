@@ -22,8 +22,13 @@ Feels like a modern delivery app, but it is NOT an online medicine shop.
 
 ## Stack
 - npm workspaces: `db/` (migrations, seed, Postgres bootstrap), `backend/` (Express API), `frontend/` (React app). `e2e/` Playwright.
-- PostgreSQL 16 + pgcrypto, unaccent, pg_trgm. Default route C: bundled PG16 via `embedded-postgres` on port 5433 (data `db/.pgdata`). Route A Docker (`docker-compose.yml`), Route B local PG: set `EMBEDDED_PG=false`.
-- Backend: Node 20+, TypeScript, Express, pg, zod, bcryptjs, jsonwebtoken, cors, helmet, express-rate-limit, dotenv. Tests: Vitest + Supertest (DB `pharmalink_test`).
+- PostgreSQL 16 + pgcrypto, unaccent, pg_trgm.
+  - **App database = hosted Neon** (`DATABASE_URL` in root `.env`, with `sslmode=require` → TLS, cert verified; see `db/src/pgconfig.ts` + `backend/src/pgconfig.ts`, keep in sync).
+  - **Never read, print or commit `.env`.** Only print key names / "hosted vs local" if you must check it.
+  - **Tests never use DATABASE_URL**: they use `TEST_DATABASE_URL`, default bundled PG16 (`embedded-postgres`) on `localhost:5433/pharmalink_test` (data `db/.pgdata`). The bundled server is only started for localhost URLs.
+  - Docker (`docker-compose.yml`) or a local PG also work via a localhost `DATABASE_URL`.
+- Project lives in `C:\Users\Fujitsu\Documents\Pharmacie-app` (moved from a temp folder whose long path broke git and initdb).
+- Backend: Node 20+, TypeScript, Express 5, pg, zod 4, bcryptjs, jsonwebtoken, cors, helmet, express-rate-limit, dotenv. Tests: Vitest + Supertest.
 - Frontend: React 18 + TS + Vite, React Router, plain CSS variables, Leaflet/react-leaflet, framer-motion, three + @react-three/fiber + drei + postprocessing (lazy). Tests: Vitest + Testing Library.
 - ONE root `.env`; Vite `envDir: '..'`. Frontend calls relative `/api` (Vite proxy). Never hard-code `localhost:4000` in frontend code.
 
@@ -31,8 +36,9 @@ Feels like a modern delivery app, but it is NOT an online medicine shop.
 ```
 cp .env.example .env
 npm install
-npm run db:reset      # drop, migrate, seed (starts bundled PG or waits 30 s)
-npm run dev           # bundled PG + backend :4000 + frontend :5173
+npm run db:reset      # drop, migrate, seed DATABASE_URL (Neon; waits up to 30 s)
+npx tsx db/scripts/test-db.ts   # seed the test DB (bundled PG on :5433) — never Neon
+npm run dev           # backend :4000 + frontend :5173
 npm test              # backend + frontend tests
 npm run build         # typecheck + production build
 npm run lint

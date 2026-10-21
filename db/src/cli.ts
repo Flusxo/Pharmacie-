@@ -3,6 +3,7 @@ import { databaseUrl } from './env.js';
 import { ensurePostgres } from './postgres.js';
 import { resetDatabase, counts } from './reset.js';
 import { migrate } from './migrate.js';
+import { isLocalUrl, pgConfig } from './pgconfig.js';
 
 const cmd = process.argv[2];
 
@@ -10,11 +11,13 @@ async function main(): Promise<void> {
   const url = databaseUrl();
   const handle = await ensurePostgres(url);
   try {
+    const where = isLocalUrl(url) ? 'local PostgreSQL' : 'hosted PostgreSQL (TLS)';
     if (cmd === 'reset') {
+      console.log(`[db] Resetting the database on the ${where} ...`);
       await resetDatabase(url);
       console.log('[db] Reset complete:', await counts(url));
     } else if (cmd === 'migrate') {
-      const c = new pg.Client({ connectionString: url });
+      const c = new pg.Client(pgConfig(url));
       await c.connect();
       const applied = await migrate(c);
       await c.end();

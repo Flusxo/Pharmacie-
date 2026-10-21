@@ -1,9 +1,9 @@
 import pg from 'pg';
-import { databaseUrl, ensurePostgres } from '../src/index.js';
+import { databaseUrl, ensurePostgres, pgConfig } from '../src/index.js';
 
 const url = databaseUrl();
 const h = await ensurePostgres(url);
-const c = new pg.Client({ connectionString: url });
+const c = new pg.Client(pgConfig(url));
 await c.connect();
 const ext = await c.query(`SELECT extname FROM pg_extension WHERE extname IN ('pgcrypto','unaccent','pg_trgm') ORDER BY 1`);
 console.log('extensions:', ext.rows.map((r) => r.extname).join(', '));
