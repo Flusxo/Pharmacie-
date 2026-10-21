@@ -33,3 +33,12 @@ export async function expectNoBuyWording(page: Page) {
   const text = (await page.locator('body').innerText()).toLowerCase();
   for (const word of ['buy now', 'add to cart', 'acheter', 'ajouter au panier', 'panier']) expect(text).not.toContain(word);
 }
+
+/** Logs in through the API and stores the token before the app loads (skips the login page and the home hero). */
+export async function loginByToken(page: Page, email: string): Promise<void> {
+  const ctx = await request.newContext();
+  const res = await ctx.post(`${API}/auth/login`, { data: { email, password: PASSWORD } });
+  const { token } = (await res.json()) as { token: string };
+  await ctx.dispose();
+  await page.addInitScript((tk) => localStorage.setItem('counter.token', tk), token);
+}

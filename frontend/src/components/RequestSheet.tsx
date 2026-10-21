@@ -8,7 +8,7 @@ import { useI18n } from '../i18n';
 import { ApiError, api } from '../lib/api';
 import { formatKm, formatPrice } from '../lib/format';
 import type { Medicine, NearbyPharmacy } from '../lib/types';
-import { IconCheck } from './Icons';
+import { SuccessCheck } from './three/ThreeVisuals';
 import { OpenBadge } from './ui';
 
 const RESPONSE_MINUTES = 30;
@@ -195,19 +195,7 @@ export function RequestSheet({ medicine, pharmacies, initialPharmacyId, onClose 
 
         {step === 3 && chosen && requestId && (
           <div className="stack" style={{ alignItems: 'center', textAlign: 'center' }} data-testid="request-sent">
-            <div
-              style={{
-                width: 72,
-                height: 72,
-                borderRadius: '50%',
-                background: 'var(--ok-bg)',
-                color: 'var(--ok)',
-                display: 'grid',
-                placeItems: 'center',
-              }}
-            >
-              <IconCheck width={40} height={40} />
-            </div>
+            <SuccessCheck />
             <p>{t('flow.sentText', { pharmacy: chosen.name, minutes: RESPONSE_MINUTES })}</p>
             <Link to={`/requests/${requestId}`} className="btn">
               {t('flow.follow')}

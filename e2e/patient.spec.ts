@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { apiAs, expectNoBuyWording, loginWithDemo } from './helpers';
 
 test.describe('patient flow (real API + real frontend)', () => {

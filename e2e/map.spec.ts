@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { apiAs, loginWithDemo } from './helpers';
 
 // A valid 1×1 PNG, served for every tile of the test tile host.

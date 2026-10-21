@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n/fr';
@@ -10,7 +10,7 @@ import type { NearbyPharmacy, OrderSummary, RequestSummary } from '../../lib/typ
 import { SearchBox } from '../../components/SearchBox';
 import { LocationControl } from '../../components/LocationControl';
 import { LazyMap } from '../../components/map/LazyMap';
-import { PackImage } from '../../components/PackImage';
+import { HeroVisual } from '../../components/three/ThreeVisuals';
 import { CardSkeleton, Empty, OpenBadge, StatusBadge } from '../../components/ui';
 
 const CATEGORY_EMOJI: Record<string, string> = {
@@ -59,23 +59,45 @@ export function HomePage() {
 
   const name = user?.patient?.firstName ?? user?.displayName ?? '';
 
+  // Scroll progress through the hero (drives the 3D camera and the step texts).
+  const heroRef = useRef<HTMLElement>(null);
+  const progress = useRef(0);
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const el = heroRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - window.innerHeight)));
+      progress.current = p;
+      setStep(p < 0.33 ? 0 : p < 0.66 ? 1 : 2);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <div className="stack" style={{ gap: 28 }}>
-      <section className="hero" aria-labelledby="hello">
-        <div className="stack">
-          <h1 id="hello">{t('home.greeting', { name })}</h1>
-          <p className="muted" style={{ fontSize: '1.1rem' }}>
-            {t('home.lead')}
-          </p>
-          <SearchBox />
-          <LocationControl compact />
-        </div>
-        <div className="hero-art" aria-hidden="true">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, width: 'min(320px, 100%)' }}>
-            <PackImage name="Doliprane" dosage="1000 mg" form="tablet" category="pain" />
-            <PackImage name="Hélicidine" dosage="10 %" form="syrup" category="cold" />
-            <PackImage name="Biafine" dosage="0,67 %" form="cream" category="skin" />
-            <PackImage name="Ventoline" dosage="100 µg" form="inhaler" category="respiratory" />
+      <section className="hero-3d" ref={heroRef} aria-labelledby="hello" data-step={step}>
+        <div className="hero-sticky">
+          <HeroVisual progress={progress} />
+          <div className="hero-copy">
+            <div className="hero-panel stack">
+              <h1 id="hello">{t('home.greeting', { name })}</h1>
+              <p className="muted" style={{ fontSize: '1.1rem', margin: 0 }}>
+                {t('home.lead')}
+              </p>
+              <SearchBox />
+              <LocationControl compact />
+            </div>
+            <ol className="hero-steps" aria-label={t('home.heroStepsLabel')}>
+              {(['home.heroStep1', 'home.heroStep2', 'home.heroStep3'] as const).map((k, i) => (
+                <li key={k} className={step >= i ? 'on' : ''}>
+                  {t(k)}
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>

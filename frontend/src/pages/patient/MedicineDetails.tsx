@@ -6,7 +6,7 @@ import { ApiError, api } from '../../lib/api';
 import { usePlace } from '../../lib/location';
 import { formatKm, formatPrice } from '../../lib/format';
 import type { Medicine, NearbyPharmacy } from '../../lib/types';
-import { PackImage } from '../../components/PackImage';
+import { ProductVisual } from '../../components/three/ThreeVisuals';
 import { RequestSheet } from '../../components/RequestSheet';
 import { LazyMap } from '../../components/map/LazyMap';
 import { LocationControl } from '../../components/LocationControl';
@@ -48,9 +48,7 @@ export function MedicineDetailsPage() {
         ← {t('common.back')}
       </Link>
       <div className="details">
-        <div className="media-box" aria-label={`${m.name} ${m.dosage}`}>
-          <PackImage name={m.name} dosage={m.dosage} form={m.form} category={m.category} imageUrl={m.imageUrl} />
-        </div>
+        <ProductVisual name={m.name} dosage={m.dosage} form={m.form} category={m.category} cip13={m.cip13} imageUrl={m.imageUrl} />
         <div className="stack">
           <div className="row" style={{ gap: 8 }}>
             <span className="badge neutral">{t(`cat.${m.category}` as MessageKey)}</span>

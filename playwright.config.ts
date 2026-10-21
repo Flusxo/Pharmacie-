@@ -4,6 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
 // the database and servers, runs Playwright, then stops everything cleanly).
 export default defineConfig({
   testDir: './e2e',
+  testMatch: '**/*.spec.ts',
   timeout: 90_000,
   expect: { timeout: 15_000 },
   fullyParallel: false,
@@ -17,5 +18,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] }, testIgnore: '**/three.spec.ts' },
+    // The 3D tests get their own browser process, so the software GPU state of the other tests cannot affect them.
+    { name: 'three', use: { ...devices['Desktop Chrome'] }, testMatch: '**/three.spec.ts' },
+  ],
 });

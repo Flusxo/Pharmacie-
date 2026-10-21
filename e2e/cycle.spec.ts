@@ -1,8 +1,10 @@
-import { expect, test, type Browser, type Page } from '@playwright/test';
+import type { Browser, Page } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { API, PASSWORD, loginWithDemo } from './helpers';
 
 async function newPage(browser: Browser): Promise<Page> {
   const ctx = await browser.newContext({ baseURL: 'http://localhost:5174', locale: 'fr-FR', timezoneId: 'Europe/Paris' });
+  await ctx.addInitScript(() => localStorage.setItem('counter.graphics', 'off'));
   return ctx.newPage();
 }
 

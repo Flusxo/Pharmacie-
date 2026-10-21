@@ -13,6 +13,8 @@ export default defineConfig(({ mode }) => {
   return {
     envDir,
     plugins: [react()],
+    // One copy of each, even if a dependency carries its own (stats-gl ships a nested three).
+    resolve: { dedupe: ['react', 'react-dom', 'three'] },
     server: { port: Number(process.env.FRONTEND_PORT || 5173), strictPort: true, proxy },
     preview: { port: Number(process.env.FRONTEND_PORT || 4173), strictPort: true, proxy },
     build: { chunkSizeWarningLimit: 900 },

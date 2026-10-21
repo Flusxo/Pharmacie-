@@ -10,6 +10,7 @@ import { PackImage } from '../../components/PackImage';
 import { CardSkeleton, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { IconCheck } from '../../components/Icons';
 import { LazyMap } from '../../components/map/LazyMap';
+import { DeliveryVisual } from '../../components/three/ThreeVisuals';
 import { useReducedMotion } from '../../lib/settings';
 
 const SIMULATED_RIDE_MS = 8 * 60_000;
@@ -47,6 +48,7 @@ function DeliveryMap({ order }: { order: OrderDetails }) {
         </h2>
         <span className="badge info">{t('order.simulated')}</span>
       </div>
+      <DeliveryVisual progress={p} delivered={order.status === 'delivered'} />
       <LazyMap
         center={{ lat: from[0], lon: from[1] }}
         showPatient={false}

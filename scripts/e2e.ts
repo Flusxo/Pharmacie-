@@ -93,7 +93,9 @@ try {
   await waitForHttp(`http://localhost:${WEB_TILES_PORT}/api/health`);
   console.log('[e2e] servers ready: API :4100, web :5174 (no tiles), web :5175 (test tiles)');
 
-  const pw = spawn(`npx playwright test ${process.argv.slice(2).join(' ')}`, { cwd: ROOT, stdio: 'inherit', shell: true });
+  // Quote each argument so filters with spaces or "|" reach Playwright intact (a shell is used on Windows).
+  const args = process.argv.slice(2).map((a) => (/^[\w./:=-]+$/.test(a) ? a : `"${a.replace(/"/g, '\\"')}"`));
+  const pw = spawn(`npx playwright test ${args.join(' ')}`, { cwd: ROOT, stdio: 'inherit', shell: true });
   code = await new Promise<number>((resolve) => pw.on('exit', (c) => resolve(c ?? 1)));
 } catch (err) {
   console.error(`[e2e] ${(err as Error).message}`);

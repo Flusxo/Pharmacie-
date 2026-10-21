@@ -8,6 +8,7 @@ import { formatDateTime, formatPrice, formatTime } from '../../lib/format';
 import type { OrderStatus } from '../../lib/types';
 import { CountdownRing, Kpi, MedicinePicker, ReasonDialog, Tabs, type MedicineHit } from '../../components/dash';
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
+import { ShelfVisual, useCan3D } from '../../components/three/ThreeVisuals';
 
 interface IncomingItem {
   id: string;
@@ -466,6 +467,8 @@ function InventoryTab({ onChange }: { onChange: () => void }) {
   const [history, setHistory] = useState<{ name: string; items: HistoryRow[] } | null>(null);
   const [csv, setCsv] = useState('');
   const [preview, setPreview] = useState<{ rows: CsvRow[]; errors: number } | null>(null);
+  const [view, setView] = useState<'table' | 'shelf'>('table');
+  const can3D = useCan3D('shelf', 2);
 
   const load = useCallback(
     () =>
@@ -549,7 +552,21 @@ function InventoryTab({ onChange }: { onChange: () => void }) {
           <span>{t('ph.lowOnly')}</span>
         </label>
       </div>
-      <div className="card table-wrap">
+      {can3D && (
+        <Tabs<'table' | 'shelf'>
+          label={t('ph.viewLabel')}
+          value={view}
+          onChange={setView}
+          tabs={[
+            { key: 'table', label: t('ph.viewTable') },
+            { key: 'shelf', label: t('ph.viewShelf') },
+          ]}
+        />
+      )}
+      {can3D && view === 'shelf' && rows && (
+        <ShelfVisual items={rows.map((r) => ({ id: r.medicineId, name: r.name, quantity: r.quantity, low: r.low }))} />
+      )}
+      <div className="card table-wrap" hidden={can3D && view === 'shelf'}>
         {!rows ? (
           <CardSkeleton />
         ) : rows.length === 0 ? (

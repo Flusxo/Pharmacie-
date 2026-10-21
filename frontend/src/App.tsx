@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import { I18nProvider } from './i18n';
 import { AuthProvider, homeFor, useAuth } from './lib/auth';
 import { SettingsProvider } from './lib/settings';
+import { GraphicsProvider } from './lib/graphics';
 import { LocationProvider } from './lib/location';
 import { ToastProvider } from './lib/toast';
 import type { Role } from './lib/types';
@@ -175,17 +176,19 @@ export function AppRoutes() {
 export function App() {
   return (
     <SettingsProvider>
-      <I18nProvider>
-        <AuthProvider>
-          <LocationProvider>
-            <ToastProvider>
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
-            </ToastProvider>
-          </LocationProvider>
-        </AuthProvider>
-      </I18nProvider>
+      <GraphicsProvider>
+        <I18nProvider>
+          <AuthProvider>
+            <LocationProvider>
+              <ToastProvider>
+                <BrowserRouter>
+                  <AppRoutes />
+                </BrowserRouter>
+              </ToastProvider>
+            </LocationProvider>
+          </AuthProvider>
+        </I18nProvider>
+      </GraphicsProvider>
     </SettingsProvider>
   );
 }

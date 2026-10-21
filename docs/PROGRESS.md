@@ -4,8 +4,8 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-Working through the user's 7-step list (second session, 2026-10-21). Steps 1 (Phase 8 dashboards + account pages) and 2 (map) are done and committed.
-Next, in order: **Step 3 site-wide 3D** (Phase 9), **Step 4 animations** (Phase 10), **Step 5 pack-label fix + design pass**, **Step 6 extras** (Phase 11), **Step 7 README + final checks** (Phase 12). Commit after each step only when build, lint and that step's tests pass.
+Working through the user's 7-step list (second session, 2026-10-21). Steps 1 (Phase 8 dashboards + account pages), 2 (map) and 3 (site-wide 3D) are done and committed.
+Next, in order: **Step 4 animations** (Phase 10), **Step 5 pack-label fix + design pass**, **Step 6 extras** (Phase 11), **Step 7 README + final checks** (Phase 12). Commit after each step only when build, lint and that step's tests pass.
 
 How to run things: `npm run dev` (API :4000 + web :5173 on Neon), `npm test` (local PG :5433, never Neon), `npm run e2e` (own DB `pharmalink_e2e`, servers :4100/:5174/:5175, cleans up after itself).
 The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECISIONS.md`.
@@ -61,7 +61,17 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Staff `/admin`: KPI cards, verification queue (approve / reject with required reason), users (search + role/status filters, suspend/reactivate with reason; staff accounts only for admins; never yourself), create staff (admin only), pharmacies, doctors, medicines (search, add/edit with image URL, soft-delete with reason), orders (status filter), reports (resolve with resolution), audit log, pharmacy performance. Buttons shown only when the staff role allows them (the API also enforces it).
   - Account page `/profile` ("Mon compte") for every role: identity (name, email, RPPS/speciality, pharmacy address, staff role, patient address), language, theme, Graphics quality (Auto/High/Medium/Low/Off, used by the 3D in step 3), Reduce animations, email notifications, change password, report a problem; patients also: doctor links, export my data, delete my account. Pending doctors/pharmacies see "En attente de validation". Notifications bell for every role. Real 404 page for unknown routes.
   - Verified by Playwright (`e2e/cycle.spec.ts`, 5 tests, real API + frontend): Alice requests Dafalgan → Pharmacie du Rhône (in a second browser window) sees "Alice M." with a countdown and accepts → Alice's request page shows "Voir la commande" → the pharmacy moves Preparing, Ready, Out for delivery, Delivered and Alice's tracking page updates to each status by itself; delivered orders have no more status buttons. Dr Martin sees Camille as "En attente de confirmation", no address on the page, only Alice and Bruno selectable, sends a request for Alice; the API refuses Camille (403). Support sees the queue but no "Valider" button. Pending Démo pharmacy sees the waiting screen → admin approves (audit row visible) → "Vérifier à nouveau" → its dashboard. Doctor and pharmacy have the bell and an account page with Graphics quality and Reduce animations; unknown route → "Page introuvable".
-- [ ] Phase 9 — Images and 3D (+ the separate 3D/animation brief: Scene3D, quality tiers, product viewer, hero, scenes, motion system)
+- [x] Phase 9 / user step 3 — Big realistic 3D across the site (`frontend/src/three/*`, `frontend/src/components/three/ThreeVisuals.tsx`, `frontend/src/lib/graphics.tsx`)
+  - Persistent full-page 3D background behind every page (floating glass bottles, split capsules, scored tablets, glowing green cross; fog for depth; float; parallax with scroll and pointer; readability veil; static gradient first and as fallback; cheap: DPR 1, no shadows/post/transmission, 30 fps cap; paused while the home hero is on screen; objects spread to the sides, closer on narrow screens).
+  - Home hero: full-viewport sticky pharmacy-counter scene (marble counter, softly blurred shelf of fictional-brand boxes, glowing green cross sign, hero amber glass bottle with liquid, meniscus and crisp label, capsules and tablets with contact shadows). Scroll moves the camera bottle → capsules → pull back to the shelf while three step texts reveal; pointer parallax ≤ 6°; separate camera path for portrait phones. Static poster first.
+  - Product viewer on Medicine Details: model by form (amber bottle with liquid for syrups/drops, pill bottle with knurled child-safe cap for tablets/capsules, tube with crimped end, upright blister with exploded view, sachet with torn edge, inhaler, pen), drag to rotate with damping, zoom limits, auto-rotate + float until touched, double-click / "Recentrer" to reset, click the cap to unscrew with a particle burst, cyclorama tinted by category, "360°" hint until first interaction, "3D / Photo" toggle, ARIA label + text alternative.
+  - Other scenes: simulated delivery on the tracking page (scooter + delivery bag on a city plane, glowing route filling with progress, following camera, confetti on Delivered: 150 desktop / 60 mobile, labelled "Suivi simulé"); pharmacy stock as a 3D shelf (Table / Étagère 3D toggle; height = quantity, red when low, grey at 0, tooltips); "request sent" 3D check that draws itself with a mint burst (animated SVG check as fallback); spinning 3D capsule on the 404 page (CSS capsule fallback).
+  - Rendering: MeshPhysicalMaterial glass (transmission, thickness, ior 1.5, low roughness, amber attenuation), liquid ior 1.34, clearcoat plastics, crinkled foil normal map, paper normal map, bevelled/lathed edges, 2048 px canvas labels with anisotropic filtering, local procedural HDR, key light with soft shadows + rim light, ContactShadows, ACES; High tier adds N8AO, bloom, vignette and (hero) depth of field.
+  - Quality: tiers High/Medium/Low/Off chosen automatically (WebGL2, memory, cores, mobile, software GPU) or set in "Mon compte → Qualité graphique"; fallback to gradient / poster / SVG pack image when WebGL is missing, Low/Off, low memory, a software GPU (Auto), or < 30 fps for 2 s (Auto); reduced motion = one still frame; lazy-loaded; pause off-screen; textures disposed when the last canvas unmounts; one heavy canvas at a time on mobile. 3D map (MapLibre) not added: no vector tiles configured.
+  - Verified (Vitest `three.test.tsx`, 7 tests): tier choice incl. software GPU; still frame with reduced motion; no WebGL → 2D pack image, no toggle, text alternative; background static without WebGL; with WebGL the viewer loads lazily with the toggle; reduced motion → still-frame mode, no 360° hint; Graphics "Off" → photo.
+  - Verified (Playwright `three.spec.ts`, 4 tests, own browser process): the login page downloads no scene chunk; details page shows a canvas, Photo removes it, 3D brings it back; every page has the 3D background (reduced motion on); Graphics "Off" in the account page switches background and hero to static.
+  - Verified by screenshots (`npm run e2e -- --config playwright.visual.config.ts`, SwiftShader software GL, 1440 px and 390 px; files in `docs/screenshots/`): home hero at 3 scroll positions, background on search / requests / account, viewer for syrup, cream, inhaler, blister and pill bottle. Reviewed critically; fixed after review: cropped box labels, stretched bottle labels, labels drawn before the font loaded, camera lagging at low fps, depth-of-field focus, viewer camera reset on mount (bottle cropped), tube label wrapped all around, blister seen edge-on, mobile hero framing, background invisible on phones and too faint on desktop.
+  - Bundle: main bundle has no three.js (354 kB, grew from 286 kB because of the Phase 8 dashboards); the 3D engine is one lazy ~1.1 MB chunk (three + drei + postprocessing) loaded only when a scene draws; scene chunks 2–18 kB.
 - [ ] Phase 10 — Design and animation polish
 - [ ] Phase 11 — Extras
 - [ ] Phase 12 — Quality and documentation
@@ -73,11 +83,12 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified: in the browser on the user's running dev server, /map now shows the key-rejected message, no "Invalid key" tiles, 1 pin and the attribution. Vitest (`map.test.tsx`, 6 tests): resolver (full URL, bare key, empty, `{s}`, style.json, malformed), fallback text. Playwright (`map.spec.ts`, 8 tests): no key → message + attribution + no external tile request; stand-in tiles 200 → tiles shown; 403 text → message; 403 + image (MapTiler behaviour) → tiles hidden + key message (repeated 5×, stable); no pharmacy in range → message → widen → Terreaux listed; geolocation denied; details popup; tracking map.
   - README started with the map-key section (where to get the key, full URL or bare key, restart, Allowed HTTP origins, keys are public).
 
-## Last check results (2026-10-21, after step 2)
+## Last check results (2026-10-22, after step 3)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 95 + frontend 18 tests passed (local PG :5433, never Neon).
-- `npm run e2e`: 17 Playwright tests passed (5 cycle + 8 map + 4 patient); test ports released afterwards.
+- `npm test`: backend 95 + frontend 25 tests passed (local PG :5433, never Neon).
+- `npm run e2e`: 21 Playwright tests passed (5 cycle + 8 map + 4 patient + 4 3D in their own browser); test ports released.
+- 3D screenshots: 18/18 taken with software GL (`docs/screenshots/`, ~32 min); 7 re-taken after fixes.
 
 ## Known issues / To fix
 
@@ -89,6 +100,8 @@ Map (the user saw tiles or pins not showing):
 
 Other known issues:
 
+- 3D in a real browser on a real GPU was not checked by me: all 3D verification used SwiftShader (software). Expect smoother motion and sharper post-processing on real hardware; very slow GPUs fall back automatically in Auto.
+- The 3D product label text looks slightly light (tone mapping + clearcoat); readable but could be darker.
 - PackImage (generated pack drawings): some labels overlap the green cross (syrup/"Hélicidine") or are slightly clipped (inhaler dosage); the pen drawing is rough. To polish in Phase 9.
 - Phases 9 (3D), 10 (animations: confetti on delivery, page transitions, etc.), 11 (printable order slip, onboarding tour, optional TOTP) and 12 (README, final docs, full acceptance checklist) are not done.
 - No README yet (Phase 12) — setup instructions live in `CLAUDE.md` for now.
