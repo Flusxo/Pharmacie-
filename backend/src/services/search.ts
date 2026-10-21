@@ -82,7 +82,7 @@ export async function searchMedicines(p: SearchParams) {
        count(*) OVER ()::int AS total
      FROM scored m
      WHERE m.rank < 3 OR m.sim >= 0.3
-     ORDER BY m.rank, m.sim DESC, m.name
+     ORDER BY m.rank, (m.n LIKE $2 || '%' ESCAPE '\\') DESC, m.sim DESC, m.name
      LIMIT $5 OFFSET $6`,
     params,
   );

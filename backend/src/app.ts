@@ -9,6 +9,7 @@ import { errorHandler, notFoundHandler } from './errors.js';
 import { log } from './logger.js';
 import { authenticate } from './middleware/auth.js';
 import { authRouter } from './routes/auth.js';
+import { publicRouter } from './routes/public.js';
 import { openapiSpec } from './openapi.js';
 
 export function createApp(): Express {
@@ -65,6 +66,7 @@ export function createApp(): Express {
 
   app.use('/api', authenticate);
   app.use('/api/auth', authRouter);
+  app.use('/api', publicRouter);
 
   app.use('/api', notFoundHandler);
   app.use(errorHandler);
