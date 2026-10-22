@@ -14,6 +14,9 @@ const ROUTES: Route[] = [
   ['post', '/api/auth/forgot-password', 'Auth', 'Request a reset link (same answer for every email)'],
   ['post', '/api/auth/reset-password', 'Auth', 'Reset password with a single-use token (30 min)'],
   ['post', '/api/auth/change-password', 'Auth', 'Change password', 'bearer'],
+  ['post', '/api/auth/totp/setup', 'Auth', 'Two-step verification: create a secret (doctor, pharmacy, staff)', 'bearer'],
+  ['post', '/api/auth/totp/enable', 'Auth', 'Two-step verification: turn on with a code', 'bearer'],
+  ['post', '/api/auth/totp/disable', 'Auth', 'Two-step verification: turn off (password + code)', 'bearer'],
 ];
 
 export function addRoutes(routes: Route[]): void {

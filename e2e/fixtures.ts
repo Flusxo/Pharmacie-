@@ -8,6 +8,8 @@ export const test = base.extend({
   page: async ({ page }, use) => {
     await page.addInitScript(() => {
       if (!localStorage.getItem('counter.graphics')) localStorage.setItem('counter.graphics', 'off');
+      // The onboarding tour is tested on its own (extras.spec.ts).
+      if (!localStorage.getItem('counter.tour')) localStorage.setItem('counter.tour', 'done');
     });
     await use(page);
   },

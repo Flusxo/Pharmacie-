@@ -11,6 +11,7 @@ import { getProfile } from '../services/profile.js';
 import { emailField, latitude, longitude, passwordField } from '../validate.js';
 import { sendMail } from '../notify.js';
 import { log, maskEmail } from '../logger.js';
+import { decryptSecret, encryptSecret, newSecret, otpauthUrl, base32Encode, verifyTotp } from '../totp.js';
 
 export const authRouter = Router();
 
@@ -159,8 +160,16 @@ authRouter.post('/register/pharmacy', registerLimiter, async (req, res) => {
   res.status(201).json({ token: signToken({ id, role: 'pharmacy' }), user: await getProfile(id) });
 });
 
+const totpCode = z.string().trim().regex(/^\d{6}$/, 'must be the 6-digit code from your authenticator app');
+
 authRouter.post('/login', loginLimiter, async (req, res) => {
-  const body = z.object({ email: emailField, password: z.string({ error: 'is required' }).min(1, 'is required').max(200) }).parse(req.body);
+  const body = z
+    .object({
+      email: emailField,
+      password: z.string({ error: 'is required' }).min(1, 'is required').max(200),
+      code: totpCode.optional(),
+    })
+    .parse(req.body);
   const u = await one<{
     id: string;
     password_hash: string;
@@ -168,9 +177,14 @@ authRouter.post('/login', loginLimiter, async (req, res) => {
     status: string;
     failed_logins: number;
     locked_until: Date | null;
-  }>('SELECT id, password_hash, role, status, failed_logins, locked_until FROM users WHERE email = $1 AND deleted_at IS NULL', [
-    body.email,
-  ]);
+    totp_enabled: boolean;
+    totp_secret_enc: string | null;
+    totp_last_step: string | null;
+  }>(
+    `SELECT id, password_hash, role, status, failed_logins, locked_until, totp_enabled, totp_secret_enc, totp_last_step
+       FROM users WHERE email = $1 AND deleted_at IS NULL`,
+    [body.email],
+  );
 
   const now = new Date();
   if (!u) {
@@ -183,7 +197,18 @@ authRouter.post('/login', loginLimiter, async (req, res) => {
     throw new HttpError(401, GENERIC, 'invalid_credentials');
   }
   const ok = await bcrypt.compare(body.password, u.password_hash);
-  if (!ok) {
+  // Two-step verification: the password was right; without a code, ask for one (not a failure).
+  if (ok && u.totp_enabled && !body.code) {
+    throw new HttpError(401, 'Enter the 6-digit code from your authenticator app.', 'totp_required');
+  }
+  let totpStep: number | null = null;
+  if (ok && u.totp_enabled && u.totp_secret_enc) {
+    totpStep = verifyTotp(decryptSecret(u.totp_secret_enc), body.code!);
+    // A code already used (same or older step) is refused: no replay.
+    if (totpStep !== null && u.totp_last_step !== null && totpStep <= Number(u.totp_last_step)) totpStep = null;
+  }
+  const totpFailed = ok && u.totp_enabled && totpStep === null;
+  if (!ok || totpFailed) {
     const prior = u.locked_until && u.locked_until <= now ? 0 : u.failed_logins;
     const failures = prior + 1;
     const lock = failures >= RULES.LOCKOUT_FAILURES;
@@ -191,11 +216,15 @@ authRouter.post('/login', loginLimiter, async (req, res) => {
       `UPDATE users SET failed_logins = $2, locked_until = CASE WHEN $3 THEN now() + make_interval(mins => $4) ELSE NULL END WHERE id = $1`,
       [u.id, lock ? 0 : failures, lock, RULES.LOCKOUT_MINUTES],
     );
-    log('warn', 'login_failed', { user: maskEmail(body.email), locked: lock });
+    log('warn', 'login_failed', { user: maskEmail(body.email), locked: lock, totp: totpFailed });
+    if (totpFailed && !lock) throw new HttpError(401, 'The code is not correct or was already used. Wait for the next code.', 'totp_invalid');
     throw new HttpError(401, GENERIC, 'invalid_credentials');
   }
   if (u.status === 'suspended') throw new HttpError(403, 'This account is suspended. Contact support.', 'account_suspended');
-  await pool.query('UPDATE users SET failed_logins = 0, locked_until = NULL, last_login_at = now() WHERE id = $1', [u.id]);
+  await pool.query(
+    'UPDATE users SET failed_logins = 0, locked_until = NULL, last_login_at = now(), totp_last_step = COALESCE($2, totp_last_step) WHERE id = $1',
+    [u.id, totpStep],
+  );
   res.json({ token: signToken({ id: u.id, role: u.role }), user: await getProfile(u.id) });
 });
 
@@ -259,4 +288,53 @@ authRouter.post('/change-password', requireAuth, async (req, res) => {
   }
   await pool.query('UPDATE users SET password_hash = $2 WHERE id = $1', [req.user!.id, await bcrypt.hash(body.newPassword, 10)]);
   res.json({ message: 'Password changed.' });
+});
+
+/* ---------- Two-step verification (TOTP) for professional accounts ---------- */
+
+function requirePro(role: Role) {
+  if (role === 'patient') throw new HttpError(403, 'Two-step verification is available for doctor, pharmacy and staff accounts.', 'forbidden');
+}
+
+/** Creates a new secret (not active until confirmed with a code). */
+authRouter.post('/totp/setup', requireAuth, async (req, res) => {
+  requirePro(req.user!.role);
+  const u = await one<{ email: string; totp_enabled: boolean }>('SELECT email, totp_enabled FROM users WHERE id = $1', [req.user!.id]);
+  if (u!.totp_enabled) throw conflict('Two-step verification is already on. Turn it off first to set up a new app.');
+  const secret = newSecret();
+  await pool.query('UPDATE users SET totp_secret_enc = $2, totp_last_step = NULL WHERE id = $1', [req.user!.id, encryptSecret(secret)]);
+  res.json({ secret: base32Encode(secret), otpauthUrl: otpauthUrl(u!.email, secret) });
+});
+
+/** Turns it on once the app shows a valid code. */
+authRouter.post('/totp/enable', requireAuth, async (req, res) => {
+  requirePro(req.user!.role);
+  const { code } = z.object({ code: totpCode }).parse(req.body);
+  const u = await one<{ totp_enabled: boolean; totp_secret_enc: string | null }>(
+    'SELECT totp_enabled, totp_secret_enc FROM users WHERE id = $1',
+    [req.user!.id],
+  );
+  if (u!.totp_enabled) throw conflict('Two-step verification is already on.');
+  if (!u!.totp_secret_enc) throw badRequest('Start the setup first.');
+  const step = verifyTotp(decryptSecret(u!.totp_secret_enc), code);
+  if (step === null) throw badRequest('The code is not correct. Check the time on your phone and try the next code.');
+  await pool.query('UPDATE users SET totp_enabled = true, totp_last_step = $2 WHERE id = $1', [req.user!.id, step]);
+  log('info', 'totp_enabled', { userId: req.user!.id });
+  res.json({ user: await getProfile(req.user!.id) });
+});
+
+/** Turns it off; needs the password and a current code. */
+authRouter.post('/totp/disable', requireAuth, async (req, res) => {
+  requirePro(req.user!.role);
+  const body = z.object({ password: z.string().min(1, 'is required'), code: totpCode }).parse(req.body);
+  const u = await one<{ password_hash: string; totp_enabled: boolean; totp_secret_enc: string | null }>(
+    'SELECT password_hash, totp_enabled, totp_secret_enc FROM users WHERE id = $1',
+    [req.user!.id],
+  );
+  if (!u!.totp_enabled || !u!.totp_secret_enc) throw badRequest('Two-step verification is not on.');
+  if (!(await bcrypt.compare(body.password, u!.password_hash))) throw badRequest('Your password is not correct.');
+  if (verifyTotp(decryptSecret(u!.totp_secret_enc), body.code) === null) throw badRequest('The code is not correct.');
+  await pool.query('UPDATE users SET totp_enabled = false, totp_secret_enc = NULL, totp_last_step = NULL WHERE id = $1', [req.user!.id]);
+  log('info', 'totp_disabled', { userId: req.user!.id });
+  res.json({ user: await getProfile(req.user!.id) });
 });

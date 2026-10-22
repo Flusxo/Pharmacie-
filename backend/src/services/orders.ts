@@ -210,6 +210,25 @@ export async function listPharmacyOrders(pharmacyId: string, scope: 'active' | '
   );
 }
 
+/** Pharmacy: one of its own orders (for the printable slip); patient as "First L." only, never an address. */
+export async function getPharmacyOrder(orderId: string, pharmacyId: string) {
+  const o = await one(
+    `SELECT o.id, o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt",
+            pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName", r.source, r.instructions,
+            r.prescription_note IS NOT NULL AS "hasPrescriptionNote",
+            json_build_object('id', p.user_id, 'name', p.name, 'address', p.address, 'city', p.city, 'phone', p.phone) AS pharmacy,
+            (${ORDER_ITEMS_SQL}) AS items,
+            (SELECT json_agg(json_build_object('status', h.status, 'changedAt', h.changed_at) ORDER BY h.changed_at, h.id)
+               FROM order_status_history h WHERE h.order_id = o.id) AS history
+       FROM orders o JOIN patients pt ON pt.user_id = o.patient_id JOIN requests r ON r.id = o.request_id
+       JOIN pharmacies p ON p.user_id = o.pharmacy_id
+      WHERE o.id = $1 AND o.pharmacy_id = $2`,
+    [orderId, pharmacyId],
+  );
+  if (!o) throw notFound('Order not found.');
+  return o;
+}
+
 /** Pharmacy: requests waiting for its answer (only those the patient chose it for). */
 export async function listIncoming(pharmacyId: string) {
   return query(

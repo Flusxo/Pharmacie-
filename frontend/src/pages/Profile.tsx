@@ -5,6 +5,8 @@ import { ApiError, api, getToken } from '../lib/api';
 import { useAuth } from '../lib/auth';
 import { useSettings, type GraphicsPref, type ThemePref } from '../lib/settings';
 import { useToast } from '../lib/toast';
+import { TwoStepSection } from '../components/TwoStep';
+import { resetTour } from '../components/Tour';
 
 interface DoctorLink {
   id: string;
@@ -147,6 +149,19 @@ export function ProfilePage() {
           <input type="checkbox" checked={reduceMotion} onChange={(e) => setReduceMotion(e.target.checked)} data-testid="reduce-motion" />
           <span>{t('profile.reduceMotion')}</span>
         </label>
+        {user.role === 'patient' && (
+          <button
+            type="button"
+            className="btn secondary small"
+            style={{ justifySelf: 'start' }}
+            onClick={() => {
+              resetTour();
+              navigate('/home');
+            }}
+          >
+            {t('tour.replay')}
+          </button>
+        )}
         <label className="check">
           <input
             type="checkbox"
@@ -199,6 +214,8 @@ export function ProfilePage() {
           ))}
         </section>
       )}
+
+      {user.role !== 'patient' && <TwoStepSection user={user} />}
 
       <form
         className="card stack"

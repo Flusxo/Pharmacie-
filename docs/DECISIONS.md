@@ -71,3 +71,22 @@ Each entry: what was chosen and why.
 - **3D map toggle (MapLibre)**: not added. It needs vector tiles with building heights from the tile provider; only a raster `VITE_MAP_TILE_URL` is configured, so the toggle is hidden and the Leaflet 2D map stays (as the brief allows).
 - **Catalog-card hover previews**: not added (would mount many canvases on the search page); the product viewer on the details page is the 3D entry point.
 - **Global loader**: a CSS capsule (2D) rather than a 3D one: loading a 1 MB 3D chunk just to show a loader would defeat its purpose. The 3D spinning capsule is used on the 404 page; the 3D drawn check (with SVG fallback) is used when a request is sent.
+
+## Animations (user step 4 / Phase 10)
+
+- **framer-motion 11 through `LazyMotion`** (`m` components, features loaded lazily, strict mode) so the main bundle stays small; shared tokens in `src/motion.ts`, mirrored as CSS variables.
+- **Page transitions are entrance-only**: `AnimatePresence mode="wait"` around `useOutlet` re-rendered the leaving page with the new URL (empty search, lost clicks). An exit animation is not worth that bug.
+- **Reveal stagger by column** (`index % 4`): on a one-column phone layout an index-based delay made the 10th card wait 0.6 s.
+
+## Pack labels and design pass (user step 5)
+
+- **Label fitting** (`lib/labelFit.ts`): explicit label box per pack form; greedy wrap (name ≤ 3 lines, dosage ≤ 2), shrink in 0.5 steps until width and height fit. Width = real canvas measurement (+4 %) once Inter is loaded, otherwise a conservative per-character estimate; never cut, never ellipsised.
+- **Tab bar below 960 px** (was 768): the patient top nav does not fit at tablet width with the language, theme, bell and sign-out controls.
+- **Design sweep script** (`scripts/design-sweep.mjs`): scrolled viewport frames instead of full-page captures, because full-page screenshots stretch `100vh` sticky sections and never trigger reveal-on-scroll.
+
+## Extras (user step 6 / Phase 11)
+
+- **Two-step verification (TOTP, RFC 6238)** for doctor, pharmacy and staff accounts only (optional; patients get 403). Implemented with Node `crypto` (HMAC-SHA1, 6 digits, 30 s, ±1 step); no backend dependency. The secret is stored AES-256-GCM encrypted with a key derived from `JWT_SECRET` (changing `JWT_SECRET` therefore invalidates enrolled apps; acceptable for a prototype, a production system would use a dedicated key / KMS). A code is accepted once (`totp_last_step`), wrong codes count towards the 5-failure lockout, a wrong password always gets the generic message. Disabling needs the password and a current code. No recovery codes (documented as not done): an admin cannot reset it yet either.
+- **QR code**: `qrcode-generator` (MIT, no dependencies) loaded lazily only on the setup screen, drawn as SVG rectangles (no HTML injection). The key is also shown in groups of 4 and as an `otpauth://` link for phones.
+- **Printable order slip** at `/orders/:id/print` for the patient (own order) and the pharmacy (`GET /api/pharmacy/orders/:id`, its own orders only, patient as "First L.", no address or coordinates). Print CSS hides the app chrome; the slip carries its own "prototype, no official value" line, so the printed page still says it is a demo.
+- **Onboarding tour**: 3 non-blocking steps (no backdrop) pointing at the real search box, map and requests links (`data-tour` attributes, the visible one in top bar or tab bar). Shown once per browser (`localStorage`, a per-viewer convenience); "Replay the guided tour" in the account page. E2E fixtures mark it done; `extras.spec.ts` tests it on its own.

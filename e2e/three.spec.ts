@@ -7,6 +7,7 @@ test.describe('3D layer', () => {
     // Medium: real 3D without post-processing (headless Chromium renders WebGL in software).
     await page.addInitScript(() => {
       if (!localStorage.getItem('counter.graphics')) localStorage.setItem('counter.graphics', 'medium');
+      localStorage.setItem('counter.tour', 'done');
     });
     test.setTimeout(240_000);
   });

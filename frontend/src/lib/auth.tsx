@@ -5,7 +5,7 @@ import type { User } from './types';
 interface Auth {
   user: User | null;
   ready: boolean;
-  login: (email: string, password: string) => Promise<User>;
+  login: (email: string, password: string, code?: string) => Promise<User>;
   acceptSession: (token: string, user: User) => void;
   logout: () => void;
   refresh: () => Promise<void>;
@@ -44,8 +44,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(
-    async (email: string, password: string) => {
-      const r = await api<{ token: string; user: User }>('/auth/login', { method: 'POST', body: { email, password } });
+    async (email: string, password: string, code?: string) => {
+      const r = await api<{ token: string; user: User }>('/auth/login', { method: 'POST', body: { email, password, code: code || undefined } });
       acceptSession(r.token, r.user);
       return r.user;
     },

@@ -9,6 +9,7 @@ export interface User {
   verified: boolean;
   displayName: string;
   emailNotifications: boolean;
+  totpEnabled?: boolean;
   patient?: {
     firstName: string;
     lastName: string;

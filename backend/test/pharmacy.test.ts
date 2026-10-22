@@ -69,6 +69,19 @@ describe('pharmacy inventory', () => {
     expect(res.body.items.length).toBeGreaterThan(0);
     for (const o of res.body.items) expect(o.patientName).toMatch(/^\S+ \S\.$/);
   });
+
+  it('opens one of its own orders for the printable slip, never another pharmacy\'s', async () => {
+    const t = await login('pharmacie.valence');
+    const own = (await api().get('/api/pharmacy/orders?scope=all').set(auth(t))).body.items[0];
+    const res = await api().get(`/api/pharmacy/orders/${own.id}`).set(auth(t));
+    expect(res.status).toBe(200);
+    expect(res.body.order.patientName).toMatch(/^\S+ \S\.$/);
+    expect(res.body.order.pharmacy.name).toBeTruthy();
+    expect(JSON.stringify(res.body)).not.toMatch(/latitude|longitude/);
+    expect(res.body.order).not.toHaveProperty('destination');
+    const other = await login('pharmacie.tournon');
+    expect((await api().get(`/api/pharmacy/orders/${own.id}`).set(auth(other))).status).toBe(404);
+  });
 });
 
 describe('patient data', () => {

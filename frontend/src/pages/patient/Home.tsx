@@ -8,6 +8,7 @@ import { usePlace } from '../../lib/location';
 import { formatDate, formatKm } from '../../lib/format';
 import type { NearbyPharmacy, OrderSummary, RequestSummary } from '../../lib/types';
 import { SearchBox } from '../../components/SearchBox';
+import { OnboardingTour } from '../../components/Tour';
 import { LocationControl } from '../../components/LocationControl';
 import { LazyMap } from '../../components/map/LazyMap';
 import { HeroVisual } from '../../components/three/ThreeVisuals';
@@ -80,6 +81,7 @@ export function HomePage() {
 
   return (
     <div className="stack" style={{ gap: 28 }}>
+      <OnboardingTour />
       <section className="hero-3d" ref={heroRef} aria-labelledby="hello" data-step={step}>
         <div className="hero-sticky">
           <HeroVisual progress={progress} />
@@ -92,7 +94,9 @@ export function HomePage() {
               <p className="small" style={{ margin: 0 }}>
                 {t('home.forExample')} <RotatingWord words={[t('home.word1'), t('home.word2'), t('home.word3')]} />
               </p>
-              <SearchBox />
+              <div data-tour="search">
+                <SearchBox />
+              </div>
               <LocationControl compact />
             </div>
             <ol className="hero-steps" aria-label={t('home.heroStepsLabel')}>

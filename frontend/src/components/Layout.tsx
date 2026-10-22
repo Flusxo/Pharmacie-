@@ -165,6 +165,8 @@ interface NavItem {
   label: string;
   /** Shorter label for the phone tab bar. */
   short?: string;
+  /** Step of the onboarding tour that points at this item. */
+  tour?: string;
   icon: ReactNode;
 }
 
@@ -179,8 +181,8 @@ export function Layout() {
       ? [
           { to: '/home', label: t('nav.home'), icon: <IconHome /> },
           { to: '/search', label: t('nav.search'), icon: <IconSearch /> },
-          { to: '/map', label: t('nav.map'), icon: <IconMap /> },
-          { to: '/requests', label: t('nav.requests'), short: t('nav.requestsShort'), icon: <IconList /> },
+          { to: '/map', label: t('nav.map'), icon: <IconMap />, tour: 'map' },
+          { to: '/requests', label: t('nav.requests'), short: t('nav.requestsShort'), icon: <IconList />, tour: 'requests' },
           { to: '/profile', label: t('nav.profile'), icon: <IconUser /> },
         ]
       : user
@@ -208,7 +210,7 @@ export function Layout() {
           </Link>
           <nav className="topnav" aria-label="Main">
             {nav.map((n) => (
-              <NavLink key={n.to} to={n.to}>
+              <NavLink key={n.to} to={n.to} data-tour={n.tour}>
                 {n.label}
               </NavLink>
             ))}
@@ -244,7 +246,7 @@ export function Layout() {
         {nav.length > 0 && (
           <nav className="tabbar" aria-label="Tabs">
             {nav.map((n) => (
-              <NavLink key={n.to} to={n.to}>
+              <NavLink key={n.to} to={n.to} data-tour={n.tour}>
                 {n.icon}
                 <span>{n.short ?? n.label}</span>
               </NavLink>

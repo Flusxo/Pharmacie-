@@ -232,6 +232,9 @@ export function OrderTrackingPage() {
             {t('order.share')}
           </button>
         )}
+        <Link to={`/orders/${order.id}/print`} className="btn secondary">
+          {t('order.print')}
+        </Link>
         {order.status === 'accepted' && (
           <button type="button" className="btn secondary" disabled={busy} onClick={() => void cancel()}>
             {t('order.cancel')}

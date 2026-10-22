@@ -8,6 +8,7 @@ async function prepare(page: Page, theme: 'light' | 'dark' = 'light') {
   await page.addInitScript((th) => {
     localStorage.setItem('counter.graphics', 'high');
     localStorage.setItem('counter.theme', th);
+    localStorage.setItem('counter.tour', 'done');
   }, theme);
 }
 async function login(page: Page) {

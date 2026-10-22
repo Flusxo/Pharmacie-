@@ -23,6 +23,7 @@ import { PharmacyDashboard } from './pages/pharmacy/PharmacyDashboard';
 import { DoctorDashboard } from './pages/doctor/DoctorDashboard';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { ProfilePage } from './pages/Profile';
+import { OrderSlipPage } from './pages/OrderSlip';
 import { LegalPage, NotFoundPage, RootRedirect, WaitingPage } from './pages/Misc';
 
 /** Requires a logged-in user with one of the roles; unverified professionals go to /waiting. */
@@ -125,6 +126,14 @@ export function AppRoutes() {
           element={
             <RequireRole roles={['patient']}>
               <OrderTrackingPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/orders/:id/print"
+          element={
+            <RequireRole roles={['patient', 'pharmacy']}>
+              <OrderSlipPage />
             </RequireRole>
           }
         />

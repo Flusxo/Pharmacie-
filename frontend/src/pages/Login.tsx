@@ -52,6 +52,9 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Two-step verification: shown once the API says this account needs a code.
+  const [needCode, setNeedCode] = useState(false);
+  const [code, setCode] = useState('');
   const [shake, setShake] = useState(0);
   const activeTab: Tab = staff ? 'staff' : tab === 'staff' ? 'patient' : tab;
 
@@ -60,10 +63,17 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
     setError(null);
     setBusy(true);
     try {
-      const user = await login(email.trim(), password);
+      const user = await login(email.trim(), password, needCode ? code : undefined);
       navigate(homeFor(user), { replace: true });
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t('common.error'));
+      if (err instanceof ApiError && err.code === 'totp_required') {
+        setNeedCode(true);
+        return;
+      }
+      setError(
+        err instanceof ApiError ? (err.code === 'totp_invalid' ? t('login.codeWrong') : err.message) : t('common.error'),
+      );
+      setCode('');
       setShake((n) => n + 1);
     } finally {
       setBusy(false);
@@ -135,12 +145,34 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
             />
             <label htmlFor="password">{t('login.password')}</label>
           </div>
+          {needCode && (
+            <div className="stack" style={{ gap: 8 }}>
+              <div className="alert info" role="status">
+                {t('login.codeNeeded')}
+              </div>
+              <div className="field float">
+                <input
+                  id="login-code"
+                  className="input"
+                  placeholder=" "
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                  autoFocus
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                />
+                <label htmlFor="login-code">{t('login.code')}</label>
+              </div>
+            </div>
+          )}
           {error && (
             <div className="alert error" role="alert">
               {error}
             </div>
           )}
-          <button className="btn block" type="submit" disabled={busy || !email || !password}>
+          <button className="btn block" type="submit" disabled={busy || !email || !password || (needCode && code.length !== 6)}>
             {busy ? t('login.submitting') : t('login.submit')}
           </button>
         </motion.form>

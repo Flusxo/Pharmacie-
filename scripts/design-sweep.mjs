@@ -37,6 +37,7 @@ for (const width of widthsArg.split(',').map(Number)) {
       ([tk, lg]) => {
         if (tk) localStorage.setItem('counter.token', tk);
         localStorage.setItem('counter.graphics', 'off');
+        localStorage.setItem('counter.tour', 'done');
         localStorage.setItem('counter.lang', lg);
       },
       [token, lang],

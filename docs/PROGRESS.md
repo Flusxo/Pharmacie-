@@ -4,7 +4,7 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-User steps 1–5 are done and committed (dashboards, map, site-wide 3D, animations, pack labels + design pass). **Next: step 6** (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
+User steps 1–6 are done and committed (dashboards, map, site-wide 3D, animations, pack labels + design pass, extras). **Next: step 7** (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
 
 ### Add-on plan (requested 2026-10-22, starts after step 7)
 
@@ -91,7 +91,11 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified: `labels.test.tsx` (4 tests) fits all 50 seeded medicines in their form's box (width, height, line counts, size ≥ 7, every word printed) and checks text boxes sit inside labels below the band; a sheet of all 50 packs was rendered and reviewed.
   - Design pass with `scripts/design-sweep.mjs` (scrolled viewport frames of 12 pages; 360/768/1440, light/dark, fr/en) and `scripts/overflow-probe.mjs`. Fixed: top bar 7 px wider than a 360 px phone (sign-out button cut), 70 px overflow at 768 px (top nav now switches to the tab bar below 960 px), "Mes demandes" wrapping in the tab bar (short label "Demandes"/"Requests"), medicine cards whose badges ran outside the card, bigger pack pictures with hover zoom, product lines whose price dropped under the name, KPI cards one per row on phones (now two), cut tab labels without a scroll hint (edge fade), admin chart overflowing in English, last category cards still invisible after scrolling (reveal delay grew with the index), hero poster objects clipped on phones and covering the step texts on desktop, hard grey shelf lines in dark mode, 1 px login overflow.
   - No horizontal overflow on any swept page at 360/768/1440 (fr light, fr dark at 360/1440, en at 360).
-- [ ] Phase 11 — Extras
+- [x] Phase 11 / user step 6 — Extras
+  - Already built in earlier phases: opening hours and on-duty state, French formats, BAN address search, password reset, CSV stock upload, share link, data export, account deletion.
+  - Added: optional two-step verification (TOTP) for doctor, pharmacy and staff accounts (account page: QR code + key + otpauth link, confirm with a code; login asks for the code; turn off with password + code); migration `003_totp.sql` (applied to Neon with `npm run db:migrate`, additive). Printable order slip for patient and pharmacy (`/orders/:id/print`, print CSS). First-visit onboarding tour for patients (3 steps, replay from the account page).
+  - Verified: backend `totp.test.ts` (10: RFC 6238 vectors, base32, encrypted storage, patients refused, setup stays off until confirmed, wrong code 400, login needs code, wrong / reused code refused, fresh code accepted, wrong password generic, disable needs password + code, 5 wrong codes lock); `pharmacy.test.ts` slip endpoint (own order, "First L.", no coordinates, other pharmacy 404). Playwright `extras.spec.ts` (3): pharmacy turns on TOTP in the UI, logs out, must enter a code computed like an authenticator app; tour shows 3 steps on the real controls and only once; patient and pharmacy slips (pharmacy sees "First L."). Slip checked visually on the dev server.
+  - Not done: TOTP recovery codes and staff reset of a lost authenticator.
 - [ ] Phase 12 — Quality and documentation
 
 - [x] User step 2 — Map tiles and pins
@@ -101,11 +105,11 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified: in the browser on the user's running dev server, /map now shows the key-rejected message, no "Invalid key" tiles, 1 pin and the attribution. Vitest (`map.test.tsx`, 6 tests): resolver (full URL, bare key, empty, `{s}`, style.json, malformed), fallback text. Playwright (`map.spec.ts`, 8 tests): no key → message + attribution + no external tile request; stand-in tiles 200 → tiles shown; 403 text → message; 403 + image (MapTiler behaviour) → tiles hidden + key message (repeated 5×, stable); no pharmacy in range → message → widen → Terreaux listed; geolocation denied; details popup; tracking map.
   - README started with the map-key section (where to get the key, full URL or bare key, restart, Allowed HTTP origins, keys are public).
 
-## Last check results (2026-10-22, after step 5)
+## Last check results (2026-10-22, after step 6)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 95 + frontend 33 tests passed (local PG :5433, never Neon).
-- `npm run e2e`: 21 Playwright tests passed (5 cycle + 8 map + 4 patient + 4 3D in their own browser); test ports released.
+- `npm test`: backend 106 + frontend 33 tests passed (local PG :5433, never Neon).
+- `npm run e2e`: 24 Playwright tests passed (5 cycle + 8 map + 4 patient + 3 extras + 4 3D in their own browser); test ports released.
 - 3D screenshots (step 3): 18/18 taken with software GL (`docs/screenshots/`, ~32 min); 7 re-taken after fixes.
 
 ## Known issues / To fix
@@ -121,7 +125,8 @@ Other known issues:
 - 3D in a real browser on a real GPU was not checked by me: all 3D verification used SwiftShader (software). Expect smoother motion and sharper post-processing on real hardware; very slow GPUs fall back automatically in Auto.
 - The 3D product label text looks slightly light (tone mapping + clearcoat); readable but could be darker.
 - PackImage drawings are flat SVG illustrations; realistic rendered pictures are add-on Part G.
-- Phases 11 (printable order slip, onboarding tour, optional TOTP) and 12 (README, final docs, full acceptance checklist) are not done.
+- Phase 12 (README, final docs, full acceptance checklist) is not done.
+- Once (2026-10-22) the dev API (:4000) stopped without a log line after several quick back-to-back `tsx watch` restarts while backend files were being edited; the frontend kept running and showed proxy errors. Restarting `npm run dev` fixed it; not reproduced.
 - No README yet (Phase 12) — setup instructions live in `CLAUDE.md` for now.
 - The seeded incoming request (Bruno → Tournon) expires 30 minutes after `npm run db:reset` (the expiry job runs every minute while the API runs). Re-run `npm run db:reset` before a demo.
 - Search: "para" also matches "paraffine" (Dexeryl) as a lower-ranked substring result. Paracetamol results come first; acceptable but could be tightened.
@@ -149,5 +154,5 @@ Note: the user referred to "section 11b of claude_code_master_prompt.md"; that f
 
 ## Not done yet
 
-- Steps 6–7 of the user's list and the add-on plan (see Next step).
-- Optional TOTP for professionals (Phase 11) is not started.
+- Step 7 of the user's list and the add-on plan (see Next step).
+- TOTP recovery codes / staff reset of a lost authenticator.

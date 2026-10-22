@@ -4,7 +4,10 @@ import { API, PASSWORD, loginWithDemo } from './helpers';
 
 async function newPage(browser: Browser): Promise<Page> {
   const ctx = await browser.newContext({ baseURL: 'http://localhost:5174', locale: 'fr-FR', timezoneId: 'Europe/Paris' });
-  await ctx.addInitScript(() => localStorage.setItem('counter.graphics', 'off'));
+  await ctx.addInitScript(() => {
+    localStorage.setItem('counter.graphics', 'off');
+    localStorage.setItem('counter.tour', 'done');
+  });
   return ctx.newPage();
 }
 

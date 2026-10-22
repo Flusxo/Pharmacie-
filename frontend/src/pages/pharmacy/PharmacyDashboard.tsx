@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n/fr';
 import { ApiError, api } from '../../lib/api';
@@ -303,7 +304,12 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
           <strong>{o.patientName}</strong>
           <span className="muted small">{formatDateTime(o.createdAt, locale)}</span>
         </div>
-        <StatusBadge status={o.status} />
+        <span className="row" style={{ gap: 8 }}>
+          <StatusBadge status={o.status} />
+          <Link to={`/orders/${o.id}/print`} className="btn secondary small" data-testid="print-slip">
+            {t('order.print')}
+          </Link>
+        </span>
       </div>
       <ul className="plain-list">
         {o.items.map((i) => (

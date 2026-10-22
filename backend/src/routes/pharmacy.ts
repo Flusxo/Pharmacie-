@@ -4,7 +4,7 @@ import { one, pool, query, tx } from '../db.js';
 import { badRequest, notFound } from '../errors.js';
 import { requireRole } from '../middleware/auth.js';
 import { addRoutes } from '../openapi.js';
-import { decideCancellation, listIncoming, listPharmacyOrders, updateOrderStatus, type OrderStatus } from '../services/orders.js';
+import { decideCancellation, getPharmacyOrder, listIncoming, listPharmacyOrders, updateOrderStatus, type OrderStatus } from '../services/orders.js';
 import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
 import { idParam, uuid } from '../validate.js';
@@ -37,6 +37,11 @@ pharmacyRouter.post('/requests/:id/substitutions', async (req, res) => {
 pharmacyRouter.get('/orders', async (req, res) => {
   const { scope } = z.object({ scope: z.enum(['active', 'all']).default('active') }).parse(req.query);
   res.json({ items: await listPharmacyOrders(req.user!.id, scope) });
+});
+
+pharmacyRouter.get('/orders/:id', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json({ order: await getPharmacyOrder(id, req.user!.id) });
 });
 
 pharmacyRouter.patch('/orders/:id/status', async (req, res) => {
@@ -277,6 +282,7 @@ addRoutes([
   ['post', '/api/pharmacy/requests/:id/refuse', 'Pharmacy', 'Refuse (request returns to the patient)', 'bearer'],
   ['post', '/api/pharmacy/requests/:id/substitutions', 'Pharmacy', 'Propose a generic for one item', 'bearer'],
   ['get', '/api/pharmacy/orders', 'Pharmacy', 'My orders (scope=active|all)', 'bearer'],
+  ['get', '/api/pharmacy/orders/:id', 'Pharmacy', 'One of my orders (printable slip; patient as "First L.")', 'bearer'],
   ['patch', '/api/pharmacy/orders/:id/status', 'Pharmacy', 'Move an order forward (or cancel before delivery)', 'bearer'],
   ['post', '/api/pharmacy/orders/:id/cancellation', 'Pharmacy', "Approve or decline a patient's cancellation request", 'bearer'],
   ['get', '/api/pharmacy/inventory', 'Pharmacy', 'My stock (low=1 for low stock only)', 'bearer'],
