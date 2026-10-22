@@ -4,15 +4,14 @@
  * gradient / SVG pack image first and swaps to the live canvas when the first frame is ready.
  * Fallbacks (no WebGL, Low/Off quality, low memory, slow frame rate in Auto, a WebGL error) never throw.
  */
-import { Component, lazy, Suspense, useCallback, useEffect, useRef, useState, type MutableRefObject, type ReactNode } from 'react';
+import { Component, lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useI18n } from '../../i18n';
 import { useCanvasSlot, useGraphics } from '../../lib/graphics';
 import { useSettings } from '../../lib/settings';
 import { PackImage, colorsFor } from '../PackImage';
-import type { CompositionName } from '../../three/compositions';
+import { useLocation } from 'react-router-dom';
+import { compositionFor } from '../../three/compositions';
 
-const BackgroundScene = lazy(() => import('../../three/BackgroundScene'));
-const HeroScene = lazy(() => import('../../three/HeroScene'));
 const ProductScene = lazy(() => import('../../three/ProductScene'));
 const PageScene = lazy(() => import('../../three/PageScene'));
 
@@ -45,50 +44,38 @@ export class ThreeBoundary extends Component<{ fallback: ReactNode; children: Re
 }
 
 /** Full-page background behind every page; static gradient when 3D is off or unavailable. */
-export function SiteBackground() {
-  const g = useGraphics();
-  const { resolvedTheme } = useSettings();
-  const slot = useCanvasSlot('background', 0);
-  const fonts = useFontsReady();
-  const draw = slot && fonts;
-  const [ready, setReady] = useState(false);
-  const onReady = useCallback(() => setReady(true), []);
-  return (
-    <div className={`site-bg ${ready && draw ? 'ready' : ''}`} aria-hidden="true" data-testid="site-bg" data-mode={draw ? '3d' : 'static'}>
-      {draw && (
-        <ThreeBoundary fallback={null}>
-          <Suspense fallback={null}>
-            <BackgroundScene
-              tier={g.tier === 'high' ? 'high' : 'medium'}
-              reduced={g.reduced}
-              dark={resolvedTheme === 'dark'}
-              paused={g.backdropPaused}
-              onSlow={g.reportSlow}
-              onReady={onReady}
-            />
-          </Suspense>
-        </ThreeBoundary>
-      )}
-    </div>
-  );
-}
 
 /**
- * Public site 3D layer: one fixed canvas behind the pages; the composition follows the route.
- * Reports when it is drawing so the page can hide its still illustration (kept as the fallback).
+ * THE 3D layer of the whole app: one canvas fixed behind every page, mounted once at the root and never
+ * unmounted by navigation (it lives outside the routes and the layouts). The route only selects the
+ * composition; the old one shrinks away while the new one grows in. On phones, when a page viewer
+ * needs the single canvas slot, this one pauses and keeps its last frame instead of being destroyed.
+ * While it is live, <html data-stage="3d"> lets the pages hide their still illustrations.
  */
-export function PageBackdrop({ name, onActive }: { name: CompositionName; onActive?: (on: boolean) => void }) {
+export function RootStage() {
   const g = useGraphics();
   const { resolvedTheme } = useSettings();
-  const draw = useCan3D('page', 1);
+  const location = useLocation();
+  const fonts = useFontsReady();
+  const { claim } = g;
+  useEffect(() => (g.canRender3D ? claim('root', 0) : undefined), [g.canRender3D, claim]);
+  const draw = g.canRender3D && fonts;
+  const paused = g.backdropPaused || (g.mobile && g.activeId !== null && g.activeId !== 'root');
   const [ready, setReady] = useState(false);
   const onReady = useCallback(() => setReady(true), []);
-  useEffect(() => onActive?.(draw && ready), [draw, ready, onActive]);
+  const live = draw && ready;
+  useEffect(() => {
+    if (live) document.documentElement.dataset.stage = '3d';
+    else delete document.documentElement.dataset.stage;
+  }, [live]);
+  const name = compositionFor(location.pathname);
+  // The dev-only render studio draws its own picture: no background layer behind it.
+  if (location.pathname === '/render') return null;
   return (
     <div
-      className={`page-bg ${ready && draw ? 'ready' : ''}`}
+      className={`page-bg ${live ? 'ready' : ''}`}
       aria-hidden="true"
-      data-testid="page-backdrop"
+      data-testid="root-stage"
       data-scene={name}
       data-mode={draw ? '3d' : 'static'}
     >
@@ -100,7 +87,8 @@ export function PageBackdrop({ name, onActive }: { name: CompositionName; onActi
               tier={g.tier === 'high' ? 'high' : 'medium'}
               reduced={g.reduced}
               dark={resolvedTheme === 'dark'}
-              onSlow={g.reportSlow}
+              paused={paused}
+              onFps={g.reportFps}
               onReady={onReady}
             />
           </Suspense>
@@ -120,47 +108,6 @@ export function HeroPoster() {
         <PackImage name="Calmora" dosage="500 mg" form="tablet" category="pain" />
         <PackImage name="Dermalis" dosage="1 %" form="cream" category="skin" />
       </div>
-    </div>
-  );
-}
-
-export function HeroVisual({ progress }: { progress: MutableRefObject<number> }) {
-  const g = useGraphics();
-  const { lang } = useI18n();
-  const fonts = useFontsReady();
-  const draw = useCanvasSlot('hero', 2) && fonts;
-  const [ready, setReady] = useState(false);
-  const onReady = useCallback(() => setReady(true), []);
-  const ref = useRef<HTMLDivElement>(null);
-  const { setBackdropPaused } = g;
-  // While the full-screen hero is on screen, the site background does not need to draw.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !draw || !('IntersectionObserver' in window)) return;
-    const io = new IntersectionObserver(([e]) => setBackdropPaused(e.isIntersecting));
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      setBackdropPaused(false);
-    };
-  }, [draw, setBackdropPaused]);
-  return (
-    <div ref={ref} className={`hero-visual ${ready && draw ? 'ready' : ''}`} data-testid="hero-visual" data-mode={draw ? '3d' : 'static'}>
-      <HeroPoster />
-      {draw && (
-        <ThreeBoundary fallback={null}>
-          <Suspense fallback={null}>
-            <HeroScene
-              key={lang /* labels are drawn in the UI language */}
-              tier={g.tier === 'high' ? 'high' : 'medium'}
-              reduced={g.reduced}
-              progress={progress}
-              onSlow={g.reportSlow}
-              onReady={onReady}
-            />
-          </Suspense>
-        </ThreeBoundary>
-      )}
     </div>
   );
 }

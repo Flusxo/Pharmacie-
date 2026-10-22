@@ -82,7 +82,7 @@ Doctor, pharmacy and staff accounts can turn on **two-step verification** in "Mo
 
 ## API
 
-The API is an Express app under `/api`. The full list (80 routes, with who may call them) is served as OpenAPI at http://localhost:4000/api/docs. Groups:
+The API is an Express app under `/api`. The full list (80 routes, with who may call them) is served as OpenAPI at http://localhost:4000/api/docs in development (never in production). Groups:
 
 - `/api/auth/*`: register (patient active; doctor and pharmacy pending), login, me, password reset and change, two-step verification.
 - `/api/medicines/*`, `/api/pharmacies/nearby`: search (accents and typos tolerated), suggestions, details, generics, nearby pharmacies with stock.

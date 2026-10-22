@@ -385,7 +385,7 @@ export function CapsuleScene({ tier, reduced, onReady }: { tier: Tier; reduced: 
       </Float>
       <Tablet position={[0.9, -0.75, 0.3]} rotation={[-1.1, 0, 0.4]} scale={2.2} />
       <Tablet position={[-1, -0.8, 0]} rotation={[-1.3, 0, 1.2]} scale={2.2} />
-      <ContactShadows position={[0, -0.95, 0]} opacity={0.4} scale={5} blur={2.4} far={2} />
+      <ContactShadows frames={1} position={[0, -0.95, 0]} opacity={0.4} scale={5} blur={2.4} far={2} />
     </Scene3D>
   );
 }

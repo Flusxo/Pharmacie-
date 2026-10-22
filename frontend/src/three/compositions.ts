@@ -27,7 +27,10 @@ export type ItemKind =
   | 'counter'
   | 'scooter'
   | 'figure-pharmacist'
-  | 'figure-doctor';
+  | 'figure-doctor'
+  | 'interior'
+  | 'beams'
+  | 'route';
 
 export interface Item {
   kind: ItemKind;
@@ -57,7 +60,28 @@ export interface Composition {
   heroX: number;
 }
 
-export type CompositionName = 'home' | 'how' | 'patients' | 'pharmacies' | 'doctors' | 'about' | 'contact' | 'faq' | 'legal' | 'auth';
+export type CompositionName =
+  | 'home'
+  | 'how'
+  | 'patients'
+  | 'pharmacies'
+  | 'doctors'
+  | 'about'
+  | 'contact'
+  | 'faq'
+  | 'legal'
+  | 'auth'
+  // After login: calmer, at the sides of the content, each page with its own objects.
+  | 'app-home'
+  | 'app-search'
+  | 'app-details'
+  | 'app-map'
+  | 'app-requests'
+  | 'app-tracking'
+  | 'app-account'
+  | 'app-pharmacy'
+  | 'app-doctor'
+  | 'app-admin';
 
 const TEAL: [string, string] = ['#0d9488', '#F8FAFC'];
 const GREEN: [string, string] = ['#10B981', '#ECFDF5'];
@@ -95,7 +119,77 @@ function depth(seed: number, colors: [string, string][]): Item[] {
   });
 }
 
+/** Calm side objects for the app pages: outside the content column, smaller, slow. */
+function calm(seed: number, colors: [string, string][], extra: Item[] = []): Composition {
+  let s = seed;
+  const r = () => {
+    s = (s * 16807) % 2147483647;
+    return s / 2147483647;
+  };
+  const items: Item[] = Array.from({ length: 10 }, (_, i) => {
+    const side = i % 2 ? 1 : -1;
+    const pick = r();
+    return {
+      kind: pick < 0.6 ? 'capsule' : 'tablet',
+      pos: [side * (4.7 + r() * 0.9), 2.2 - i * 1.5 - r(), -1.5 - r() * 2],
+      rot: [r() * 3, r() * 3, r() * 3],
+      scale: 1.5 + r() * 0.9,
+      colors: colors[i % colors.length],
+      spin: (r() - 0.5) * 4,
+      drift: 0.6 + r(),
+      float: 0.5 + r() * 0.6,
+    } satisfies Item;
+  });
+  return { heroX: 0, travel: [0, -8, 0], items: [...extra, ...items] };
+}
+
 export const COMPOSITIONS: Record<CompositionName, Composition> = {
+  // Patient home: the big hero is drawn here (no second canvas) — bottle, capsules and tablets on the
+  // right, the pharmacy interior behind; scrolling travels down past the side objects.
+  'app-home': {
+    heroX: 2.9,
+    travel: [0, -8, 0],
+    items: [
+      { kind: 'amber', pos: [2.9, -0.3, 0], rot: [0.05, -0.12, 0.06], scale: 1.55, label: APAISA, spin: 1.2, float: 0.6 },
+      { kind: 'capsule', pos: [1.6, 1.3, 0.9], rot: [0.4, 0.2, 0.9], scale: 3.0, colors: TEAL, split: true, spin: 2, float: 1.2 },
+      { kind: 'capsule', pos: [4.4, 1.5, -0.4], rot: [0.2, 0.5, -0.7], scale: 2.6, colors: GREEN, split: true, spin: -1.5, float: 1 },
+      { kind: 'tablet', pos: [1.8, -1.5, 1.1], rot: [1.1, 0.3, 0], scale: 2.3, spin: 3, float: 1.1 },
+      { kind: 'tablet', pos: [4.5, -1.2, 0.7], rot: [0.6, 1.2, 0.2], scale: 2.0, spin: -2, float: 0.9 },
+      { kind: 'interior', pos: [1.5, -3.4, -8], rot: [0, -0.12, 0] },
+      ...calm(201, [TEAL, GREEN, SKY]).items.filter((it) => it.pos[1] < -2),
+    ],
+  },
+  'app-search': calm(211, [SKY, TEAL, AMBER], [{ kind: 'pin', pos: [-5.2, 1.6, -1.8], scale: 0.7, float: 0.8 }]),
+  'app-details': calm(
+    223,
+    [TEAL, VIOLET, GREEN],
+    [{ kind: 'blister', pos: [5.2, 1.4, -2.2], rot: [0.3, -0.5, 0.3], scale: 0.8, label: CALMORA, float: 0.7 }],
+  ),
+  'app-map': calm(
+    227,
+    [GREEN, TEAL],
+    [
+      { kind: 'pin', pos: [5.2, 1.8, -2], scale: 0.8, float: 0.8 },
+      { kind: 'pin', pos: [-5.1, -1, -2.4], scale: 0.6, color: '#94a3b8', float: 1 },
+    ],
+  ),
+  'app-requests': calm(229, [AMBER, TEAL, SKY], [{ kind: 'bag', pos: [5.1, 1.6, -2], rot: [0, -0.5, 0], scale: 0.7, float: 0.7 }]),
+  'app-tracking': calm(
+    233,
+    [AMBER, GREEN],
+    [
+      { kind: 'bag', pos: [-5.2, 1.6, -2], rot: [0, 0.5, 0], scale: 0.7, float: 0.7 },
+      { kind: 'route', pos: [0, -3.2, -6], rot: [0.25, 0, 0], scale: 1.1 },
+    ],
+  ),
+  'app-account': calm(239, [TEAL, ROSE]),
+  'app-pharmacy': calm(
+    241,
+    [AMBER, TEAL, VIOLET],
+    [{ kind: 'box', pos: [5.2, 1.5, -2.2], rot: [0.2, -0.5, 0.1], scale: 0.8, brand: 'Calmora', color: '#065F46', float: 0.7 }],
+  ),
+  'app-doctor': calm(251, [TEAL, SKY], [{ kind: 'stethoscope', pos: [5.1, 1.5, -2], rot: [0.3, -0.5, 0.4], scale: 0.9, float: 0.7 }]),
+  'app-admin': calm(257, [TEAL, GREEN], [{ kind: 'blob', pos: [5.1, 1.7, -2.4], scale: 0.9, color: '#a7f3d0', blob: 'torus', float: 0.6 }]),
   home: {
     heroX: 2.9,
     travel: [0, -9, 0],
@@ -107,6 +201,8 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'tablet', pos: [1.5, -1.3, 1.1], rot: [1.1, 0.3, 0], scale: 2.4, spin: 3, float: 1.1 },
       { kind: 'tablet', pos: [4.6, -0.2, 0.7], rot: [0.6, 1.2, 0.2], scale: 2.1, spin: -2, float: 0.9 },
       { kind: 'cross', pos: [4.7, 2.3, -1.6], rot: [0.1, -0.5, 0], scale: 0.55, float: 0.7 },
+      { kind: 'interior', pos: [1.5, -3.4, -8], rot: [0, -0.12, 0] },
+      { kind: 'beams', pos: [1.5, -3.4, -6.5] },
       ...depth(11, [TEAL, GREEN, SKY, AMBER]),
     ],
   },
@@ -137,6 +233,7 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
     travel: [0, -9, 0],
     items: [
       { kind: 'shelf', pos: [2.9, -0.1, -0.6], rot: [0.04, -0.32, 0], scale: 1.05, spin: 0.3, float: 0.3 },
+      { kind: 'interior', pos: [0, -3.4, -9], rot: [0, 0.1, 0] },
       { kind: 'cross', pos: [3.9, 1.85, -1.0], rot: [0, -0.3, 0], scale: 0.45, float: 0.7 },
       { kind: 'box', pos: [1.2, -1.3, 1.0], rot: [0.2, 0.5, 0.1], scale: 1.1, brand: 'Calmora', color: '#065F46', spin: 2, float: 1.1 },
       { kind: 'capsule', pos: [1.25, 1.45, 0.9], rot: [0.4, 0.2, 0.9], scale: 2.8, colors: AMBER, split: true, spin: 2, float: 1.2 },
@@ -211,20 +308,33 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'cross', pos: [4.9, 2.1, -2.2], rot: [0.1, -0.5, 0], scale: 0.5, float: 0.7 },
       { kind: 'capsule', pos: [4.8, 0.6, -2.5], rot: [0.4, 0.2, 0.9], scale: 2.2, colors: SKY, float: 1 },
       { kind: 'tablet', pos: [4.6, -2.2, -2], rot: [1.1, 0.3, 0], scale: 2, float: 1 },
+      { kind: 'beams', pos: [0, -3.6, -7] },
     ],
   },
 };
 
-/** Which composition a public route shows. */
+/** Which composition a route shows (public site and app). */
 export function compositionFor(path: string): CompositionName {
+  // Whole path segments: "/doctors" (public page) is not "/doctor" (dashboard).
+  const at = (p: string) => path === p || path.startsWith(p + '/');
   if (path === '/') return 'home';
-  if (path.startsWith('/how-it-works')) return 'how';
-  if (path.startsWith('/patients')) return 'patients';
-  if (path.startsWith('/pharmacies')) return 'pharmacies';
-  if (path.startsWith('/doctors')) return 'doctors';
-  if (path.startsWith('/about')) return 'about';
-  if (path.startsWith('/contact')) return 'contact';
-  if (path.startsWith('/faq')) return 'faq';
-  if (path.startsWith('/privacy') || path.startsWith('/terms')) return 'legal';
+  if (at('/home')) return 'app-home';
+  if (at('/search')) return 'app-search';
+  if (at('/medicines')) return 'app-details';
+  if (at('/map')) return 'app-map';
+  if (at('/requests')) return 'app-requests';
+  if (at('/orders') || at('/track')) return 'app-tracking';
+  if (at('/profile') || at('/waiting')) return 'app-account';
+  if (at('/pharmacy')) return 'app-pharmacy';
+  if (at('/doctor')) return 'app-doctor';
+  if (at('/admin')) return 'app-admin';
+  if (at('/how-it-works')) return 'how';
+  if (at('/patients')) return 'patients';
+  if (at('/pharmacies')) return 'pharmacies';
+  if (at('/doctors')) return 'doctors';
+  if (at('/about')) return 'about';
+  if (at('/contact')) return 'contact';
+  if (at('/faq')) return 'faq';
+  if (at('/privacy') || at('/terms')) return 'legal';
   return 'auth';
 }

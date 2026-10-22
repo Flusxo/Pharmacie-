@@ -8,8 +8,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const W = 512;
-const H = 256;
+// 1024 × 512: enough for sharp reflections of the softboxes (an environment map is used blurred for
+// lighting, a bigger file would not look different and would cost download time).
+const W = 1024;
+const H = 512;
 
 // Lights in (longitude, latitude) degrees, with angular size and colour * intensity.
 const LIGHTS = [
@@ -18,6 +20,12 @@ const LIGHTS = [
   { lon: 130, lat: 18, w: 10, h: 48, c: [9, 9.5, 10] }, // rim strip, back-right
   { lon: 75, lat: 20, w: 40, h: 26, c: [1.6, 1.9, 2.2] }, // cool fill
   { lon: -150, lat: 10, w: 30, h: 30, c: [1.2, 2.0, 1.5] }, // faint green bounce (brand)
+  // Studio detail: a strip-light pair for long highlights on glass, a window grid, small practicals.
+  { lon: -95, lat: 40, w: 6, h: 60, c: [10, 10, 10.5] },
+  { lon: -82, lat: 40, w: 6, h: 60, c: [10, 10, 10.5] },
+  ...[-20, -6, 8].flatMap((dl) => [12, 26].map((la) => ({ lon: 160 + dl, lat: la, w: 11, h: 11, c: [3.2, 3.4, 3.6] }))),
+  { lon: 40, lat: 55, w: 5, h: 5, c: [22, 20, 16] },
+  { lon: -120, lat: 52, w: 5, h: 5, c: [22, 20, 16] },
 ];
 
 function smoothRect(dLon, dLat, w, h) {

@@ -5,13 +5,16 @@
  *          medium = no post-processing, contact shadows, DPR up to 1.5
  *          low    = no WebGL canvas: static gradient / SVG pack images
  *          off    = same as low, chosen by the user
- * "auto" picks a tier from WebGL2 support, device memory and CPU cores, then steps down at runtime
- * when a canvas stays under 30 fps for 2 s. An explicit choice in Settings is never overridden.
+ * "auto" picks a tier from WebGL2 support, device memory and CPU cores; at runtime a TierGovernor
+ * (lib/tierGovernor.ts) moves it with hysteresis from the root canvas's frame rate: down only after a
+ * sustained low rate, up only after a long stable period, at most once a minute, never because of a
+ * hidden tab. An explicit choice in Settings is never overridden.
  * Reduced motion (OS or the "Reduce animations" switch) keeps 3D but renders a single still frame.
  * On mobile only one heavy canvas renders at a time (the most important one that is mounted).
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useReducedMotion, useSettings, type GraphicsPref } from './settings';
+import { TierGovernor, type AutoTier } from './tierGovernor';
 
 export type Tier = 'high' | 'medium' | 'low' | 'off';
 
@@ -59,8 +62,6 @@ export function chooseTier(pref: GraphicsPref, d: DeviceInfo): Tier {
   return 'high';
 }
 
-const ORDER: Tier[] = ['high', 'medium', 'low', 'off'];
-
 interface GraphicsCtx {
   tier: Tier;
   /** true when a WebGL canvas may be drawn at all */
@@ -68,7 +69,9 @@ interface GraphicsCtx {
   reduced: boolean;
   mobile: boolean;
   auto: boolean;
-  /** Called by a canvas whose frame rate stayed under 30 fps for 2 s (only acts in "auto"). */
+  /** One frame-rate sample per second from the root canvas (only acts in "auto"). */
+  reportFps: (fps: number) => void;
+  /** Kept for the inline canvases: they no longer change the tier (only the root canvas samples). */
   reportSlow: () => void;
   /** Mobile canvas lock: returns true when this canvas may render now. */
   claim: (id: string, priority: number) => () => void;
@@ -84,19 +87,35 @@ export function GraphicsProvider({ children, device }: { children: ReactNode; de
   const { graphics } = useSettings();
   const reduced = useReducedMotion();
   const [info] = useState<DeviceInfo>(() => device ?? probeDevice());
-  const [downgrades, setDowngrades] = useState(0);
+  const base = chooseTier(graphics, info);
+  // Auto: the governor starts at the device's tier and moves it with hysteresis.
+  const governor = useRef<TierGovernor | null>(null);
+  const [autoTier, setAutoTier] = useState<AutoTier | null>(null);
   const claims = useRef(new Map<string, number>());
   const [activeId, setActiveId] = useState<string | null>(null);
   const [backdropPaused, setBackdropPaused] = useState(false);
 
-  useEffect(() => setDowngrades(0), [graphics]);
+  useEffect(() => {
+    governor.current = graphics === 'auto' && (base === 'high' || base === 'medium') ? new TierGovernor(base) : null;
+    setAutoTier(null);
+  }, [graphics, base]);
+  // Time spent hidden never counts as slow (or fast).
+  useEffect(() => {
+    const onVis = () => governor.current?.pause();
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
 
-  const base = chooseTier(graphics, info);
-  const tier = graphics === 'auto' ? ORDER[Math.min(ORDER.indexOf(base) + downgrades, ORDER.length - 1)] : base;
+  const tier: Tier = graphics === 'auto' && autoTier ? autoTier : base;
 
-  const reportSlow = useCallback(() => {
-    if (graphics === 'auto') setDowngrades((d) => Math.min(d + 1, 2));
-  }, [graphics]);
+  const reportFps = useCallback((fps: number) => {
+    const g = governor.current;
+    if (!g || document.visibilityState !== 'visible') return;
+    const before = g.tier;
+    const after = g.sample(fps, performance.now());
+    if (after !== before) setAutoTier(after);
+  }, []);
+  const reportSlow = useCallback(() => {}, []);
 
   const recompute = useCallback(() => {
     let best: string | null = null;
@@ -123,13 +142,14 @@ export function GraphicsProvider({ children, device }: { children: ReactNode; de
       reduced,
       mobile: info.mobile,
       auto: graphics === 'auto',
+      reportFps,
       reportSlow,
       claim,
       activeId,
       backdropPaused,
       setBackdropPaused,
     }),
-    [tier, reduced, info.mobile, graphics, reportSlow, claim, activeId, backdropPaused],
+    [tier, reduced, info.mobile, graphics, reportFps, reportSlow, claim, activeId, backdropPaused],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

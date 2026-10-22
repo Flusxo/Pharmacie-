@@ -4,6 +4,7 @@
  */
 import * as THREE from 'three';
 import { labelFooter } from './labelFooter';
+import { fitLabel, packTitle } from '../lib/labelFit';
 
 const cache = new Map<string, THREE.Texture>();
 
@@ -93,17 +94,26 @@ export interface LabelSpec {
   cip?: string;
   color: string;
   light?: string;
-  /** wrap-around label for bottles (wide) or a front panel for boxes */
-  kind?: 'wrap' | 'panel';
+  /** wrap-around label for bottles (wide), a square panel, or the front of a carton box */
+  kind?: 'wrap' | 'panel' | 'carton';
+  /** prescription medicine: prints an "Rx" mark */
+  rx?: boolean;
 }
 
-/** 2048 px label: name, dosage, green cross, CIP code and a small barcode. Crisp thanks to anisotropic filtering. */
+let labelRes = 2048;
+/** High tier: 4096 px labels (crisper hero objects); otherwise 2048 px. Set by the canvases. */
+export function setLabelResolution(px: 2048 | 4096): void {
+  labelRes = px;
+}
+
+/** 2048 px (4096 on High) label: name, dosage, green cross, CIP code and a small barcode. Crisp thanks to anisotropic filtering. */
 export function labelTexture(spec: LabelSpec, anisotropy = 8): THREE.Texture {
-  const key = `label:${spec.kind ?? 'wrap'}:${spec.name}:${spec.dosage}:${spec.color}:${spec.cip ?? ''}:${labelFooter()}`;
+  const key = `label:${spec.kind ?? 'wrap'}:${spec.name}:${spec.dosage}:${spec.color}:${spec.cip ?? ''}:${spec.rx ? 'rx' : ''}:${labelFooter()}:${labelRes}`;
   const hit = cache.get(key);
   if (hit) return hit;
   const wrap = (spec.kind ?? 'wrap') === 'wrap';
-  const [c, ctx] = canvas(2048, wrap ? 1024 : 2048);
+  const k = labelRes / 2048;
+  const [c, ctx] = canvas(2048 * k, (wrap ? 1024 : spec.kind === 'carton' ? 1280 : 2048) * k);
   const W = c.width;
   const H = c.height;
   // paper
@@ -123,22 +133,43 @@ export function labelTexture(spec: LabelSpec, anisotropy = 8): THREE.Texture {
   // On a wrap label only the front third is visible: centre the text there.
   const cx = W / 2;
   const maxW = W * 0.8;
-  greenCross(ctx, cx - maxW / 2 + 90, H * 0.3, wrap ? 150 : 170);
+  // White cross and the Rx mark sit in the colour band, away from the text.
+  const band = H * 0.16;
+  greenCross(ctx, cx - maxW / 2 + band * 0.5, band / 2, band * 0.55, '#FFFFFF');
+  if (spec.rx) {
+    const bw = band * 1.3;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.roundRect(cx + maxW / 2 - bw, band * 0.2, bw, band * 0.6, band * 0.3);
+    ctx.fill();
+    ctx.fillStyle = spec.color;
+    ctx.textAlign = 'center';
+    ctx.font = `800 ${Math.round(band * 0.42)}px Inter Variable, Inter, Arial, sans-serif`;
+    ctx.fillText('Rx', cx + maxW / 2 - bw / 2, band * 0.66);
+  }
+  // Name (≤ 3 lines) and dosage (≤ 2) fitted inside the text box: shrink and wrap, never cropped.
+  const family = 'Inter Variable, Inter, Arial, sans-serif';
+  const measure = (text: string, size: number, weight: number) => {
+    ctx.font = `${weight === 700 ? 800 : 700} ${size}px ${family}`;
+    return ctx.measureText(text).width * 1.02;
+  };
+  const box = { x: cx - maxW * 0.45, y: H * 0.21, w: maxW * 0.9, h: H * (wrap ? 0.43 : 0.42) };
+  const lines = fitLabel(packTitle(spec.name), spec.dosage, box, {
+    maxTitle: (wrap ? 210 : 230) * k,
+    maxDose: (wrap ? 140 : 160) * k,
+    measure,
+  });
   ctx.textAlign = 'center';
-  ctx.fillStyle = '#0F172A';
-  const title = spec.name.replace(/\s+\d.*$/, '') || spec.name;
-  const ts = fitText(ctx, title, maxW * 0.86, wrap ? 210 : 230);
-  ctx.font = `800 ${ts}px Inter Variable, Inter, Arial, sans-serif`;
-  ctx.fillText(title, cx, H * (wrap ? 0.47 : 0.42));
-  ctx.fillStyle = spec.color;
-  const ds = fitText(ctx, spec.dosage, maxW * 0.8, wrap ? 140 : 160, 700);
-  ctx.font = `700 ${ds}px Inter Variable, Inter, Arial, sans-serif`;
-  ctx.fillText(spec.dosage, cx, H * (wrap ? 0.6 : 0.55));
+  for (const l of lines) {
+    ctx.font = `${l.weight === 700 ? 800 : 700} ${l.size}px ${family}`;
+    ctx.fillStyle = l.weight === 700 ? '#0F172A' : spec.color;
+    ctx.fillText(l.text, cx, l.y);
+  }
   if (spec.cip) barcode(ctx, spec.cip, cx - maxW * 0.22, H * 0.665, maxW * 0.44, H * (wrap ? 0.12 : 0.1));
   ctx.textAlign = 'left';
-  ctx.font = `600 ${wrap ? 36 : 54}px Inter Variable, Inter, Arial, sans-serif`;
+  ctx.font = `600 ${(wrap ? 36 : 54) * k}px Inter Variable, Inter, Arial, sans-serif`;
   ctx.fillStyle = '#FFFFFF';
-  ctx.fillText(labelFooter(), 40, H * 0.955);
+  ctx.fillText(labelFooter(), 40 * k, H * 0.955);
   return finish(key, c, { anisotropy });
 }
 
@@ -237,6 +268,56 @@ export function paperNormal(): THREE.Texture {
   const r = rng(5);
   const noise = Array.from({ length: 128 * 128 }, () => r());
   return normalFromHeight('paper', 128, (x, y) => noise[(y % 128) * 128 + (x % 128)] * 0.6, 1.2, 6);
+}
+
+/** Fine micro-surface for moulded plastics and caps (tiny orange-peel bumps). */
+export function plasticNormal(): THREE.Texture {
+  const r = rng(23);
+  const n = 256;
+  const noise = Array.from({ length: n * n }, () => r());
+  const blur = (x: number, y: number) => {
+    let t = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) t += noise[((y + dy + n) % n) * n + ((x + dx + n) % n)];
+    return t / 9;
+  };
+  return normalFromHeight('plastic-n', n, blur, 0.9, 4);
+}
+
+/** Roughness variation (0.85–1 multiplier): fingerprints-free but not perfectly uniform. */
+export function roughnessNoise(): THREE.Texture {
+  const key = 'rough';
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const [c, ctx] = canvas(256, 256);
+  const img = ctx.createImageData(256, 256);
+  const r = rng(31);
+  for (let i = 0; i < 256 * 256; i++) {
+    const v = 215 + r() * 40;
+    img.data.set([v, v, v, 255], i * 4);
+  }
+  ctx.putImageData(img, 0, 0);
+  return finish(key, c, { srgb: false, repeat: 3 });
+}
+
+/** Embossed brand name + cross for a carton front (normal map built from the same drawing). */
+export function boxNormal(brand: string): THREE.Texture {
+  const key = `box-n:${brand}`;
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const n = 512;
+  const [, ctx] = canvas(n, n);
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, n, n);
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  const sz = fitText(ctx, brand, 440, 92, 800);
+  ctx.font = `800 ${sz}px Inter Variable, Inter, Arial, sans-serif`;
+  ctx.fillText(brand, 256, 330);
+  greenCross(ctx, 70, 230, 70, '#fff');
+  const data = ctx.getImageData(0, 0, n, n).data;
+  const grain = rng(3);
+  const g = Array.from({ length: n * n }, () => grain() * 0.15);
+  return normalFromHeight(key, n, (x, y) => data[(y * n + x) * 4] / 255 + g[y * n + x], 2.2, 1);
 }
 
 /** Dispose every cached texture (called when the last 3D canvas unmounts). */

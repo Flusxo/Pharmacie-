@@ -3,7 +3,7 @@ import express, { type Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
-import { config } from './config.js';
+import { config, isProd } from './config.js';
 import { pool } from './db.js';
 import { errorHandler, notFoundHandler } from './errors.js';
 import { log } from './logger.js';
@@ -84,11 +84,14 @@ export function createApp(): Express {
       res.status(503).json({ status: 'degraded', database: 'unreachable', time: new Date().toISOString() });
     }
   });
-  const openapi = openapiSpec();
-  app.get('/api/openapi.json', (_req, res) => {
-    res.json(openapi);
-  });
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapi, { customSiteTitle: 'PharmaLink API' }));
+  // API documentation: development and tests only, never in production.
+  if (!isProd) {
+    const openapi = openapiSpec();
+    app.get('/api/openapi.json', (_req, res) => {
+      res.json(openapi);
+    });
+    app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapi, { customSiteTitle: 'PharmaLink API' }));
+  }
 
   app.use('/api', authenticate);
   app.use('/api/auth', authRouter);

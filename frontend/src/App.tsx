@@ -11,6 +11,7 @@ import { LocationProvider } from './lib/location';
 import { ToastProvider } from './lib/toast';
 import type { Role } from './lib/types';
 import { Layout } from './components/Layout';
+import { RootStage } from './components/three/ThreeVisuals';
 import { LoginPage } from './pages/Login';
 import { RegisterPage, ForgotPasswordPage, ResetPasswordPage } from './pages/Register';
 import { HomePage } from './pages/patient/Home';
@@ -243,6 +244,7 @@ export function App() {
               <LocationProvider>
                 <ToastProvider>
                   <BrowserRouter>
+                    <RootStage />
                     <AppRoutes />
                   </BrowserRouter>
                 </ToastProvider>

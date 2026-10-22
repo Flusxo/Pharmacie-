@@ -8,7 +8,17 @@ import { useMemo, useRef, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { RoundedBox } from '@react-three/drei';
-import { boxTexture, foilNormal, labelTexture, marbleTexture, paperNormal, type LabelSpec } from './textures';
+import {
+  boxNormal,
+  boxTexture,
+  foilNormal,
+  labelTexture,
+  marbleTexture,
+  paperNormal,
+  plasticNormal,
+  roughnessNoise,
+  type LabelSpec,
+} from './textures';
 
 const v2 = (pts: [number, number][]) => pts.map(([x, y]) => new THREE.Vector2(x, y));
 
@@ -17,21 +27,32 @@ const v2 = (pts: [number, number][]) => pts.map(([x, y]) => new THREE.Vector2(x,
 export function useGlass(tint: 'amber' | 'clear', quality: 'high' | 'medium') {
   return useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({
-        color: '#ffffff',
-        transmission: 1,
-        thickness: 0.35,
-        roughness: tint === 'amber' ? 0.06 : 0.03,
-        ior: 1.5,
-        attenuationColor: new THREE.Color(tint === 'amber' ? '#a85a12' : '#e8f4ef'),
-        attenuationDistance: tint === 'amber' ? 0.45 : 4,
-        clearcoat: 1,
-        clearcoatRoughness: 0.05,
-        specularIntensity: 1,
-        envMapIntensity: 1.2,
-        // Medium tier: cheaper single-sided transmission.
-        side: quality === 'high' ? THREE.DoubleSide : THREE.FrontSide,
-      }),
+      // Medium: tinted transparent glass, no transmission pass (that pass re-renders the whole scene).
+      quality === 'medium'
+        ? new THREE.MeshPhysicalMaterial({
+            color: tint === 'amber' ? '#b8691c' : '#e8f4ef',
+            transparent: true,
+            opacity: tint === 'amber' ? 0.72 : 0.32,
+            roughness: 0.05,
+            clearcoat: 1,
+            clearcoatRoughness: 0.04,
+            envMapIntensity: 1.4,
+            depthWrite: false,
+          })
+        : new THREE.MeshPhysicalMaterial({
+            color: '#ffffff',
+            transmission: 1,
+            thickness: 0.35,
+            roughness: tint === 'amber' ? 0.06 : 0.03,
+            ior: 1.5,
+            attenuationColor: new THREE.Color(tint === 'amber' ? '#a85a12' : '#e8f4ef'),
+            attenuationDistance: tint === 'amber' ? 0.45 : 4,
+            clearcoat: 1,
+            clearcoatRoughness: 0.05,
+            specularIntensity: 1,
+            envMapIntensity: 1.2,
+            side: THREE.DoubleSide,
+          }),
     [tint, quality],
   );
 }
@@ -39,6 +60,10 @@ export function useGlass(tint: 'amber' | 'clear', quality: 'high' | 'medium') {
 export function plastic(color: string, opts: { clearcoat?: number; roughness?: number; sheen?: number; transmission?: number } = {}) {
   return new THREE.MeshPhysicalMaterial({
     color,
+    // Micro-surface detail (procedural maps): highlights break up like real moulded plastic.
+    normalMap: plasticNormal(),
+    normalScale: new THREE.Vector2(0.12, 0.12),
+    roughnessMap: roughnessNoise(),
     roughness: opts.roughness ?? 0.32,
     clearcoat: opts.clearcoat ?? 1,
     clearcoatRoughness: 0.12,
@@ -70,6 +95,33 @@ function cardboard(map: THREE.Texture) {
 }
 
 // ---------- geometry helpers ----------
+
+/** Screw thread on a bottle neck: a thin tube following a helix (seen when the cap is off). */
+function Thread({
+  radius,
+  y0,
+  y1,
+  turns = 2.2,
+  material,
+}: {
+  radius: number;
+  y0: number;
+  y1: number;
+  turns?: number;
+  material: THREE.Material;
+}) {
+  const geo = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    const n = 160;
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      const a = t * turns * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(a) * radius, y0 + (y1 - y0) * t, Math.sin(a) * radius));
+    }
+    return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 240, radius * 0.06, 8, false);
+  }, [radius, y0, y1, turns]);
+  return <mesh geometry={geo} material={material} />;
+}
 
 /** Cylinder with vertical knurls (child-safe cap grip). */
 function knurledCap(radius: number, height: number, ridges = 56) {
@@ -214,6 +266,7 @@ export function AmberBottle({ label, quality, open, onCapClick, burst = 0 }: Pro
     <group>
       <mesh geometry={liquid} material={liquidMat} />
       <mesh geometry={body} material={glass} castShadow receiveShadow />
+      <Thread radius={0.203} y0={1.335} y1={1.43} material={glass} />
       <mesh position={[0, 0.52, 0]} material={labelMat}>
         <cylinderGeometry args={[0.506, 0.506, 0.56, 64, 1, true, -1.1, 2.2]} />
       </mesh>
@@ -249,6 +302,7 @@ export function PillBottle({ label, open, onCapClick, burst = 0 }: ProductProps)
   return (
     <group>
       <mesh geometry={body} material={mat} castShadow receiveShadow />
+      <Thread radius={0.424} y0={1.21} y1={1.295} turns={1.6} material={mat} />
       <mesh position={[0, 0.64, 0]} material={labelMat}>
         <cylinderGeometry args={[0.526, 0.526, 0.6, 64, 1, true, -1.15, 2.3]} />
       </mesh>
@@ -503,7 +557,14 @@ export function PharmaBox({
   ...props
 }: { brand: string; color: string; size?: [number, number, number] } & JSX.IntrinsicElements['group']) {
   const map = boxTexture(brand, color);
-  const front = useMemo(() => cardboard(map), [map]);
+  const emboss = boxNormal(brand);
+  const front = useMemo(() => {
+    const m = cardboard(map);
+    // Embossed brand name and cross.
+    m.normalMap = emboss;
+    m.normalScale = new THREE.Vector2(0.6, 0.6);
+    return m;
+  }, [map, emboss]);
   const side = useMemo(() => new THREE.MeshStandardMaterial({ color: '#f1f5f4', roughness: 0.85 }), []);
   const [w, h, d] = size;
   return (

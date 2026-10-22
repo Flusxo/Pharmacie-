@@ -7,7 +7,6 @@ import { useSettings } from '../lib/settings';
 import { api } from '../lib/api';
 import type { Notification } from '../lib/types';
 import { formatDateTime } from '../lib/format';
-import { SiteBackground } from './three/ThreeVisuals';
 import { IconBell, IconDashboard, IconHome, IconList, IconLogout, IconMap, IconMoon, IconSearch, IconSun, IconUser } from './Icons';
 
 export function PrototypeNotice() {
@@ -199,7 +198,6 @@ export function Layout() {
 
   return (
     <>
-      <SiteBackground />
       <div className="app">
         <a href="#main" className="sr-only">
           {t('app.skip')}
@@ -240,9 +238,6 @@ export function Layout() {
         <footer className="footer">
           <Link to="/terms">{t('footer.terms')}</Link>
           <Link to="/privacy">{t('footer.privacy')}</Link>
-          <a href="/api/docs" target="_blank" rel="noreferrer">
-            {t('footer.api')}
-          </a>
         </footer>
         {nav.length > 0 && (
           <nav className="tabbar" aria-label={t('nav.tabs')}>

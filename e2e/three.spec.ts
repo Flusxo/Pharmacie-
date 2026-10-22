@@ -24,32 +24,82 @@ test.describe('3D layer', () => {
     expect(scripts.filter((u) => /ProductScene|HeroScene|ExtraScenes/.test(u))).toEqual([]);
   });
 
-  test('public site: one shared 3D layer, a composition per page; forms work while it loads; Off shows the still art', async ({ page }) => {
-    await page.goto('/login');
+  test('ONE persistent canvas: same element and visible across 11 pages of client-side navigation, back after a refresh', async ({
+    page,
+  }) => {
+    test.setTimeout(400_000);
+    const stage = page.getByTestId('root-stage');
+    const mark = () =>
+      page.evaluate(
+        () => ((window as unknown as { __c: Element | null }).__c = document.querySelector('[data-testid="root-stage"] canvas')),
+      );
+    const same = () =>
+      page.evaluate(
+        () => (window as unknown as { __c: Element | null }).__c === document.querySelector('[data-testid="root-stage"] canvas'),
+      );
+    const visible = () =>
+      page.evaluate(() => {
+        const c = document.querySelector('[data-testid="root-stage"] canvas') as HTMLElement | null;
+        const holder = c?.closest('.page-bg-canvas') as HTMLElement | null;
+        return !!c && c.getBoundingClientRect().width > 100 && !!holder && getComputedStyle(holder).opacity === '1';
+      });
+    const check = async (scene: string) => {
+      await expect(stage).toHaveAttribute('data-scene', scene);
+      expect(await same(), `canvas replaced on ${scene}`).toBe(true);
+      await expect.poll(visible, { message: `canvas hidden on ${scene}` }).toBe(true);
+    };
+
     // The form is usable at once, whatever the 3D layer is doing.
+    await page.goto('/login');
     await page.getByLabel('Adresse e-mail').fill('alice@pharmacie.test');
     await expect(page.getByLabel('Adresse e-mail')).toHaveValue('alice@pharmacie.test');
-    const layer = page.getByTestId('page-backdrop');
-    await expect(layer).toHaveAttribute('data-scene', 'auth');
 
     await page.goto('/');
-    await expect(layer).toHaveAttribute('data-scene', 'home');
-    await expect(layer).toHaveAttribute('data-mode', '3d');
-    await expect(layer.locator('canvas')).toHaveCount(1, { timeout: 60_000 });
-    await page.evaluate(() => ((window as unknown as { __c: Element | null }).__c = document.querySelector('.page-bg canvas')));
-    // Client-side navigation keeps the same canvas (shared scene manager) and switches the composition.
-    await page.getByRole('navigation', { name: 'Navigation du site' }).getByRole('link', { name: 'Pharmacies' }).click();
-    await expect(layer).toHaveAttribute('data-scene', 'pharmacies');
-    expect(
-      await page.evaluate(() => (window as unknown as { __c: Element | null }).__c === document.querySelector('.page-bg canvas')),
-    ).toBe(true);
+    await expect(stage).toHaveAttribute('data-mode', '3d');
+    await expect(stage.locator('canvas')).toHaveCount(1, { timeout: 90_000 });
+    await expect.poll(visible, { timeout: 90_000 }).toBe(true);
+    await mark();
+    const nav = page.getByRole('navigation', { name: 'Navigation du site' });
+    for (const [link, scene] of [
+      ['Pharmacies', 'pharmacies'],
+      ['Médecins', 'doctors'],
+      ['À propos', 'about'],
+      ['FAQ', 'faq'],
+      ['Contact', 'contact'],
+    ] as const) {
+      await nav.getByRole('link', { name: link }).click();
+      await check(scene);
+    }
+    await page.getByTestId('login-button').click();
+    await check('auth');
+    await page.getByTestId('demo-panel').getByRole('button', { name: 'Alice — Tournon' }).click();
+    await page.getByRole('button', { name: 'Se connecter' }).click();
+    await expect(page).toHaveURL(/\/home$/);
+    await check('app-home');
+    const main = page.getByRole('navigation', { name: 'Navigation principale' });
+    for (const [link, scene] of [
+      ['Rechercher', 'app-search'],
+      ['Carte', 'app-map'],
+      ['Mes demandes', 'app-requests'],
+      ['Profil', 'app-account'],
+    ] as const) {
+      await main.getByRole('link', { name: link }).click();
+      await check(scene);
+    }
+    expect(await page.locator('canvas').count()).toBeLessThanOrEqual(2);
 
+    // A refresh builds it again (a new page), and it is visible again.
+    await page.reload();
+    await expect(stage.locator('canvas')).toHaveCount(1, { timeout: 90_000 });
+    await expect.poll(visible, { timeout: 90_000 }).toBe(true);
+    await expect(stage).toHaveAttribute('data-scene', 'app-account');
+
+    // Graphics Off: no canvas, the still art on public pages.
     await page.evaluate(() => localStorage.setItem('counter.graphics', 'off'));
     await page.goto('/');
-    await expect(layer).toHaveAttribute('data-mode', 'static');
-    await expect(layer.locator('canvas')).toHaveCount(0);
+    await expect(stage).toHaveAttribute('data-mode', 'static');
+    await expect(stage.locator('canvas')).toHaveCount(0);
     await expect(page.locator('.pub-hero-visual .hero-art')).toBeVisible();
-    await expect(page.locator('.pub-app')).not.toHaveClass(/pub-3d/);
   });
 
   test('medicine details: 3D viewer with canvas, 3D / Photo toggle and a text alternative', async ({ page }) => {
@@ -72,7 +122,7 @@ test.describe('3D layer', () => {
     await loginByToken(page, 'alice@pharmacie.test');
     for (const url of ['/search', '/requests', '/profile']) {
       await page.goto(url);
-      await expect(page.getByTestId('site-bg')).toHaveAttribute('data-mode', '3d');
+      await expect(page.getByTestId('root-stage')).toHaveAttribute('data-mode', '3d');
     }
     await page.goto('/search?q=Biafine');
     await page.getByTestId('medicine-card').first().click();
@@ -84,8 +134,9 @@ test.describe('3D layer', () => {
     await loginByToken(page, 'alice@pharmacie.test');
     await page.goto('/profile');
     await page.getByTestId('graphics-quality').selectOption('off');
-    await expect(page.getByTestId('site-bg')).toHaveAttribute('data-mode', 'static');
+    await expect(page.getByTestId('root-stage')).toHaveAttribute('data-mode', 'static');
     await page.goto('/home');
-    await expect(page.getByTestId('hero-visual')).toHaveAttribute('data-mode', 'static');
+    await expect(page.getByTestId('root-stage').locator('canvas')).toHaveCount(0);
+    await expect(page.locator('.hero-poster')).toBeVisible();
   });
 });

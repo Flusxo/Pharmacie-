@@ -11,7 +11,7 @@ import { SearchBox } from '../../components/SearchBox';
 import { OnboardingTour } from '../../components/Tour';
 import { LocationControl } from '../../components/LocationControl';
 import { LazyMap } from '../../components/map/LazyMap';
-import { HeroVisual } from '../../components/three/ThreeVisuals';
+import { HeroPoster } from '../../components/three/ThreeVisuals';
 import { AnimatedNumber, Reveal, RotatingWord, TiltCard, WordReveal } from '../../components/motion';
 import { CardSkeleton, Empty, OpenBadge, StatusBadge } from '../../components/ui';
 
@@ -84,7 +84,10 @@ export function HomePage() {
       <OnboardingTour />
       <section className="hero-3d" ref={heroRef} aria-labelledby="hello" data-step={step}>
         <div className="hero-sticky">
-          <HeroVisual progress={progress} />
+          {/* The 3D comes from the root stage behind the page (app-home composition); the poster is the fallback. */}
+          <div className="hero-visual">
+            <HeroPoster />
+          </div>
           <div className="hero-copy">
             <div className="hero-panel stack">
               <WordReveal id="hello" text={t('home.greeting', { name })} />

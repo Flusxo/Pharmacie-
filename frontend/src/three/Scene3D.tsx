@@ -5,16 +5,19 @@
  * - tier high: post-processing (subtle bloom, ambient occlusion, vignette, optional depth of field), DPR up to 2
  *   tier medium: no post-processing, DPR up to 1.5
  * - pauses when off-screen (IntersectionObserver); reduced motion renders ONE still frame
- * - frame-rate guard: under 30 fps for 2 s -> reportSlow() (the provider steps the tier down in "auto")
+ * - frame-rate sampler: one sample per second (stalls and hidden time ignored) -> onFps (root canvas
+ *   only; the provider's TierGovernor decides, with hysteresis)
+ * - WebGL context loss: the canvas fades to its fallback and comes back when the browser restores it
+ * - hidden tab: rendering stops and resumes without a reload
  * - textures released when the last canvas unmounts; R3F disposes geometries/materials of unmounted meshes
  */
 import { Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
-import { Bloom, DepthOfField, EffectComposer, N8AO, ToneMapping, Vignette } from '@react-three/postprocessing';
+import { Bloom, DepthOfField, EffectComposer, N8AO, Noise, ToneMapping, Vignette } from '@react-three/postprocessing';
 import { ToneMappingMode } from 'postprocessing';
-import { releaseTextures } from './textures';
+import { releaseTextures, setLabelResolution } from './textures';
 import { frameloopFor } from '../lib/graphics';
 
 let liveCanvases = 0;
@@ -27,6 +30,8 @@ export interface Scene3DProps {
   className?: string;
   label: string;
   onSlow?: () => void;
+  /** one frame-rate sample per second of visible rendering */
+  onFps?: (fps: number) => void;
   onReady?: () => void;
   /** Background scenes keep the CPU/GPU light: capped DPR, no shadows, no post-processing. */
   light?: boolean;
@@ -39,32 +44,53 @@ export interface Scene3DProps {
   paused?: boolean;
   /** Cap the frame rate (background scenes). */
   maxFps?: number;
+  /** Device-pixel-ratio range (full-screen layers render below native on Medium: fill-rate bound GPUs). */
+  dprRange?: [number, number];
+  /** Ambient occlusion on High (off for full-screen layers: too costly over a whole viewport). */
+  ao?: boolean;
+  /** Bloom threshold/strength (full-screen light backgrounds need a high threshold or everything glows). */
+  bloom?: { threshold: number; intensity: number };
   /** Orthographic camera fitted to a world box (like an SVG viewBox, "meet"), so HTML overlays line up. */
   ortho?: { width: number; height: number };
 }
 
-/** Counts frames; if the average stays under 30 fps for 2 s (after a 1 s warm-up), reports once. */
-function FpsGuard({ onSlow }: { onSlow?: () => void }) {
-  const acc = useRef({ t: 0, frames: 0, warm: 0, done: false });
+/**
+ * One frame-rate sample per second. A frame longer than 250 ms (tab switch, heavy page load, a paused
+ * loop resuming) resets the window instead of counting as slow; 3 s of warm-up after mount.
+ */
+function FpsSampler({ onFps }: { onFps: (fps: number) => void }) {
+  const acc = useRef({ t: 0, frames: 0, warm: 0 });
   useFrame((_, delta) => {
     const a = acc.current;
-    if (a.done || !onSlow) return;
-    if (a.warm < 1) {
+    if (delta > 0.25) {
+      a.t = 0;
+      a.frames = 0;
+      return;
+    }
+    if (a.warm < 3) {
       a.warm += delta;
       return;
     }
     a.t += delta;
     a.frames += 1;
-    if (a.t >= 2) {
-      if (a.frames / a.t < 30) {
-        a.done = true;
-        onSlow();
-      }
+    if (a.t >= 1) {
+      onFps(a.frames / a.t);
       a.t = 0;
       a.frames = 0;
     }
   });
   return null;
+}
+
+/** Hidden tab → stop drawing (resumes by itself when visible again). */
+function usePageVisible(): boolean {
+  const [visible, setVisible] = useState(() => typeof document === 'undefined' || document.visibilityState === 'visible');
+  useEffect(() => {
+    const on = () => setVisible(document.visibilityState === 'visible');
+    document.addEventListener('visibilitychange', on);
+    return () => document.removeEventListener('visibilitychange', on);
+  }, []);
+  return visible;
 }
 
 /** Renders a single frame once everything has loaded (reduced motion), then tells the page it is ready. */
@@ -111,7 +137,7 @@ export function Scene3D({
   camera = { position: [0, 1.2, 5], fov: 35 },
   className,
   label,
-  onSlow,
+  onFps,
   onReady,
   light = false,
   dof,
@@ -121,10 +147,17 @@ export function Scene3D({
   paused = false,
   maxFps,
   ortho,
+  ao = true,
+  dprRange,
+  bloom = { threshold: 0.85, intensity: 0.35 },
 }: Scene3DProps) {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
+  const pageVisible = usePageVisible();
+  const [lost, setLost] = useState(false);
   const high = tier === 'high' && !light;
+  // 4096 px labels on High (hero objects), 2048 otherwise.
+  setLabelResolution(high ? 4096 : 2048);
 
   useEffect(() => {
     liveCanvases += 1;
@@ -143,13 +176,18 @@ export function Scene3D({
   }, []);
 
   void alwaysRender;
-  const loop = frameloopFor({ visible, paused, reduced });
+  const loop = frameloopFor({ visible: visible && pageVisible && !lost, paused, reduced });
   // A capped scene renders on demand, ticked by a timer.
   const frameloop = loop === 'always' && maxFps ? 'demand' : loop;
-  const dpr: [number, number] = light ? [1, 1] : tier === 'high' ? [1, 2] : [1, 1.5];
+  const dpr: [number, number] = dprRange ?? (light ? [1, 1] : tier === 'high' ? [1, 2] : [1, 1.5]);
 
   return (
-    <div ref={wrap} className={className} {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}>
+    <div
+      ref={wrap}
+      className={`${className ?? ''} ${lost ? 'gl-lost' : ''}`}
+      data-gl={lost ? 'lost' : 'ok'}
+      {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true })}
+    >
       <Canvas
         dpr={dpr}
         frameloop={frameloop}
@@ -161,7 +199,18 @@ export function Scene3D({
             : { position: camera.position, fov: camera.fov ?? 35, near: 0.1, far: 100 }
         }
         gl={{ antialias: !high, alpha: true, powerPreference: light ? 'low-power' : 'high-performance' }}
-        onCreated={({ gl }) => {
+        onCreated={({ gl, invalidate }) => {
+          // Context loss (GPU reset, too many contexts, driver update): keep the canvas and wait for the
+          // browser to restore it; three.js re-uploads textures and geometry by itself.
+          const el = gl.domElement;
+          el.addEventListener('webglcontextlost', (e) => {
+            e.preventDefault();
+            setLost(true);
+          });
+          el.addEventListener('webglcontextrestored', () => {
+            setLost(false);
+            invalidate();
+          });
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.toneMappingExposure = exposure;
           gl.outputColorSpace = THREE.SRGBColorSpace;
@@ -182,16 +231,18 @@ export function Scene3D({
           {children}
           {high && (
             <EffectComposer multisampling={4}>
-              <N8AO halfRes aoRadius={0.4} intensity={1.6} distanceFalloff={0.6} />
-              <Bloom intensity={0.35} luminanceThreshold={0.85} luminanceSmoothing={0.2} mipmapBlur />
+              {ao ? <N8AO halfRes aoRadius={0.4} intensity={1.6} distanceFalloff={0.6} /> : <></>}
+              <Bloom intensity={bloom.intensity} luminanceThreshold={bloom.threshold} luminanceSmoothing={0.15} mipmapBlur />
               {dof ? <DepthOfField focusDistance={dof.focusDistance} focalLength={dof.focalLength} bokehScale={dof.bokehScale} /> : <></>}
-              <Vignette offset={0.28} darkness={0.42} />
+              <Vignette offset={0.3} darkness={0.35} />
+              {/* Subtle film grain: breaks gradient banding and adds a photographic texture. */}
+              <Noise premultiply opacity={0.035} />
               <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
             </EffectComposer>
           )}
           <FirstFrame reduced={reduced} onReady={onReady} />
         </Suspense>
-        {!reduced && <FpsGuard onSlow={onSlow} />}
+        {!reduced && onFps && <FpsSampler onFps={onFps} />}
         {loop === 'always' && maxFps ? <Ticker fps={maxFps} /> : null}
       </Canvas>
     </div>

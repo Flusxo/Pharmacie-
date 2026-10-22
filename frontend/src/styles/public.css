@@ -826,7 +826,7 @@
 .pub-hero-visual .hero-art {
   transition: opacity var(--dur-slow) var(--ease-out);
 }
-.pub-3d .pub-hero-visual .hero-art {
+:root[data-stage='3d'] .pub-hero-visual .hero-art {
   opacity: 0;
 }
 /* Login / sign-up over the big scene: glass panels, the scene shows around them. */
@@ -867,4 +867,9 @@
     backdrop-filter: blur(14px);
     margin-top: 150px;
   }
+}
+
+/* Patient home hero: the poster steps aside while the root stage draws. */
+:root[data-stage='3d'] .hero-sticky .hero-poster {
+  opacity: 0;
 }

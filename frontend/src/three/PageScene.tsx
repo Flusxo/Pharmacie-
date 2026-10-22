@@ -35,6 +35,7 @@ import {
   Stethoscope,
   Tablet,
 } from './models';
+import { DeliveryRoute, LightBeams, PharmacyInterior } from './environment';
 import { COMPOSITIONS, type CompositionName, type Item } from './compositions';
 
 export interface Inputs {
@@ -50,7 +51,7 @@ const smooth = (a: number, b: number, v: number) => {
   return t * t * (3 - 2 * t);
 };
 
-export function Model({ it, split, quality }: { it: Item; split: number; quality: 'high' | 'medium' }) {
+export function Model({ it, split, quality, reduced = false }: { it: Item; split: number; quality: 'high' | 'medium'; reduced?: boolean }) {
   switch (it.kind) {
     case 'capsule':
       return <Capsule colorA={it.colors?.[0]} colorB={it.colors?.[1]} split={split} cheap={quality !== 'high'} />;
@@ -90,6 +91,12 @@ export function Model({ it, split, quality }: { it: Item; split: number; quality
       return <Counter />;
     case 'scooter':
       return <Scooter />;
+    case 'interior':
+      return <PharmacyInterior />;
+    case 'beams':
+      return <LightBeams reduced={reduced} />;
+    case 'route':
+      return <DeliveryRoute reduced={reduced} />;
     case 'figure-pharmacist':
       return <Figure role="pharmacist" />;
     case 'figure-doctor':
@@ -122,6 +129,8 @@ function ItemView({
   const base = useMemo<[number, number, number]>(() => {
     const [x, y, z] = it.pos;
     if (!portrait) return [x, y, z];
+    // Set pieces (room, beams, route) stay centred behind everything.
+    if (it.kind === 'interior' || it.kind === 'beams' || it.kind === 'route') return [x * 0.3, y, z];
     return hero ? [(x - heroX) * 0.42, y * 0.62 + 1.3, z] : [Math.sign(x) * 1.5, y, z - 0.5];
   }, [it.pos, portrait, hero, heroX]);
   const scale = (it.scale ?? 1) * (portrait ? 0.62 : 1);
@@ -140,7 +149,7 @@ function ItemView({
   return (
     <group ref={ref} scale={scale}>
       <Float speed={reduced ? 0 : (it.float ?? 0)} rotationIntensity={0.25} floatIntensity={0.35}>
-        <Model it={it} split={split} quality={quality} />
+        <Model it={it} split={split} quality={quality} reduced={reduced} />
       </Float>
     </group>
   );
@@ -247,14 +256,16 @@ export default function PageScene({
   tier,
   reduced,
   dark,
-  onSlow,
+  paused = false,
+  onFps,
   onReady,
 }: {
   name: CompositionName;
   tier: 'high' | 'medium';
   reduced: boolean;
   dark: boolean;
-  onSlow?: () => void;
+  paused?: boolean;
+  onFps?: (fps: number) => void;
   onReady?: () => void;
 }) {
   const inputs = useRef<Inputs>({ scroll: 0, x: 0, y: 0 });
@@ -285,16 +296,22 @@ export default function PageScene({
   }, []);
   return (
     <Scene3D
-      // Full-screen layer: no post-processing (keeps 60 fps); High still gets glass transmission on the models.
-      tier="medium"
+      // High: bloom on real highlights only, soft vignette and grain (no depth of field: the fog gives depth;
+      // no ambient occlusion over a whole viewport). The governor steps down to Medium if it gets slow.
+      tier={tier}
+      ao={false}
+      // Behind glass panels and fog: 0.8× resolution on Medium is invisible and saves a third of the pixels.
+      dprRange={tier === 'high' ? [1, 1.5] : [0.8, 0.8]}
+      bloom={{ threshold: 0.97, intensity: 0.25 }}
       reduced={reduced}
       label=""
       className="page-bg-canvas"
       camera={{ position: [0, 0.3, 9], fov: 35 }}
       exposure={dark ? 0.85 : 1.05}
       environmentIntensity={dark ? 0.6 : 1}
-      onSlow={onSlow}
+      onFps={onFps}
       onReady={onReady}
+      paused={paused}
       alwaysRender
     >
       <Stage name={name} inputs={inputs} reduced={reduced} dark={dark} quality={tier} />

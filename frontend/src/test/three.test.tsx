@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { I18nProvider } from '../i18n';
 import { SettingsProvider } from '../lib/settings';
 import { GraphicsProvider, chooseTier, frameloopFor, type DeviceInfo } from '../lib/graphics';
-import { ProductVisual, SiteBackground } from '../components/three/ThreeVisuals';
+import { ProductVisual, RootStage } from '../components/three/ThreeVisuals';
 
 // The real scenes need WebGL; in tests they are replaced by markers that expose the props they receive.
 vi.mock('../three/ProductScene', () => ({
@@ -14,7 +14,12 @@ vi.mock('../three/ProductScene', () => ({
     return <div data-testid="product-scene" data-reduced={String(p.reduced)} />;
   },
 }));
-vi.mock('../three/BackgroundScene', () => ({ default: () => <div data-testid="bg-scene" /> }));
+vi.mock('../three/PageScene', () => ({
+  default: (p: { name: string; paused: boolean; onReady?: () => void }) => {
+    p.onReady?.();
+    return <div data-testid="bg-scene" data-name={p.name} data-paused={String(p.paused)} />;
+  },
+}));
 
 const strong: DeviceInfo = { webgl: true, webgl2: true, memoryGb: 16, cores: 12, mobile: false };
 const noGl: DeviceInfo = { webgl: false, webgl2: false, memoryGb: 16, cores: 12, mobile: false };
@@ -62,10 +67,35 @@ describe('3D fallbacks', () => {
     expect(screen.getByText('Illustration de l’emballage de Hélicidine sirop, 10 %.')).toBeInTheDocument();
   });
 
-  it('without WebGL the site background is the static gradient', () => {
-    render(wrap(<SiteBackground />, noGl));
-    expect(screen.getByTestId('site-bg')).toHaveAttribute('data-mode', 'static');
+  it('without WebGL the root stage stays static (no canvas, no scene)', () => {
+    render(wrap(<RootStage />, noGl));
+    expect(screen.getByTestId('root-stage')).toHaveAttribute('data-mode', 'static');
     expect(screen.queryByTestId('bg-scene')).toBeNull();
+  });
+
+  it('with WebGL the root stage shows the composition of the route and marks the page as 3D', async () => {
+    render(wrap(<RootStage />, strong));
+    expect(await screen.findByTestId('bg-scene')).toHaveAttribute('data-name', 'home');
+    expect(document.documentElement.dataset.stage).toBe('3d');
+  });
+
+  it('on a phone, a page viewer pauses the root stage instead of destroying it', async () => {
+    const phone = { ...strong, mobile: true };
+    const { rerender } = render(wrap(<RootStage />, phone));
+    const scene = await screen.findByTestId('bg-scene');
+    expect(scene).toHaveAttribute('data-paused', 'false');
+    rerender(
+      wrap(
+        <>
+          <RootStage />
+          <ProductVisual {...med} />
+        </>,
+        phone,
+      ),
+    );
+    await screen.findByTestId('product-scene');
+    expect(screen.getByTestId('bg-scene')).toBe(scene);
+    expect(screen.getByTestId('bg-scene')).toHaveAttribute('data-paused', 'true');
   });
 
   it('with WebGL the 3D viewer loads lazily, with the 3D / Photo toggle', async () => {
