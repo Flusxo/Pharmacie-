@@ -15,7 +15,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from '@playwright/test';
 import sharp from 'sharp';
-import { SHOTS, type Shot } from '../frontend/src/render/library';
+import { SHOTS, medViews, medicineShot, type Shot } from '../frontend/src/render/library';
+import { MEDICINES } from '../db/src/data';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT = path.join(ROOT, 'frontend', 'public', 'renders');
@@ -33,14 +34,22 @@ export interface ManifestEntry {
   alpha: boolean;
 }
 
-const widthsFor = (max: number) => (max === 3840 ? [480, 960, 1920, 3840] : max === 1920 ? [480, 960, 1920] : [400, 800, 1600]);
-const webpFor = (max: number) => (max === 3840 ? 1920 : max === 1920 ? 960 : 800);
+const widthsFor = (max: number) =>
+  max === 1024 ? [256, 512, 1024] : max === 3840 ? [480, 960, 1920, 3840] : max === 1920 ? [480, 960, 1920] : [400, 800, 1600];
+const webpFor = (max: number) => (max === 1024 ? 512 : max === 3840 ? 1920 : max === 1920 ? 960 : 800);
 
 async function main() {
   const args = process.argv.slice(2);
   const force = args.includes('--force');
   const only = args.filter((a) => !a.startsWith('--'));
-  const shots = SHOTS.filter((s) => !only.length || only.includes(s.id));
+  const meds = args.includes('--meds');
+  // --meds: every medicine of the demo data, one picture per view (front / three-quarter / cap off).
+  const medShots = meds
+    ? MEDICINES.flatMap((m) =>
+        medViews(m.form).map((v) => medicineShot({ name: m.name, dosage: m.dosage, form: m.form, category: m.category, rx: m.rx }, v)),
+      )
+    : [];
+  const shots = (meds ? medShots : SHOTS).filter((s) => !only.length || only.includes(s.id));
   fs.mkdirSync(OUT, { recursive: true });
   const manifest: Record<string, ManifestEntry> = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : {};
 
@@ -88,7 +97,7 @@ async function shoot(browser: import('@playwright/test').Browser, shot: Shot): P
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
   const page = await ctx.newPage();
   page.on('pageerror', (e) => console.error(`  page error (${shot.id}):`, String(e).slice(0, 300)));
-  await page.goto(`${BASE}/render?shot=${encodeURIComponent(shot.id)}`);
+  await page.goto(`${BASE}/render?${shot.query ?? 'shot=' + encodeURIComponent(shot.id)}`);
   await page.waitForFunction(() => (window as unknown as { __renderReady?: boolean }).__renderReady === true, null, {
     timeout: 600_000,
     polling: 1000,

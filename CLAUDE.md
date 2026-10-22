@@ -19,7 +19,7 @@ PharmaLink (brand **counter.**) connects patients, doctors, pharmacies and staff
 3. `requires_prescription` items need a prescription note from the patient OR a confirmed doctor link. Pharmacy confirms before preparing.
 4. A pharmacy is proposed only if verified, active, not paused, and has every item in stock. Never first-click wins.
 5. Privacy: doctor sees only confirmed patients, never their address. Pharmacy sees only requests it was chosen for, patient as "First L.". Patient sees only own data. Staff view, never impersonate.
-6. Out of scope ("Coming soon" + TODO): real couriers, payments, HDS hosting, real prescription verification, legal review. Tracking is "Simulated tracking".
+6. Out of scope ("Coming soon" + TODO): real couriers, real-money payments (Stripe TEST MODE only, see README), HDS hosting, real prescription verification, legal review. Tracking is "Simulated tracking".
 7. Permanent notice: "Prototype only. Not for real medical use. Demo data."
 8. No secret in source or git. Map key + JWT secret only in the ignored root `.env`.
 

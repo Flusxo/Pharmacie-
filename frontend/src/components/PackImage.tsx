@@ -5,6 +5,8 @@
  */
 import { useState, type ReactNode } from 'react';
 import { fitLabel, packTitle, type Box } from '../lib/labelFit';
+import { medPictureId, type MedView } from '../lib/medicine';
+import { Picture, hasPicture } from './Picture';
 
 export const CATEGORY_COLORS: Record<string, [string, string]> = {
   pain: ['#065F46', '#A7F3D0'],
@@ -51,11 +53,13 @@ interface Props {
   imageUrl?: string | null;
   /** Prints an "Rx" mark on the label for prescription medicines. */
   rx?: boolean;
+  /** which rendered picture to show when one exists (front, three-quarter, cap off) */
+  view?: MedView;
   size?: number;
   className?: string;
 }
 
-export function PackImage({ name, dosage, form, category, imageUrl, rx, size, className }: Props) {
+export function PackImage({ name, dosage, form, category, imageUrl, rx, view = 'front', size, className }: Props) {
   const [broken, setBroken] = useState(false);
   const alt = `${name} — ${dosage}`;
   if (imageUrl && !broken) {
@@ -70,6 +74,15 @@ export function PackImage({ name, dosage, form, category, imageUrl, rx, size, cl
         onError={() => setBroken(true)}
         loading="lazy"
       />
+    );
+  }
+  // A picture rendered from our 3D model of this medicine, when the library has one; the drawing below is the fallback.
+  const pictureId = medPictureId(name, dosage, view);
+  if (hasPicture(pictureId)) {
+    return (
+      <div className={className ?? 'pack'} data-testid="pack-photo">
+        <Picture id={pictureId} alt={alt} sizes="(max-width: 600px) 40vw, 240px" />
+      </div>
     );
   }
   const [dark, light] = colorsFor(category);

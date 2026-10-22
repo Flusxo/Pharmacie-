@@ -7,6 +7,7 @@ import { useToast } from '../../lib/toast';
 import { formatDateTime, formatPrice, formatTime } from '../../lib/format';
 import type { OrderDetails, OrderStatus } from '../../lib/types';
 import { PackImage } from '../../components/PackImage';
+import { PaymentCard } from '../../components/PaymentCard';
 import { CardSkeleton, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { IconCheck } from '../../components/Icons';
 import { LazyMap } from '../../components/map/LazyMap';
@@ -225,6 +226,8 @@ export function OrderTrackingPage() {
           <strong>{formatPrice(total, locale)}</strong>
         </div>
       </section>
+
+      <PaymentCard orderId={order.id} orderStatus={order.status} total={total} />
 
       <div className="row">
         {order.shareToken && order.status !== 'cancelled' && (

@@ -11,7 +11,7 @@ counter. connects patients, doctors, pharmacies and staff in France. A patient s
 3. Prescription medicines need the patient's prescription statement or a confirmed doctor link, and the pharmacy must tick "prescription checked" before preparing.
 4. A pharmacy is proposed only if it is verified, active, not paused and has every item in stock. Two pharmacies can never both accept the same request.
 5. Privacy: a doctor sees only confirmed patients and never their address; a pharmacy sees only requests it was chosen for, with the patient shown as "First L."; a patient sees only their own data; staff can view but never impersonate.
-6. Not built (shown as "Coming soon" / "Simulated"): real couriers, payments, HDS-certified hosting, real prescription verification, legal review. Delivery tracking is labelled "Simulated tracking".
+6. Not built (shown as "Coming soon" / "Simulated"): real couriers, real money (payments are Stripe TEST MODE only), HDS-certified hosting, real prescription verification, legal review. Delivery tracking is labelled "Simulated tracking".
 7. The notice "Prototype only. Not for real medical use. Demo data." is on every page.
 8. No secret in the code or in git: the database URL, JWT secret and map key live only in the ignored root `.env`.
 
@@ -118,7 +118,7 @@ The API is an Express app under `/api`. The full list (80 routes, with who may c
 ## What is simulated or not built
 
 - **Simulated**: delivery tracking (courier position, labelled "Simulated tracking"), emails (written to `logs/mail.log` in development).
-- **Not built**: real couriers, online payments, HDS-certified hosting, real prescription verification, legal review of the terms and privacy texts ("Coming soon").
+- **Not built**: real couriers, real-money payments (Stripe test mode only), HDS-certified hosting, real prescription verification, legal review of the terms and privacy texts ("Coming soon").
 - Progress, known issues and every design decision: `docs/PROGRESS.md`, `docs/DECISIONS.md`. 3D asset sources and licences: `docs/ASSETS.md`.
 
 ## Project layout
@@ -127,3 +127,26 @@ The API is an Express app under `/api`. The full list (80 routes, with who may c
 - `backend/`: Express 5 API (TypeScript, zod validation, JWT auth, JSON logs with request id, no medicine names, addresses or full emails in logs).
 - `frontend/`: React 18 + Vite app (React Router, Leaflet, framer-motion, lazy-loaded three.js scenes), French by default, English available.
 - `e2e/`: Playwright tests. `scripts/`: dev runner, e2e runner, design sweep tools.
+
+## Payments (Stripe test mode)
+
+Payment is optional and **test mode only**: no real money, and a live key (`sk_live_…`) is refused. Card data is typed on Stripe's own page; counter. never sees it and the database only stores Stripe ids, the amount and a status.
+
+How it works: the patient chooses a pharmacy → the pharmacy accepts (the order exists) → only then the patient can pay → Stripe **authorises** the amount (held, not taken) → when the pharmacy marks the order **ready**, the amount is **captured** → if the order is cancelled, the authorisation is released (or the capture refunded). The amount is always computed on the server from the pharmacy's prices. A receipt page is available after payment.
+
+Set it up:
+
+1. Create a free account at https://dashboard.stripe.com/register and stay in **Test mode** (switch at the top of the dashboard).
+2. Developers → API keys → copy the **Secret key** (`sk_test_…`) into the root `.env` as `STRIPE_SECRET_KEY`. Never commit `.env`.
+3. Install the Stripe CLI (https://docs.stripe.com/stripe-cli), run `stripe login`, then forward webhooks to your local API:
+
+   ```bash
+   stripe listen --forward-to localhost:4000/api/webhooks/stripe
+   ```
+
+   It prints a signing secret (`whsec_…`): put it in `.env` as `STRIPE_WEBHOOK_SECRET` and restart `npm run dev`.
+
+4. Log in as a patient, send a request, log in as the pharmacy to accept it, then open the order as the patient and press **Pay (test)**.
+5. Test cards: `4242 4242 4242 4242` succeeds; `4000 0000 0000 0002` is declined (any future date, any CVC). Move the order to **Ready** as the pharmacy to see the capture; cancel to see the refund.
+
+Without keys the order page says **"Payments not configured"** and everything else still works. Hosted: add the same two variables on Render and create a webhook endpoint `https://<your-service>.onrender.com/api/webhooks/stripe` (events: `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `payment_intent.canceled`, `charge.refunded`); see `DEPLOY.md`.

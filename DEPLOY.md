@@ -2,11 +2,11 @@
 
 Three free services work together:
 
-| Part | Service | Free plan |
-| --- | --- | --- |
-| Database | Neon (already in use) | yes |
-| Backend (API) | Render, "Web Service" | yes, **falls asleep after ~15 min without visits** and takes up to a minute to wake |
-| Frontend (website) | Cloudflare Pages | yes |
+| Part               | Service               | Free plan                                                                           |
+| ------------------ | --------------------- | ----------------------------------------------------------------------------------- |
+| Database           | Neon (already in use) | yes                                                                                 |
+| Backend (API)      | Render, "Web Service" | yes, **falls asleep after ~15 min without visits** and takes up to a minute to wake |
+| Frontend (website) | Cloudflare Pages      | yes                                                                                 |
 
 > Prototype only. Not for real medical use. Demo data. Never put real patient data on this deployment.
 
@@ -31,32 +31,36 @@ You only need the connection string again for step 3 (Neon console → your proj
 
 Render dashboard → **New +** → **Web Service** → connect GitHub → choose `Flusxo/Pharmacie-`. Then fill the form:
 
-| Field | Value |
-| --- | --- |
-| Name | `counter-api` (any name; it becomes `https://counter-api.onrender.com`) |
-| Language | `Node` |
-| Branch | `main` |
-| Region | `Frankfurt (EU Central)` |
-| Root Directory | *(leave empty — the project is one workspace at the repository root)* |
-| Build Command | `npm ci --include=dev && npm run build -w backend` |
-| Start Command | `npm run start -w backend` |
-| Instance Type | `Free` |
-| Health Check Path (Advanced) | `/api/health` |
+| Field                        | Value                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------- |
+| Name                         | `counter-api` (any name; it becomes `https://counter-api.onrender.com`) |
+| Language                     | `Node`                                                                  |
+| Branch                       | `main`                                                                  |
+| Region                       | `Frankfurt (EU Central)`                                                |
+| Root Directory               | _(leave empty — the project is one workspace at the repository root)_   |
+| Build Command                | `npm ci --include=dev && npm run build -w backend`                      |
+| Start Command                | `npm run start -w backend`                                              |
+| Instance Type                | `Free`                                                                  |
+| Health Check Path (Advanced) | `/api/health`                                                           |
 
 The server listens on the `PORT` that Render provides (do **not** create a `PORT` variable).
 
 ### Environment variables on Render (Environment section)
 
-| Name | Value | Where the value comes from | Secret? |
-| --- | --- | --- | --- |
-| `NODE_VERSION` | `22` | type it (Render's Node version setting) | no |
-| `NODE_ENV` | `production` | type it | no |
-| `DATABASE_URL` | `<your Neon connection string>` | Neon console → Connect → connection string, must end with `?sslmode=require` (same value as in your local `.env`) | **yes** |
-| `JWT_SECRET` | `<long random text>` | click Render's **Generate** button (or run `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` and paste the result) | **yes** |
-| `JWT_EXPIRES_IN` | `8h` | type it (optional) | no |
-| `FRONTEND_URL` | `https://<your-site>.pages.dev` | the address Cloudflare gives you in step 4, **no trailing slash**. Several addresses are allowed, separated by commas. Only these addresses may call the API (CORS). | no |
+| Name                    | Value                           | Where the value comes from                                                                                                                                           | Secret? |
+| ----------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `NODE_VERSION`          | `22`                            | type it (Render's Node version setting)                                                                                                                              | no      |
+| `NODE_ENV`              | `production`                    | type it                                                                                                                                                              | no      |
+| `DATABASE_URL`          | `<your Neon connection string>` | Neon console → Connect → connection string, must end with `?sslmode=require` (same value as in your local `.env`)                                                    | **yes** |
+| `JWT_SECRET`            | `<long random text>`            | click Render's **Generate** button (or run `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` and paste the result)                          | **yes** |
+| `JWT_EXPIRES_IN`        | `8h`                            | type it (optional)                                                                                                                                                   | no      |
+| `STRIPE_SECRET_KEY`     | `sk_test_...`                   | Stripe dashboard (Test mode) → Developers → API keys → Secret key. Optional: without it the site says "Payments not configured". A `sk_live_` key is refused.        | **yes** |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_...`                     | Stripe dashboard (Test mode) → Developers → Webhooks → your endpoint → Signing secret (see below).                                                                   | **yes** |
+| `FRONTEND_URL`          | `https://<your-site>.pages.dev` | the address Cloudflare gives you in step 4, **no trailing slash**. Several addresses are allowed, separated by commas. Only these addresses may call the API (CORS). | no      |
 
 Because the free backend does not know the final site address until step 4, deploy once, then come back and set `FRONTEND_URL`, then **Save** (Render restarts the service).
+
+Stripe webhook (only if you use payments): Stripe dashboard in **Test mode** → Developers → Webhooks → **Add endpoint** → URL `https://<your-service>.onrender.com/api/webhooks/stripe` → events `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `payment_intent.canceled`, `charge.refunded` → copy its **Signing secret** into `STRIPE_WEBHOOK_SECRET` on Render.
 
 Check it: open `https://<your-service>.onrender.com/api/health`. It must show `"status":"ok"`. (The first visit after a pause takes up to a minute.) `/api/docs` is intentionally not available in production.
 
@@ -64,20 +68,20 @@ Check it: open `https://<your-service>.onrender.com/api/health`. It must show `"
 
 Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → `Flusxo/Pharmacie-`.
 
-| Field | Value |
-| --- | --- |
-| Production branch | `main` |
-| Framework preset | `None` (React (Vite) also works if you set the two fields below yourself) |
-| Root directory (advanced) | *(leave empty)* |
-| Build command | `npm ci && npm run build -w frontend` |
-| Build output directory | `frontend/dist` |
+| Field                     | Value                                                                     |
+| ------------------------- | ------------------------------------------------------------------------- |
+| Production branch         | `main`                                                                    |
+| Framework preset          | `None` (React (Vite) also works if you set the two fields below yourself) |
+| Root directory (advanced) | _(leave empty)_                                                           |
+| Build command             | `npm ci && npm run build -w frontend`                                     |
+| Build output directory    | `frontend/dist`                                                           |
 
 ### Environment variables on Cloudflare (Settings → Variables and Secrets, "Production")
 
-| Name | Value | Where the value comes from | Secret? |
-| --- | --- | --- | --- |
-| `NODE_VERSION` | `22` | type it | no |
-| `VITE_API_URL` | `https://<your-service>.onrender.com` | the address of your Render service (step 3), **no trailing slash, no `/api`** | no (public, it is in the website code) |
+| Name                | Value                                                                                  | Where the value comes from                                                                                            | Secret?                                                                                                              |
+| ------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `NODE_VERSION`      | `22`                                                                                   | type it                                                                                                               | no                                                                                                                   |
+| `VITE_API_URL`      | `https://<your-service>.onrender.com`                                                  | the address of your Render service (step 3), **no trailing slash, no `/api`**                                         | no (public, it is in the website code)                                                                               |
 | `VITE_MAP_TILE_URL` | `https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=<your-maptiler-key>` | your local `.env` (same line) — optional; without it the map shows "Map tiles are not configured" but pins still work | the key is **visible in the browser** whatever you do: restrict it to your site address in the MapTiler account page |
 
 Everything starting with `VITE_` is baked into the website at build time: change it, then **Retry deployment**.

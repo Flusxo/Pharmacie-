@@ -41,6 +41,7 @@ interface PharmacyOrder {
   status: OrderStatus;
   createdAt: string;
   cancelRequestedAt: string | null;
+  paymentStatus?: string | null;
   patientName: string;
   source: 'patient' | 'doctor';
   instructions: string | null;
@@ -305,6 +306,11 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
           <span className="muted small">{formatDateTime(o.createdAt, locale)}</span>
         </div>
         <span className="row" style={{ gap: 8 }}>
+          {o.paymentStatus && (
+            <span className="badge info" data-testid="order-payment">
+              {t(`pay.status.${o.paymentStatus}` as MessageKey)}
+            </span>
+          )}
           <StatusBadge status={o.status} />
           <Link to={`/orders/${o.id}/print`} className="btn secondary small" data-testid="print-slip">
             {t('order.print')}

@@ -24,6 +24,21 @@ export const FR: Record<string, string> = {
   'Waiting for staff approval. You can use this feature once your account is verified.':
     'En attente de validation par l’équipe. Vous pourrez utiliser cette fonction une fois votre compte vérifié.',
 
+  // Payments (Stripe test mode)
+  'Payments not configured. Ask the administrator to set the Stripe test keys.':
+    'Paiements non configurés. Demandez à l’administrateur de renseigner les clés de test Stripe.',
+  'Only Stripe test keys are accepted: this prototype never handles real money.':
+    'Seules les clés de test Stripe sont acceptées : ce prototype ne manipule jamais d’argent réel.',
+  'This order can no longer be paid.': 'Cette commande ne peut plus être payée.',
+  'This order is already paid.': 'Cette commande est déjà payée.',
+  'Nothing to pay: the pharmacy has not set a price for this order.':
+    'Rien à payer : la pharmacie n’a pas fixé de prix pour cette commande.',
+  'The payment page could not be created. Please try again.': 'La page de paiement n’a pas pu être créée. Veuillez réessayer.',
+  'There is no receipt for this order yet.': 'Il n’y a pas encore de reçu pour cette commande.',
+  'A patient paid an order (test mode). The amount is held until the order is ready.':
+    'Un patient a payé une commande (mode test). Le montant est bloqué jusqu’à ce que la commande soit prête.',
+  'Invalid webhook signature.': 'Signature de webhook invalide.',
+
   // Admin
   'No {kind} with this id.': 'Aucun élément ({kind}) avec cet identifiant.',
   'User not found.': 'Utilisateur introuvable.',

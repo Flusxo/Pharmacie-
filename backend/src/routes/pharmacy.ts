@@ -13,6 +13,7 @@ import {
   updateOrderStatus,
   type OrderStatus,
 } from '../services/orders.js';
+import { getPayment } from '../services/payments.js';
 import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
 import { idParam, uuid } from '../validate.js';
@@ -50,6 +51,11 @@ pharmacyRouter.get('/orders', async (req, res) => {
 pharmacyRouter.get('/orders/:id', async (req, res) => {
   const { id } = idParam.parse(req.params);
   res.json({ order: await getPharmacyOrder(id, req.user!.id) });
+});
+
+pharmacyRouter.get('/orders/:id/payment', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json(await getPayment(id, { pharmacyId: req.user!.id }));
 });
 
 pharmacyRouter.patch('/orders/:id/status', async (req, res) => {

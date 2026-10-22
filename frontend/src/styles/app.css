@@ -2017,3 +2017,43 @@ table.table {
     transform: rotate(360deg);
   }
 }
+
+/* ---------- Medicine photo gallery (rendered pictures) ---------- */
+.med-gallery {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+.med-gallery-main {
+  width: min(100%, 420px);
+  overflow: visible;
+  transition: transform var(--dur-base) var(--ease-out);
+  cursor: zoom-in;
+}
+.med-gallery-main.float {
+  animation: med-float 6s ease-in-out infinite;
+}
+.med-gallery-main[style*='scale'] {
+  animation: none;
+}
+@keyframes med-float {
+  50% {
+    translate: 0 -6px;
+  }
+}
+.med-gallery-thumbs {
+  display: flex;
+  gap: 8px;
+}
+.med-gallery-thumbs button {
+  width: 64px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line, rgb(15 23 42 / 0.12));
+  background: var(--surface, transparent);
+  cursor: pointer;
+}
+.med-gallery-thumbs button[aria-selected='true'] {
+  border-color: var(--brand, #0d9488);
+  box-shadow: 0 0 0 2px var(--brand, #0d9488);
+}

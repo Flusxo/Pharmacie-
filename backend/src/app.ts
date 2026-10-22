@@ -4,6 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { FRONTEND_ORIGINS, isProd } from './config.js';
+import { handleWebhook } from './services/payments.js';
 import { pool } from './db.js';
 import { errorHandler, notFoundHandler } from './errors.js';
 import { log } from './logger.js';
@@ -76,6 +77,15 @@ export function createApp(): Express {
     }),
   );
   app.use(cors({ origin: FRONTEND_ORIGINS, credentials: false }));
+  // Stripe webhook: the signature covers the exact bytes, so this route reads the raw body (before express.json).
+  app.post('/api/webhooks/stripe', express.raw({ type: 'application/json', limit: '1mb' }), async (req, res) => {
+    const result = await handleWebhook(req.body as Buffer, req.header('stripe-signature'));
+    if (result === 'bad_signature') {
+      res.status(400).json({ error: 'Invalid webhook signature.', code: 'bad_signature' });
+      return;
+    }
+    res.json({ received: true, duplicate: result === 'duplicate' });
+  });
   app.use(express.json({ limit: '1mb' }));
 
   app.get('/api/health', async (_req, res) => {

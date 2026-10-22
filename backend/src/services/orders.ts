@@ -4,6 +4,7 @@ import { RULES } from '../config.js';
 import { one, query, tx } from '../db.js';
 import { HttpError, conflict, notFound } from '../errors.js';
 import { notify } from '../notify.js';
+import { onOrderCancelled, onOrderReady } from './payments.js';
 
 export const ORDER_FLOW = ['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'] as const;
 export type OrderStatus = (typeof ORDER_FLOW)[number] | 'cancelled';
@@ -94,6 +95,18 @@ export async function updateOrderStatus(
   actorId: string,
   prescriptionChecked: boolean,
 ) {
+  const result = await updateOrderStatusTx(orderId, pharmacyId, to, actorId, prescriptionChecked);
+  await afterStatusChange(orderId, to);
+  return result;
+}
+
+/** Money follows the order: capture when it is ready, release or refund when it is cancelled. */
+async function afterStatusChange(orderId: string, to: OrderStatus): Promise<void> {
+  if (to === 'ready') await onOrderReady(orderId);
+  if (to === 'cancelled') await onOrderCancelled(orderId);
+}
+
+async function updateOrderStatusTx(orderId: string, pharmacyId: string, to: OrderStatus, actorId: string, prescriptionChecked: boolean) {
   return tx(async (c) => {
     const o = await lockOrder(c, orderId);
     if (!o || o.pharmacy_id !== pharmacyId) throw notFound('Order not found.');
@@ -118,6 +131,12 @@ export async function updateOrderStatus(
 
 /** Patient cancels: directly while "accepted"; afterwards it becomes a request the pharmacy must approve. */
 export async function cancelOrderByPatient(orderId: string, patientId: string) {
+  const r = await cancelOrderByPatientTx(orderId, patientId);
+  if (r.status === 'cancelled') await onOrderCancelled(orderId);
+  return r;
+}
+
+async function cancelOrderByPatientTx(orderId: string, patientId: string) {
   return tx(async (c) => {
     const o = await lockOrder(c, orderId);
     if (!o || o.patient_id !== patientId) throw notFound('Order not found.');
@@ -143,6 +162,12 @@ export async function cancelOrderByPatient(orderId: string, patientId: string) {
 }
 
 export async function decideCancellation(orderId: string, pharmacyId: string, approve: boolean, actorId: string) {
+  const r = await decideCancellationTx(orderId, pharmacyId, approve, actorId);
+  if (approve) await onOrderCancelled(orderId);
+  return r;
+}
+
+async function decideCancellationTx(orderId: string, pharmacyId: string, approve: boolean, actorId: string) {
   return tx(async (c) => {
     const o = await lockOrder(c, orderId);
     if (!o || o.pharmacy_id !== pharmacyId) throw notFound('Order not found.');
@@ -201,6 +226,7 @@ export async function listPharmacyOrders(pharmacyId: string, scope: 'active' | '
     `SELECT o.id, o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt", o.cancel_requested_at AS "cancelRequestedAt",
             pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName", r.source, r.instructions,
             r.prescription_note IS NOT NULL AS "hasPrescriptionNote", (${ORDER_ITEMS_SQL}) AS items,
+            (SELECT status FROM payments pay WHERE pay.order_id = o.id) AS "paymentStatus",
             (SELECT json_agg(json_build_object('status', h.status, 'changedAt', h.changed_at) ORDER BY h.changed_at, h.id)
                FROM order_status_history h WHERE h.order_id = o.id) AS history
        FROM orders o JOIN patients pt ON pt.user_id = o.patient_id JOIN requests r ON r.id = o.request_id

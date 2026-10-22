@@ -30,7 +30,9 @@ export type ItemKind =
   | 'figure-doctor'
   | 'interior'
   | 'beams'
-  | 'route';
+  | 'route'
+  /** any medicine pack by its form (used by the rendered medicine pictures) */
+  | 'product';
 
 export interface Item {
   kind: ItemKind;
@@ -41,6 +43,10 @@ export interface Item {
   color?: string;
   blob?: 'sphere' | 'torus' | 'pill';
   label?: LabelSpec;
+  /** medicine form for kind 'product' */
+  form?: string;
+  /** cap unscrewed (0 closed .. 1 off) for kind 'product' */
+  open?: number;
   brand?: string;
   /** turns (radians) added over the whole page scroll */
   spin?: number;

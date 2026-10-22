@@ -26,6 +26,7 @@ import { DoctorDashboard } from './pages/doctor/DoctorDashboard';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { ProfilePage } from './pages/Profile';
 import { OrderSlipPage } from './pages/OrderSlip';
+import { ReceiptPage } from './pages/Receipt';
 import { NotFoundPage, WaitingPage } from './pages/Misc';
 import { PublicLayout } from './components/public/PublicLayout';
 import {
@@ -166,6 +167,14 @@ export function AppRoutes() {
           element={
             <RequireRole roles={['patient']}>
               <OrderTrackingPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/orders/:id/receipt"
+          element={
+            <RequireRole roles={['patient']}>
+              <ReceiptPage />
             </RequireRole>
           }
         />

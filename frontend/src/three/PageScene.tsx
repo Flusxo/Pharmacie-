@@ -30,6 +30,7 @@ import {
   Pen,
   Phone,
   PillBottle,
+  ProductModel,
   Scooter,
   Shelf,
   Stethoscope,
@@ -53,6 +54,8 @@ const smooth = (a: number, b: number, v: number) => {
 
 export function Model({ it, split, quality, reduced = false }: { it: Item; split: number; quality: 'high' | 'medium'; reduced?: boolean }) {
   switch (it.kind) {
+    case 'product':
+      return <ProductModel form={it.form ?? 'tablet'} label={it.label!} quality={quality} open={it.open ?? 0} />;
     case 'capsule':
       return <Capsule colorA={it.colors?.[0]} colorB={it.colors?.[1]} split={split} cheap={quality !== 'high'} />;
     case 'tablet':

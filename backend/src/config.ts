@@ -12,6 +12,9 @@ const schema = z.object({
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
   JWT_EXPIRES_IN: z.string().default('8h'),
   PORT: z.coerce.number().int().positive().default(4000),
+  /** Stripe TEST keys (optional: without them the site answers "Payments not configured"). */
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
   /** The hosted site's address; several allowed, separated by commas (the first one is used in e-mail links). */
   FRONTEND_URL: z.string().default('http://localhost:5173'),
 });

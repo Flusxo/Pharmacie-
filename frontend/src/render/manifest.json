@@ -2,7 +2,11 @@
   "cut-capsule": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRl4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMMAAAABgFvbtmplnXPf/x/XAjx1KIACnNAhJPLICnHIaYCYCn6Ou7s+YdzsvoflETEB/K1ijCQiAqJJkNveW4SJJeRuWZutw0gMw7D1fXvfg1E3j3H7HvnR1yyok1J5Zj+jILCbtRgXlMas9YPIt3dteOKAUrRiozAMXvf6UHFAldFHG/iHJ68LHuKAeLRe2JP9y6PHjQLEATwqlu6uTw5236YxTqgwdn65t3O9iLqhhpbtp5vHzlhgKJ9Z7CRJFUCSQFSVfxIAVlA4IHQAAACwAwCdASoYABgAPu1oqU+ppiOiKA1RMB2JZQAALnWw/9AN8naSkAD+6nszxvH1CHpql1rRmn+oAUhZ3aJDlBLJWtn+LVZE1or1/8O4jcQ/Lfqyr//+7Pudk///p28uCW/XYBL9GNa2FGbogqiJRuecCAAAAA==",
     "alpha": true
@@ -10,7 +14,12 @@
   "hero-capsules": {
     "w": 3840,
     "h": 2160,
-    "widths": [480, 960, 1920, 3840],
+    "widths": [
+      480,
+      960,
+      1920,
+      3840
+    ],
     "webp": 1920,
     "blur": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACwAwCdASoYAA4APu1iqU2ppaQiMAgBMB2JQBdgBDvxA7Qi3tRskAD+5w9R8E6rZVEtVMYBYZhx4FRjjEg8rqcbknAhF3K89DYhA6KiJBgAAA==",
     "alpha": false
@@ -18,7 +27,12 @@
   "hero-capsules-green": {
     "w": 3840,
     "h": 2160,
-    "widths": [480, 960, 1920, 3840],
+    "widths": [
+      480,
+      960,
+      1920,
+      3840
+    ],
     "webp": 1920,
     "blur": "data:image/webp;base64,UklGRrYAAABXRUJQVlA4IKoAAABwBACdASoYAA4APu1iqU2ppaOiMAgBMB2JQBUesWRbFw0hAsJX6yeALN4CAAD+7oO/WBo9Q4OWMsdQPdtpbzBzwWrhAwcLgd0IkGSd+JQ/KK1+wEdcxBFhAWbgJA+OUeOD086fjAV6WyaRb+COb4pf6ZEY2R4T/9wrsoI89NfKLwfb76JhPWjIjw0gYAkeqO2ork3/cPnP3fFQS66EhudpkD8PQiXT/TAAAA==",
     "alpha": false
@@ -26,7 +40,12 @@
   "hero-spill": {
     "w": 3840,
     "h": 2160,
-    "widths": [480, 960, 1920, 3840],
+    "widths": [
+      480,
+      960,
+      1920,
+      3840
+    ],
     "webp": 1920,
     "blur": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAADQAgCdASoYAA4APu1iqU2ppaOiMAgBMB2JZwAAivIAAP7unUZfiNPhidle8Nz11ETrOJjSwm5gL+UIsABZQAAA",
     "alpha": false
@@ -34,7 +53,12 @@
   "hero-counter": {
     "w": 3840,
     "h": 2160,
-    "widths": [480, 960, 1920, 3840],
+    "widths": [
+      480,
+      960,
+      1920,
+      3840
+    ],
     "webp": 1920,
     "blur": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAACwAwCdASoYAA4APu1iqU2ppaQiMAgBMB2JZwAAW+ueXmPvM+DieAD+6nXATYnmiQQ37TbJovwf4//HEiJVd9oQAAA=",
     "alpha": false
@@ -42,7 +66,12 @@
   "hero-shelves": {
     "w": 3840,
     "h": 2160,
-    "widths": [480, 960, 1920, 3840],
+    "widths": [
+      480,
+      960,
+      1920,
+      3840
+    ],
     "webp": 1920,
     "blur": "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAADQAgCdASoYAA4APu1iqk2ppaQiMAgBMB2JZwAAe/QAAP7u7c31veVIlLOS3xB75MQvp94oR2wA/ABd4AA=",
     "alpha": false
@@ -50,7 +79,12 @@
   "hero-abstract": {
     "w": 3840,
     "h": 2160,
-    "widths": [480, 960, 1920, 3840],
+    "widths": [
+      480,
+      960,
+      1920,
+      3840
+    ],
     "webp": 1920,
     "blur": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAABwAwCdASoYAA4APu1iqU2ppaOiMAgBMB2JYwC7ACHe/a/JUsAA/uctCu8BybYznVYcAGapgr9doeuccxxuRS8MLcDQiA8AAAA=",
     "alpha": false
@@ -58,7 +92,11 @@
   "scene-amber-bottles": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAQBACdASoYABIAPu1krE+ppSQiMBgIATAdiWUAAC51JD0fABgspRC/4AD+6mhduE1W1r46wl2iMUfGCPdX4G6XOsVRIfhKd5bw2lva9QhVlUz/7XJ8IJmbZ+wyxkV/zeN5/rqAAAA=",
     "alpha": false
@@ -66,7 +104,11 @@
   "scene-blister": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAACQAwCdASoYABIAPuVgpU2pJaOiMAwBIByJaWmIADhN9aflF62IAP7vlAncViern6oLjgKifBVbq32q0zmAAAAA",
     "alpha": false
@@ -74,7 +116,11 @@
   "scene-rainbow": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAwCdASoYABIAPu1grFAppSQisBgIATAdiWUAACl/dq2fvq0sXNKoAP7gzdwcoj+HpROjz/ljLDnsj4oSLKEpEm8eYLpFJiNZ4SZiQzFJbgEAAAA=",
     "alpha": false
@@ -82,7 +128,11 @@
   "scene-vitamins": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADQAwCdASoYABIAPu1mqk6ppaOiKA1RMB2JYwDE2A+DuSr2PF5enQAA/uqW6TYDWGJDS1YUl2cq1/wbAwDCIABMv36cD4FQec/Dk1OCs/S3aqAI9AA=",
     "alpha": false
@@ -90,7 +140,11 @@
   "scene-delivery": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAACQAwCdASoYABIAPu1krE+ppSQiMBgIATAdiWcAzNAQ78VemQqAAP7qZilMicrj+avLHlOOMvukIKLdQhUKrkk8prlPEs6AgAA=",
     "alpha": false
@@ -98,7 +152,11 @@
   "scene-doctor-desk": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAAAwBACdASoYABIAPu1oq08ppiOiMBgIATAdiWcAzcAQ78a+FEV+BE9p+AAA/upmLvO/ylyO0dEXFIrtWaejEzBGpmAAAA==",
     "alpha": false
@@ -106,7 +164,11 @@
   "scene-pharmacist": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAACQAwCdASoYABIAPu1sq1EppiOiqAqpMB2JZwAALnW5A9NbrXwAAP7qZm6CTonVPV7U6/LQMdRRj5X41z1Vwea4dt18BX0iYOl5aBaCaRyHWr8EWAA=",
     "alpha": false
@@ -114,7 +176,11 @@
   "scene-doctor": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAACQAwCdASoYABIAPu1mqk2ppaQiMAgBMB2JZwAAXK+GMkxViPAAAP7qjqD/530o3fG7Tt2272khV5mlSm9ozZSnGHkAAA==",
     "alpha": false
@@ -122,7 +188,11 @@
   "scene-abstract-mint": {
     "w": 1920,
     "h": 1440,
-    "widths": [480, 960, 1920],
+    "widths": [
+      480,
+      960,
+      1920
+    ],
     "webp": 960,
     "blur": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACQAwCdASoYABIAPu1sqlGppaOiqAqpMB2JZwAALnXEJEyW0agAAP7qZjNs9K784dWTHwVKOr9TJdlY06ubqmtNyJcMQmY1k5RX7XPE6gAAAA==",
     "alpha": false
@@ -130,7 +200,11 @@
   "cut-syrup": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRgICAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAABgBtJtmpnz33/i5nRZ5Nclve9n4NeJoJQGE0M4ZuSzcx87lvhuS+EiJgAGEUEqUYCiEsjbcH0zt7+dgwJcVjn0ye34MIW+PzO5TR67hPe9IdlMPDhk+dhRAGC+JGqfIwhJsEMVb1X5TycQVB7zk/vvf/gcT3E0nRP/aU864SzNN7T/3XeDglISNLzos3WcPffeaut/va/s5aA6/9Om2x1l/+dNAac0f9SHjXYyg6onx8fn8rDUgsc8oUnknws5OFgz3SN5HKjXRkI7JkikchBshmYMxWt3cNjU1Njw92tFZk/AABWUDgg+AAAALAFAJ0BKhgAGAA+7WyqUSmlo6KoCqkwHYlB11RSLw6tkoEQ3pAAdeYPJVLZeH36U60fWqrGWAD+01WttaA6Y6ax+f1IHRz3TgqRhjVJAm0qVTYSr46t9IezUitAiYKK04CpV/jkn/VFKx6b91Xk8Xf2L6OTVRoReu5t/7C+JMUC51V9ZHxyZvQkAjDsvbPlEL7NR1L9bX/uXD/P38D/rnYG0fXaEU+reOrBARlhO3tPK+1hLmOYg2xedDwIxcTwrG4EYaH1CkTiK9Sfne4/wyKdjcn+pbetRzt36UmnpmXlPQm4eTC7CVPNjUftE5gZRA5w2O4NwAAA",
     "alpha": true
@@ -138,7 +212,11 @@
   "cut-tube": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRp4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOYAAAABkGPbtmpF+9yLu7u7u0MfyOkAg9QdOuDuoUNMCzxjEBFpBuVu775det8f1YKImAD8j6KV+EYB4qe8CWYWKhUgXgRxj/xx3pcHrxod/Oa6/H4UDvGwzh+u842HENgKgq5pSMN2aCuFMkOXhldBECuNLhrSYSc0rBV2+YOGNxEQK0HkLQ0ddkPDWqGFpOFDAsTOD8N06HACGvaCYzoun9IhdoLkl3R/cBIa9gp1pOG7IigPAr9LfuMWFDzpE35eTIB4Ucj7yG1o+LJttcVHvtahiVm5GYmRgcqDCorLq26sK82MDdbyN1ZQOCCSAAAAkAQAnQEqGAAYAD7taKpPKaYjojAYCAEwHYllAAPkyy9J2KMj+9PXk1NGFAAAAP72CbaQJ7GuMIeYAu8/MP/66uAB32UW3rm4lOsEDO4s9JevppdgC62np2Sm/3bIE7ua9ixcAPodqi0OGCRzcCdovt8dPacD8T7f1t9mAU7p/wCklDKgj78cZ7RG7/pg3kIAAAA=",
     "alpha": true
@@ -146,7 +224,11 @@
   "cut-inhaler": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRpwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSLEAAAABgBtJtmpn772fmSEBtL7HX8xZMLgM+SgZZlOmXNX3LxznwSlFEBETgKBCCPzvSFxxKOx8fz90IRkOyLoRFMMuaT2EZDglSwtQYSQGf2ToswERIoIbMs7SFhTTJsMd263HOsONxxrDNRnnaJXhwmOF4dxjmeHMY5HhhoyzNAsj0fslo+m9BBFM4ZCso3kfEsEFmvcvP/N9KHBm6+CM5qr1aj0XkyFEvNIarq0PWpWE8AIAVlA4IMQAAAAwBACdASoYABgAPu1osFAppaSiqAqpMB2JbAAD5ehfJdd1cyIbdf2mMgAA1v7z8ZwBK2lwI+wNlY+lm/OAlODZXXH3tKj3jS/BC1ZxdiJP01QC+GRI5coQB+dvG4JXcYjlL//6GIJ2v09WWuYqG7AaCD0g/3BmWZeC3lsyFcybujA1jMEn79J3EnsmxxcUFPOpmRYRUWEArRfiKErHJhPK8k1o9cZMBFwoGH8ekfMMyZxZYYdRy2I9l5MDGDyB8A2k2EAA",
     "alpha": true
@@ -154,7 +236,11 @@
   "cut-pen": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRo4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKIAAAABgFpt2/LmDTMtkBPFrKKZaRQmH82JzA7QVqElyVWdgulRbZ4RIkKB2zbKmA9fIX9QoRASFcKS1clGj5AQFQPaa6xFSSi1jPDsYGqUEv9BnXQvsCLdIZ7MnBv6RJ5z5Rwz0u3RbuAdOdI9xZR0W3g07XcVKq2E35DZ7yo1RpvxGGPSbeDeyDW7X1Ai3+YSNzpObbC1MKAQV0wl9LcjQfnPVAFWUDggxgAAANAEAJ0BKhgAGAA+7W6uUimmJCKoCAEwHYlsDbAFfW8eERWE40N9SonDyOiU8PIAAP7Tm+6cQwprX7s0W9xFiTOBpCd7fW31kjwrxYlU15Vjo8vP0xTM7y/wXqjmvCB8UcU++dVyW/Jqf//40OSu2EFkvzvn3HfxgF9O3L8RYp4Ksh4HWUyxUvjcoC7zOyhVRUORhxaulsOgrt8o1XXYUj93989/unfH0q/nlPu6OdM3XzebIX0oDt/KPPhdo/NrlNPNj4AAAA==",
     "alpha": true
@@ -162,7 +248,11 @@
   "cut-cross": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRvgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSPwAAAANkJttezJUz5fg7l65Q8cqVKzAAlT0tFoyBzUVpbu7uyb5gPPb2SAiJoD/LxGagUZkaEokBA1fIYUJzQvGB/0c3TAhEUgjudaawy8S56iX7xwvxgnJneCMMYAnB/URokUjhee3nwAacMSKNk3QBAgUTpc9vW9Pff2jfNgcEAA73FhUKnNeFOArxxLrlZwPIdr7PCc2worikRDhXEEOkepFzCeigPI8WtTSO1KogliUT2LD0v7JyXitIk/zte2tp3EY48RZVF4mN/cvCgkxIeA012OdxTwKiRWxwDcqIYnyNlY21NN5LSgpdXFpef2hEkmFRfVcUFJ7QJSMlYRWUDgg1gAAAPAFAJ0BKhgAGAA+7WKqTamlpCIwGAwBMB2JbADNCUB0gFmRERYF6fFt4yB4mFhigwqAV/r//GggAP5SN3xdUVX+nCBpGEP6USz88O9mmA3YtzmGBX2L3OK01XDWHii2rV7tIoZIY9KpTgDNH4c2mcJhKlwXPU+X0pJKNJUU1HUuXa6VswLxy5KlbYLRK5zoQrYRat/ecRZIXeS2Qv2Q+ztvw//warH8y/J9/Yfw3n71/4O7J39DUEHZnRiCTlVJcT9ApAHtWL3m7Bx81+Sr+wrrxgLQAAA=",
     "alpha": true
@@ -170,7 +260,11 @@
   "cut-phone": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRhYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSA4BAAANkFvbtrJVa1/c3XNyMkIiivAWoAAGBRBqBbRgoVVATqgPd/3ODr7vv48SImIC+EOZ2pIEoTCkSFHLtgEDBKZ2+/jQ0NDgyOvqZYqlmZWDFKUUm5MF8Nt9vhtji0ytUVbBEHZAfd9dOr+a2EUGXFfcDLguAT0PdT/r04cEZfmuT4DoeQhOtsEVcD1EZc+DeTmTqXkzkCq6H41TUG2uh1TR8wAEGTcDshBdTyb/X2895WZ9yBnmKXVUNbyQ//nab6GSnPXx3mcBTQ2v5FrFfT/lpsYXOYMUNwOFUNS1vZEt3wwk4Dd1Pss5wc7ISFN7W/fDLUHe6fINdXXNn6jIAinenp7vpOA/bSQUwR/amFxWUDgg4gAAADAFAJ0BKhgAGAA+7WiuUKmlpCKoCqkwHYlBtoSt4uKCIs3QAY/0rpOVVdCXgisKSfgAANrwyeRPWcz6QE/NmRgfrbiiNbEOSzjbfvmMsS6BgRhH44wsDvQudPODcBGVlrjh8rxvlmAzZ9jnXIxJ+sf2X8pmgCU89QABgb5Tp//9sgMzHof3/plr+BDwdBDNTMuaPRdK66PYcpRd8aqrelvL4rebzMuv58X66458GeVN017z82btG2qKr3ECOg586nVFHxL6Ex8GbPTPWtAq9OhXjMf8y1nLoldxurChpwCUAAA=",
     "alpha": true
@@ -178,7 +272,11 @@
   "cut-envelope": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRoQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAANgFtt2/Lkeb8v7u4uY2QENqBKzQIcSmcIHYNOB6BkAneJ539f5PuCDhARE4D/myDfox3RLN+gJsvtbp/ERgbicMfreE/OST5pETYhuzXtb+8dKv7kAFB+0h6lR4vdxkIJDJAkNuPegCdAbu32Yn8tcAFiAJjOBRhmRn3+zE2Mz/3HggMQQCB43L0pjDR5TiiCUeCjAYyi5DYlFoJP90g+QfFN2gZ4XT3YrzMEu0/3SGYQBwABYI9vALPgIu+CmRjhF4uDg6VQMBKLxqLRWDSdwoz9097r8+PT49PT4+sV4NhIwSwAY1Zhy58GAFZQOCByAAAAUAMAnQEqGAAYAD7tZKlNqaWkIjAYDAEwHYllAACZMFBKVoAA/vGJVNMbNmsDZg0QxjHjr8bH/6Lp0KFGPw9/ffHtZczrq4pqmmgY46LA6GKTnQw1MKb7eARvCbmm2HXOUWa7M4P2ek22winxEEsYAAAA",
     "alpha": true
@@ -186,7 +284,11 @@
   "cut-tablets": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRuIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSAUBAAABkGtr27FH9/N9sW2ny0qVLq2dA0htJ5XT2k4qs7ZT2bZtOzPzDj6MDiAiJgD/bZLDkxCBZAAkABVOGjnbggAO3rMh4MR4+NwPG4DAo5H1SeHgsnsbD56I72KtUgh2izcLelCA+jSrlEBADzt5j4GivccuywIvwsH569dPtq6bx9gHS4CChCr2rf30a/Etex6ZCXJVEyJYbR7dBZaxnqQ2L4fqrdcEcL/wiLjdP9wty3QCAt5err+kCxAUu862z+7uazJz04ZedztjtEECFsdne13fGGOfr8ePUeAIotkHpZZda3NL0zPz445QlKBgqQzwKqrapha6IEgkEBGECZI5AkgY/10AVlA4ILYAAABQBACdASoYABgAPuVipE2pJaOiMAwBIByJQAB8gUG+kvXz8jEqsrMt1u3gAP7eltV1ZdxOgkZcp6touGvAxq7SUo0eY6pf4v6zyGUm7GCr4jVi1UmGRawRIy0LCgDkJYoTHjj0p0l+yF9ne9X96cqPsVIpwZkJ2BQZMhA+DzVX+WzF7XzHcSOBotI6eaAgje49sGFKK3/v0ZW5hcDd1F4gsybN2Aai3X37Ytf6LcXx07DL154AAA==",
     "alpha": true
@@ -194,9 +296,1381 @@
   "cut-bag": {
     "w": 1600,
     "h": 1600,
-    "widths": [400, 800, 1600],
+    "widths": [
+      400,
+      800,
+      1600
+    ],
     "webp": 800,
     "blur": "data:image/webp;base64,UklGRqwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSPgAAAANkGJr27JV9/Pg7g6J5q5Tcc0kKmOguTWGAcndrTkkt8+eBzjf+/KvM4KImAD8h0wkEgkSUSL9G0nFYNT0LukfiP3SoQ53eXInKrAiYR3oBa7mR5VILJTjolfctGAxCgKFMSpoH/YLH8uL3duVobfohUmWEJZaeIjhqITEdCQASzB/xSsAKKCI+oRR4cXwPwQQ4IM0BHBjYevA0o2liMGsZOXEWQBWbizZuCaFG4uIAE6c1ZeNFyNCRBTimBQPsTkKqE8E8LtJsD5Q0NBaXhIPaMxYHCQM0JvjreXLhLK2hvwRENQEJujzxd7y3idYYCsKEAPOM/sIBVZQOCCOAAAA8AQAnQEqGAAYAD7pXKdNqSUjojf1WAEgHQlAGFAxfo3m8+89weaO0juy8TiJUglAAP7tQ0i1tQ0ILJlm9+WPJEuT+6pd/1wHoar9CmCL7DNPpCh51b/VgehCzdTL9EjPrafdT285x1K0KGAlUCgFAWg7aH0riPPRqedwdid7zllKB+viyt2ggxgOHMQAAA==",
+    "alpha": true
+  },
+  "med-doliprane-1000-mg-1000-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRswBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg4AAAALAFAJ0BKhgAGAA+7W6uUqmmJCKoCAEwHYlqAMf5ACaVSJGC8uLuh1bYatVfm8Sig02SvRwBQAD+6o54WtXUHCIEHAvvo0/qkmCXHqPR4WICPzySOkPxxfHCnNQA58iyglgcbFDu9SfsGpTnM+lgojCLCZy3S4ZfJuB/rDRFrMjN9LM8shN84RHwH7SQVrW2em1co+NXTm6Ct6N38nQaHuS+DTxq04AcWfJf0uHTe50NBqlPXur/2k2/xCA7jqkw13hUWsTObsiXuNjBJYMex7g8+coKJTh3TOq1mf3suwAA",
+    "alpha": true
+  },
+  "med-doliprane-1000-mg-1000-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCwAAAAsAQAnQEqGAAYAD7taK5QqaWkIqgKqTAdiWYAzeCp4KQJxYJcjOjnIF/SI2voAAD+w/I/3FTQGBaJ1NTBX1XeO7/+dKb5SiJkYE3YpzUn5zsfCpc+A8d8If1YrjNKX+fi0zNyLe54IufkNe2euxbNYntoIu8Wrw2WACpjWyBqatD60XpVzdjYVi7quHqR9ELpgC/6tm0jQ+zETDNc65kBpr7zU04V9uPqwsbCcmm3wAA=",
+    "alpha": true
+  },
+  "med-doliprane-1000-mg-1000-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggqgAAALAEAJ0BKhgAGAA+7WquUKmlpCKoCqkwHYljAFMAW/+XBoOvYBQ79Sl5Il2ClAAA/sP5/6hJ63DMRSu9K8EDdLVfSHyjvTCQrywVGraXEVOIk3PRflxVAA3eI36/+CtV8kms3L0Wy7jfjp6oyY+z6PUhUGk59rLu+QKTUJ5lsOpZNIdvnSc+N3CHnbsVvHIvKibdTgpS+iwj54Jwg66b0QLrCq088dIgAAAA",
+    "alpha": true
+  },
+  "med-paracetamol-biogaran-1000-mg-1000-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg3gAAAJAFAJ0BKhgAGAA+7WipT6mmI6IoDVEwHYloAMDoFIIkALy4u6HhRHxzey7e/VbGHjqPJKFAAP7qjnhYYxK36hMpSRIBdJZyvVQbdZcbtWn6gWx1pjGSDeJkt84924Hfmlra2kobgTpKEwmzgW1sF7Dn3S4ZSVN6T9e2nJnJEQO7RMBBsRT8rLinv+N9czRzvEBb0HRE2naw2fVvhJt5rvJeNdRGJ0ZJYGCud3qe3w6dwzqKTidJKVJasP3bewCaUW3Xmt6RtvjMQTy6iHnPZGdRJDFKST+EIlBLypQAAA==",
+    "alpha": true
+  },
+  "med-paracetamol-biogaran-1000-mg-1000-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCwAAAAkAQAnQEqGAAYAD7taK9QqaWkIqgKqTAdiWYAzeCp4KkJxXPT4hzhJHj4WOuAAP7D8j/cd5gYN5jVZ0a9D+iK+dE0AxvC3F52AdP+e0rGi2++O2W18lI1Z2U/640w4/50jSuRb3PBFz8hr2z4MX99pguuLn4ZDI5lieWYmE+oAFm1ovSrx1MYuOEGIKhxlnYbwAEvU66iIewt0JvYB35E+VqvvdjlfjnY0wdNbLtVQAA=",
+    "alpha": true
+  },
+  "med-paracetamol-biogaran-1000-mg-1000-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggqgAAANAEAJ0BKhgAGAA+7WqvUCmlpKKoCqkwHYljAFR+3AmXBoOvYBY9BNXNY07ACNgAAP7D+f+oUetwzEUr0GvBA3rv8liso70wlNdsFdOxtRLEiJN5csnrrP/SpOvTPgt7hG1Lm8WVr08J8XcczeJc8bu/4NKVrwvIhndl/RQbdpofMIKCtGvLk94sQbLYgdp3xGkvoyCd9FhIkgOlFPv2vRAuyhNXNmzNMAAA",
+    "alpha": true
+  },
+  "med-dafalgan-500-mg-500-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRs4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg4gAAAPAFAJ0BKhgAGAA+7W6uUqmmJCKoCAEwHYlqAMf5ACaVSI7C8uLuh1kWf+ywtIm9FgXpyXY0USUAAP7qjnhWeZFjXD+DtLkcTwQq84SRSUXqvhgo/YuvRX8aadrs+QDnyLKCWBxsUO71J+walOcz6WCf/p7Gw1w5VjDqSjEr7kLSK5RrTVgW4ronIh4Q0LkQGWpt7zQwoILSgmHmibwXtHUR4lOXD0HW86qYXkq0RSd6+NxKencOFWwdHCx/L3K1NnOCdvevF0At87dbe6jXqVy2bwfNGcn6ZXz8l9BMPpZdgAA=",
+    "alpha": true
+  },
+  "med-dafalgan-500-mg-500-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCyAAAAcAQAnQEqGAAYAD7taK5QqaWkIqgKqTAdiWYAzeCp4KkJxRiVxJRrA3LEIAAA/sPyP9x3mBg3mNVnRr0P6Ir50TQDG8Lcd2cOS/O3/jNKEGAeDXmahb9QVoLjOiNaB1Onv3rE2Rb3PBFz8hr2z4MYDJoOpKxNCF1A8s/ulh6GPYEI8jJuEv6N4gu+TGh9N0tM4ZvOAtgTDMg4FxEw0TB6nV8c8L7iFm/qms9ox43swqAAAA==",
+    "alpha": true
+  },
+  "med-dafalgan-500-mg-500-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggqgAAANAEAJ0BKhgAGAA+7WqvUKmmJCKoCqkwHYljAFMAXAwXBoOvYJ2PJzvG4+2IsoGAAP7D+f+oU3twzEUr2KvBA30FOT/8o70yTsssFdSxtRLEiJN6XpnvJP/WLpJVN8P1eiejNWeSZtHrVN+LuOZxEueN8Gkgk0RJSb6WFL+ig27TRAYQkeNimS0nvlrjTHzrQ3Yt58qZ99FhHzwThB103ogXWVT3JKGzAAAA",
+    "alpha": true
+  },
+  "med-advil-200-mg-200-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg5AAAAPAFAJ0BKhgAGAA+7W6uUimmJCKoCAEwHYlqAMHhACaVSI2C8uLuh1kQg4yaITAJVcA3bT5dRaQAAP7qjnhUhxAHPk5KCHs7Rs6pMKned6G564YORldc79+LHGrAW1VZaxjUh1GqpHd6k/YNSnOZ9LBPCKY9Dpi+N+DYAxc5q/T0mmM3UC7VmcNjfk8IaFyLGLmCAwRdowXD9oIZk1aQsHjxmKL4WRatHgRbmjLK8+KfRVdGoYUFr5etM7NQOl0H8dOWfuDHxr5MjzA3J37i86181Rp3+mJ0zlJYpaN8ZNeHXFCgAA==",
+    "alpha": true
+  },
+  "med-advil-200-mg-200-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCwAAAAkAQAnQEqGAAYAD7taK5QqaWkIqgKqTAdiWYAzeCp4KcJxRmQvlHN+QXx2nCAAP7D8j/cc5gYJxLVF0a81d477FTEpvlY13hj3DlA49RKEn+JW5OvD2CZ25kOqr7uvY1TZvyqtb3PBFz8hr2z4IYAFAOpKxK9pq68s/okJV8tgc05/YW/P32jcHP4OVrD0cOxJrwToZ+cYRExEw0EXM5P8c8MLSLH/1TWe0OS2ItoJAA=",
+    "alpha": true
+  },
+  "med-advil-200-mg-200-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggqAAAALAEAJ0BKhgAGAA+7WqvUKmlpCKoCqkwHYljAFMAXAcXBoOvVPoFqJXHWUiGUDAA/sP5/6hP63DMRSvN68EDeMsnSNzqvTCUX2wVs7G1Er0ok3eLDDN0/+bbpf46tHwVqvkkyMrDFH2/U8XcczaJVcbu82JWpwjNu8Rcqd43cXr4YbtfI8UzPFvLyFO2IgvkxtoVJv4I5UyAyWzlMw8zqmOk+9iHIAAAAA==",
+    "alpha": true
+  },
+  "med-nurofen-400-mg-400-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRswBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg4AAAADAGAJ0BKhgAGAA+7WqpUCmmI6KoDVEwHYlqAMw8yboCaUiJGC8uLuh1NQzLhWPuWNspFZjsiRT7PAAA/uqOeFrV1BwiBBwL76NP6p+9ad5huvSVuiPzySOkPwvntc0JtgDr0Ye0mLoe7nm7bALYZjNtYKIwiwmrT5vTreHIJHZK+31J+9AYqqGA6no4XKPG9AR2GcDZ19AYfJ7XIJ1OQFjhZvBGQdqX/pszMc1k+ORSnsAUwg121REPk1nzc15NoXma/d67te/ul1aDGh7W2SOZDV1GdLCq3hBZcK7iWAAA",
+    "alpha": true
+  },
+  "med-nurofen-400-mg-400-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCyAAAAkAQAnQEqGAAYAD7taK5QqaWkIqgKqTAdiWgAzeBwIKcJxRlqAKR8hBnU5VMAAP7D8j/cc5gYJxLVF0a81d477FTEpvlY13hj3DlA49RKEn+JW5OvE2tV/ZKoi2+eHEOP+dI0rkTagCfyaEBDiP62IMjBdcCJ8yTxT0QgpNAh4iWeKQ3pQsfkbqkTQCyuoxzPoe45EEIldalJETDQRcznFB5Wp70b4n24+rCxsJyabfAAAA==",
+    "alpha": true
+  },
+  "med-nurofen-400-mg-400-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggqAAAABAFAJ0BKhgAGAA+7WqvUKmmJCKoCqkwHYljAFMAW/CXBoOvYBY9BNXNY1RwxqgvCOAA/sP5/6hAS7BjesTqhRSYoScfD3utooT91q12xZowF0Zqd9lyyc7UxremsDoP1eiejNWeSZsyWln+LuOZbMVIYN3EmntxxKFIHXzUJ5lsOpXNyvFAGz1exdC8uPEkg1pXIi5QbavosI+eCcAmWvME7GW6FeAAAA==",
+    "alpha": true
+  },
+  "med-zyrtec-10-mg-10-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg5AAAANAFAJ0BKhgAGAA+7WquUKmlpCKoCqkwHYlsAL9YmvqCaPiJEC8idsJfhrHWBbEwI1ESmbqJXaAA/uqN9wK4YSfj+elwoJwV9IhhRLvrskQAi1f1DMeOBH8WFClM7Z9VOpvM+MJqs7Z0xwdP6lgkMGPFJYtzMv/v8Sa6IixU3onCkfd02pefMv4+t5fUink7NLTJ+QAXGUa1hsgfjN0snjbexBenefVUNJ7kXlUXDrSa5otap2PVT3sVcI2mG99ixUhnbXJO0NzT4b+ugjK4ls5Mv9vAb7+/MJf+SSbB3sw5B0QAAA==",
+    "alpha": true
+  },
+  "med-zyrtec-10-mg-10-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC0AAAAMAUAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYlsAMjiIA3ksiIwjMYcJjUszyBpFgERGgAA/tOWUp+7Od/EhtddOixmVMbPaLBfjCDZWX2S7EUEs+D7PxisAYj8hGDzFVTABFeSgSiBYJgsuKp8vsfAvYUacdkrCrqhsRLvPVXOZRAK/lX5H8eubPpnBTcSyGAPLMqasMnDdeGwC/d+MQwU7J7WpfKnuxyvxzsaX/ZjCbzYAAAA",
+    "alpha": true
+  },
+  "med-zyrtec-10-mg-10-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggrAAAANAEAJ0BKhgAGAA+7WKsUCmlJCKwGAgBMB2JZgAD5UEDXYnb9bLE7Way1RbTTlAAAP7Do7171oN2PEowYNngI50RSD/HBFlT3lCX90pcjbh495XMEIkJCFYh51ZKmqjS2gNy61sRoAzvhasjL8OzCRxBTLirtvIA9tIofg5AGTbYKayJ+lIyppSKAYxsqad3NdUmCRjybVrPtgJY59gG2hus6noWfhgIa9zgAAA=",
+    "alpha": true
+  },
+  "med-strepsils-miel-citron-0-6-mg-1-2-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRmIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJ8AAAANgF5bb9vmgYCc3rfKLjmZJbvUpXovJL8/Ak5GiIgJYNWMXKIqFcqms5OZtKeHQptX57+xMpb7Cx+J2CVID95MCQRozaKLVCwY6fJHapOFYnQlQFR8VKwUHVPiVpORNscyZ1BopEbQK55BaFRaxal4KVRp/+dYyZR4o+jWydvUWDM3m4mpbeFrsDV6Ij6vYyauM5Q9X76jtQ4ZEFSHAAAAVlA4IJwAAADQBACdASoYABgAPu1orU6ppiSiMAgBMB2JZwAD46JgA1BNa7fgoe63Mrl7rey7AAD+3t7b7hmVkJ5wJoL3R/+Vdrrq3TnEjnPAJQ2GHDB5dfg9nUeOwSP5ptia5WIckPYy4M1K4w5Ix1KRRs+u4QkHj8exCbnv75Qze/kDO0frO7e6vu90IXfHH8YI8fIXnBSb00LEs6PIxqLAAAA=",
+    "alpha": true
+  },
+  "med-strepsils-miel-citron-0-6-mg-1-2-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRp4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSNYAAAANgFvbtmplnfvdLcKhAAaRQ0on1gKl0YATOZG7u8O7B7n//F9CREwAjQoodokpinoa1oimivbMxJKpRDJe3piOROs5P9jnASJeVrGKdvMlCMSOiH0boIeY8P8Is6cdIbhvkihZq3dgglIu5DgxiVYS/Ff38I2aOlH3T66dCXpQCSHeINodgjOcRemqd4BVvmlFCO6bIF9qjmghH3KcmqAVj4pT9/SJmjL3VQSN4lfO5JmbaBnr7+123CHeAHqxPbd8GB8czyJqwon4u52VWfDYvSoiglfCVlA4IKIAAADQBACdASoYABgAPt1epE2opaOiN/qoARAbiWkAA+JaDw3Wg+zADvB0KrTNTxcMgAD+8czTYw3ABodYl7gJZTAp/VIsF6atDlnCqySqyqYcJGxpOf4Bof38il2itr87CEYY2Dq6R2qs4yEADvdMnY4vjnAAAEsK1eADb4maAGDSQa1lPDrN+9oQlFBoDqi3bG+zeThEhl6LHWttIUGALNYAAAA=",
+    "alpha": true
+  },
+  "med-physiomer-spray-nasal-135-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRngBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJ8AAAANgFvbtmpl7fv94y51EJITeUYT5HTg3b2MQezuenbEfVJBREwAmRI2VdpUPLLcubt2ufbvwY4/1y/kMjBE/d+fKiJhUT6YgE7nvVTrZ59g6nTvVc4zqzix8nBeBizAVCgA4XIWgGm4q7Co082RLQurjH6Hs6TQZcJ5KdaI9Nc6ovWbZ84mF/66RUGQHxS7MTrRRWVAl3cf91JQ2gkUwf8AVlA4ILIAAAAwBQCdASoYABgAPuVipE2pJaOiMAwBIByJbADImYxs32l9ISBK1s3isUQ4+vTue4hRAAD+7UURZZ4bbz5kZObrp+nCeu7i32VCttjHI8HftlHPRCxGYBR27fHphHMKE73COE+JZubbt32VxPFJnROoa//+HPF8AzDH4zIB4vRpJLHbFv9eAC/g7OfU/TBLEplqryylIjSj5/WBSmuL7k0pIKOBZA/IBU5QFgchegk4yQAA",
+    "alpha": true
+  },
+  "med-physiomer-spray-nasal-135-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSM0AAAABgGJrezLn/ZIyg2NYQBU7XAO3apZRx8ySdW0VM1dVciurpnrOn+R1SZYQERMAbxFBXAF0nMIiQUyNrfTpbDEkSHBLfpWECSp/ySMohI05wwXoEI1+WsPDbEhAFjaY0LIL2k8EFzSOphnKT6EmTWf5Uw4JaaGj4SUU/DVGaGm4CR2QhXEaGqYizNI4x86gbBwwsfyrgvITFL3SWj5B4K3QeEvHDPeh/bIwwYxJ+N8H5afQ/kbLqyYIAgWFqZeVPCgEi0CLUogoWrQgrsAfAFZQOCDQAAAA8AQAnQEqGAAYAD7tZqtPKaWjoigNUTAdiWwAyMdJHzYiKQvT93KjyJMyllP5jzAAAP70JT90h9SB5qzWvD9kCx/TKmlIb+c9GRowMdSBgIbkNwKmy4rEK17GkbTnR/iQ5fU5x08LzAsX6R1//8Dai+4ciaF/zAoU1pzn5DUjCLSBkFAjeniRtKUGqVsVVylyewd027gUUrQ/iCYLp6TMuFL+uNXav7e3/wPIxo6OpXxg2qpMTdyZQcGKdQG0mB+/04Cvtj+wOzLgqQtNlwAAAA==",
+    "alpha": true
+  },
+  "med-smecta-3-g-3-g-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgICAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMgAAAANgFrbtmtlnRvI0YEClWMrFMGgHFTsAkUhDDwWicrvnU249wAdRMQE8L8Jk8mEyYQHPHny5EmY55Fu8uOTu/XH5RebfFp5OLq+Sf7DnFP2WGUGFllj45y2KIz0cxnUwibJASbfZGrkgkXq6LRzJmhM+NArEagK5F/w8UcTPvQK1jOqBlMrE64aaOcSm9BHw1SJVw0NmFRswntTRI1svckQsvrRmdBoCtT6YQJMMyQjOvPMT/F4OxC0uoN+OPdnKMAb+A+wTHwUAFZQOCAUAQAAUAcAnQEqGAAYAD7tbq9SqaYkIqgIATAdiWwAnTlBOApneABLAH6zcCcjQNosQo8hhrzqWvsUVkjYMBxqqwDlDLYoAAD+w5cLRIS+83sKNcVx59ToEQWSdAUBpkZyeUjZQTYfoj5aZjw3P++rPtHGzuEhR4uPBR5mCVcG/gJOM6A41cBHhzoYftthb+FLAoSPwbCgixW7XcU8xcll1Je4l98lGFbXTEVRd3ifuWvTs0MlVqdfsTtcrBHxF+mFa2kYsT+9tSZXWpR3ZGPnOwmcxKp/KKCPJkX/iD+p18dUG82mkg6S63ZM2Y0DPkC9ZnwE/Dunx4Gti3t9cUi6dd3whax4Fi79K3W85G6EX3ysqL3IAAAA",
+    "alpha": true
+  },
+  "med-smecta-3-g-3-g-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgwCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOQAAAANgFvbtmpl7/tl/Ax3dw2dnJ4I6UVboAJ3d3eHSN+/G3n3jEEHETEB+HcyhqKXDT5GEMxUUbFPJZCmCuYeqAB9YqT9PRIieawPOR9SWTUyFAQg5xXWSngn4u8ujFQz4BB/ZGuCGEOb0BBQ4uMZCjByVSBieJswALk5FhipwlQAuEIiMjRALnAEI9UMHzqwAE0QA0eWLGpB/FXSX0MB+kwhwncOYSo/D84LdOKtgwLC20RzeyEB+cQ1EpHheXjlqXigp7M2gRPYk18321Nz54muwRLIFNGR/vlocRLwJkgSSDIrxAJWUDggAgEAALAGAJ0BKhgAGAA+7WipT6mmI6IoDVEwHYlsAJ0vAZQIMB/6Jgl9ADpPyIcMMGILvKmirzErFbLt3u3nm95AAP73CEDTFMZX8CqoN0jgClvSOBsfCwyFSgR9dKs79eKPvekM01OWt/Yz18CqT28Gw22XXgpIpiZ7pCNMaiAFM7u3vRhdUYzuDXeBdSHa29ymNqSQeL/f+Cl421h0+JDrOQp7PKtV3tDNimy6gIj3pXoxd5ofthkyTYDJYxzCT9XSLno9uzbmY4t0Wt+3k2u/P+d6vymfjOjieuK36Zx48EPOTQyLzasel2LVwd7MsCkq4d7/MYCW4uz/wS0bgy/md4AAAA==",
+    "alpha": true
+  },
+  "med-imodium-2-mg-2-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg6gAAADAGAJ0BKhgAGAA+7WarT6mlI6IwGAgBMB2JbAC7IQC6AuwDeTyVR+RMgTXstSo5LjYWQC+C+rG8YEAA/u1JJa0+Rz2hrKvsIqBUsSEGV1KaZyEMNPON/ixuQyInf+i1pkBut9k8YT2WVeYlnyIo0nzmlGOqzjJAAZwKeW2Ym7RlMa84/0blrbv0QVdz64wyHnALdciaE+UCZg11oD5bAgEnLd05w4Huk5Gq4rMy8BjTnJ61PnK9ZW3QL8j0HDuvsvO5eGTHTi6snfFIz2J+aOvwzJ5BLOX5lVvFgea7jORMnInnpI/zLLQAAA==",
+    "alpha": true
+  },
+  "med-imodium-2-mg-2-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCyAAAA0AQAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYlsDbAFGzKY+sgMWLBgt+vFJsKMIYAA/t6fjJRIScIlCkFAIrZyDzn79NyYLNdjADK2sOaPjT0vwWBtj4egwOZAoQeY/00E7wGBcnv//ojo+k4BkvsoK6mel7hq3E5L/xb+JQIIcqfFBLY015GqyeoP2Hzz9GVaw7b1sp7HL8RMVYWXxELgRPSchGJsRmw1CiEcpr9k+AAAAA==",
+    "alpha": true
+  },
+  "med-imodium-2-mg-2-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDgguAAAAFAFAJ0BKhgAGAA+7WKtUCmlJCKwGAgBMB2JZgDHFCf/BbcwtkU24FUz85aZzbNuGF/eAAD+0zvsum6lx71mFH5K7zf4GM2F8Ta/t+c3GEvqsooN3GfRljtnQYrG7/Bvxncv4F2z/ydNkxN4GqBGHAJrFmZzcxT5wOTjBNLQ7ItmLczvCXFc8Oovx+1x1LcjyIdsp6BBzFarwaDJRK8JLosJUVpRM1W/ByqTyHUMhVqAmKRMi0AAAAA=",
+    "alpha": true
+  },
+  "med-zymad-10-000-ui-ml-10-000-ui-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSNQAAAANkFvb2rJF5+Lu7ikhoVsJrjFVQEYHRJRgVXgOqUPoDiPfe8e+92OtaSAiJoB0CbDJbvPF5V0Vejp/zSKz0R1cfTIux0FuFUZ1tyZrctuIdYMc59xkeRWxQm4Sp8AQFr2HQY5RqFonyXey1rz0KKcplGzzo8Dox8Li/Iuc5p7CH4UByP0+9nyUEyJKyLEBROE3YkOODCAwGaW/yGSR/l/5yyDkRIS4n3kh+Us5OVHm+HFEApyzU06I0MtUMtBezuv1bi44DfO+v3/1AiCZ+FxhgRPzT1ZQOCAMAQAAkAUAnQEqGAAYAD7taqtPKaYjojAYCAEwHYlsALsdgEyS7yqAyEF1ZWX76vquIVXcbRZsnwAA/ucfr955G4LCYt8fyt0WDwpcAOlbKqbNwarpLiGybx17zjzlImw4qPRxpn5P7iUf4Sxp27f//NdBt0jo8Jx3uFh/aLFLszkvf+N+Ef4Pwn+4OljP7/Evfv7hGf4CZ3gr/o/AHzJLcYK+4/436MdFxMLkMbnvDiD7TY78aCU2K5gkSN/RJ4Qtfn/WtsWF6MEoySJNjtRMsS7GKHfYtXcr3wtW6DaGCdTgJfH/5NoC486/4t9JA/+KBh1gh2j3eKrvwHYhxQod1nhoj8a/LzZb17nRVzAAAA==",
+    "alpha": true
+  },
+  "med-zymad-10-000-ui-ml-10-000-ui-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSL8AAAABgFtbe8Lm+/VrC59U9gTJBszpcjJCshF3zMw8ibtwa5bkLyTJ3iAiJgDdF1VV6USnBcWR0dGxIiTHYrXS9FyC5i03mo4LeQa9X+RXH0yOouedfClAMwz6y/Se5QFIkmLW0Yfg6WZgUgxOWQ8hhAYvoAkiuGTrT4v3acBD7DbnmZ4kPa/TBA+x85zb2EkSBFexgzSDw9h2msUaG8451+RammK6wTbZZmsKJgVAaW5hf29hvoRcQVRyYNRaa9Wg6wBWUDgg2gAAAHAFAJ0BKhgAGAA+7WqrTymmJCIwGAgBMB2JagDIqfZ2RmRHQX+rqgRfR/aqFn6+Tb40z/QA/u/DWIzZzVKK/kyD8GQl8T7bAHJ04lF3Gm2a9idMNYejuj5t3OgVA/fVt8tf94YP/H5GIm5v1yPG8zXGxZF+DNPgHuvHUdTBY71vFoBM+Po0qt7sW9axxc4ufu5ilZ36pd4lFtuTxXt/N1EMq76DfZHJSAV9cr25WUwFyWeKmA/mx1A+NbPlqqxepPxiGeZBn/bUkzz59JsOp95R9eYNGyerwAAA",
+    "alpha": true
+  },
+  "med-zymad-10-000-ui-ml-10-000-ui-ml-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRq4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMAAAAABgFtt2/Lk+d4vwXUEtzoL4L5CPCNknUyAlc4GdEwArVXRTx7s/98fJoiICUBKsVbwrxeOTxYzsDgIMXIXVldm8KzoBBuv3fbHjg7AxPLiKLI0U7OzU1kILrudK1iVYOSRfMpDFAbz93SOD/MwqQRzz/QheL7MQdJYVNgLIYQui7DpGnQ/BqzpfIwxOlY1dQaS9H9Q0dSSyppKUlHXd865vkZQ6DKSkf0CJA2A9Wbr7LTVXIfWINFoILmctTkrSARWUDggyAAAADAFAJ0BKhgAGAA+7WCmTamlIyIwCAEwHYlmAMfli3zbi3FI9Qf+Cdps7TWjzT3e+nAAAP7zdTHioR6/ZLaKAHFccRuxgWqYZ7FFrl2Ev9vUHLroIlxwidOtG93J/QpprmysuMKQLkeFcD3tzKdN9lk/A3MJ1P+v8+c2gHftkT2VL/iabQ1tuRSmTLYeJ0iXYyQwC0kIrPDHh82Soew2za8OC2PqnRYt/ZaN/4vrrkGbDdwyZDsJm7fyAlCWb8d/pltmfs/gfIAA",
+    "alpha": true
+  },
+  "med-amoxicilline-biogaran-1-g-1-g-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg6AAAANAFAJ0BKhgAGAA+7WCrUCmko6KwGAgBMB2JbAC7ISG6AmjlGgbUAgTLJjtNCiWOWpbXWhroOHAA/up754wLYxQ0CJa/jiAH0PBdxrOIvN4pd1s306oFFJVb1eTOynBp7+dQdlnZbKW2ZOAADI+lFXLjungZZYm1mnWMBWtDgk/VZk+HciYP+rmQ86yHBm8UrJCn6XZDGZjTLvV80DLQLzZWhJighB8BL+IHAmsiagDJIQQFf+OCd1P9OSknJqhL3PzFdQ8gt17worEmmPf1kHb6sZvXHMhinn4DO/77iVf8fsPVD7YIIAA=",
+    "alpha": true
+  },
+  "med-amoxicilline-biogaran-1-g-1-g-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC0AAAAsAQAnQEqGAAYAD7taKpPqaWjojAYCAEwHYloDbAFat3HEz3kYBRp3FB+kS+IAAD+05uRzFHfJGXsiv6AkFmbB/GAtmGs/v+TnwKzwnQR9iX6JWwCIHprE4/DXz2vASUsKsvYpCOKcP//wSoTP3CeH3B9/gnInJ+1vEoaiTdaqqJfCJnW2WWm9ntk2+77koWRRKErhx2zarKexy/FrPaqIkjbmCmEBCVEMEbgoT4YJrS+b4AA",
+    "alpha": true
+  },
+  "med-amoxicilline-biogaran-1-g-1-g-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggrAAAALAEAJ0BKhgAGAA+7WirTymmI6IwGAgBMB2JZgDLLYukbcCr17W10ab1TdafRhwA/sOjvXpfqwQKkktbHyEg+eJC7braKE+K2497rTXBO5pAP+XRm4kLL76Jd3pYAhBPfjCIUaXL5IJ07c5zS9PptiXttk6jAmTOiOXe9u2gWIAbtK12oWeR4KjfVsXYW9uVKr/aWxjVtuhG8cg61nvtQT/e/J97EOt3oeAAAAA=",
+    "alpha": true
+  },
+  "med-cetirizine-sandoz-10-mg-10-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg6AAAANAFAJ0BKhgAGAA+7WiwUCmlpKKoCqkwHYlsALsg0TY8IjwLyMcYhdvtHlTwnhtXh+pewXc+H8AA/uqN9v/Ht84bnW9jWPUOBvllmyqaEdDCf3R++nkE2EJPDvxf59ita4GQgYf43I7LvEg4HaUDIG3dRhcdyiWcbuc2nMroSLb23l06kScfmn0WkDUGie4sODM4pWSFH+X2n/IkBzeTcbA/6r2KJGhXP7TwDHfXvu12ItV3HCddGM9u4rjQqcFIZ3iTW5m+acWuosh6zw0iJvv3cifbn3AOMb98wl/4/rxfi4nA6sYAAAA=",
+    "alpha": true
+  },
+  "med-cetirizine-sandoz-10-mg-10-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC4AAAAcAUAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYlqAMjiIA3kQiKAjMYWkhGi8p30+Gxk8Bt4gAD+05ZSoEqH4KwuE/vKrnlQT1ZtNV9NgbIsYYr591klyabCqRhlqqwW7x/3ST4BlN9OqC8OSUxQMjJ8mId4Kuewo047JWFX8DYiXfclpo2JRjcWEpcY2D3/NhAeglkhsmWxEFYb6Vt2w49yqMYhhCX+Tp76H3uxyvxzsaX/ZjCbzYAAAA==",
+    "alpha": true
+  },
+  "med-cetirizine-sandoz-10-mg-10-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggqgAAALAEAJ0BKhgAGAA+7WKsUCmlJCKwGAgBMB2JZgAD5XEDXYnb9bLE7WN01VbdmsAA/sOjvXv2g3Y8SjHY2eCqeIo+91cuWijAxluPtgzTjGkgPoyvwC0AXwgnOfEYfjCI98jovjsAGUocOuY0/0lfL488UAIchywHsieVwAtk0jwmRP0pGVNKRQDMRZPRMmy2OMrCxdj4KArB4XPsA25ACAW0qGQq1ATF3AAA",
+    "alpha": true
+  },
+  "med-ibuprofene-mylan-400-mg-400-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg3gAAAHAFAJ0BKhgAGAA+7WqpUCmmI6KoDVEwHYloAMDoFIIjYLy4u6Heje01eh7EOXMzyyIwyWgA/uqOeFSHEAc+TkoIeztGzqF3QSH4YiBp1xsZN69gfY6BtkShqw0WdeUY93xG9Fq7rPqJS9YJ4RTHsOfdLhkNC8hzUcZqoVPUOU/OKynJC8B+vEaVzGAV20P3aUoia/8P3qzz/Ylwzs5YgcqqX30v4IRMHDjycJaOU6o2AWLEM7qNuf/rY+ICtNb6D+6qU2w4YmPb6f97pVTLnJxVqAGqOrazH9UPtVMAAA==",
+    "alpha": true
+  },
+  "med-ibuprofene-mylan-400-mg-400-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC0AAAAcAQAnQEqGAAYAD7taK5QqaWkIqgKqTAdiWYAzeCp4KkJxW6GQF+2/FvyVWAA/sPyP9x3mBg3mNVnRr0P6Ir50TQDG8LcXnYB0/57SsaLb74+LRi/R6+yCjpw85k51i/z8WmZuRb3PBFz8hr2z4MYDJoOpKxNCF1A8s/ulh6E4m6rw39hb83gVntYiblSd4NFfuKK8P1Xs2kdvHoiYaJhUI61xkUPbELN/VNZ7Q5LYi2gkAAA",
+    "alpha": true
+  },
+  "med-ibuprofene-mylan-400-mg-400-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggqAAAANAEAJ0BKhgAGAA+7WqvUKmmJKKoCqkwHYljAFMAW/qXBoOvV1G9vxrj6uVjCeQAAP7D+f+oRetwzEUrulgM5ajKbbN8Va/mqTMkzrGiAhWymXWXiwwmAOSg+woS/q9E9Gas8kzZ7x/38XcczGQx/wb4TeRp4qJt2iLlTvG7i9fAi3DYPh0cueoR8E5xW3emK1t2tv4I5UyAyWzlMw8zqmOk+9iHIAAAAA==",
+    "alpha": true
+  },
+  "med-loperamide-arrow-2-mg-2-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg7gAAANAFAJ0BKhgAGAA+7WSqT6mlI6IwGAgBMB2JbACsIV46AmkIiLQvI5i2R8OJ+mW0eM+FPe+DqwAA/u1JJa0+R0/gZ1fYTGSZstuHTzxQAQIZ/8GT2jyLfCWlCVHIgoUHZy8WHhNGBImjkdnRsV7r3SWCLaY9VvWKYj2YK0AM3EfPwP/B5dsFhvb9zripbIAyeFOOiDlI32OR4tsy8VpKc/dDbSj14W2ghnp1f0nCRAR4Ei1C+AzfT12ytOmLLgPQmVFa+cNGclw5KsifevmqU4gY6DMucmCMD+oYbusSbYuIjLVh+/zzmX3LXe8AAAA=",
+    "alpha": true
+  },
+  "med-loperamide-arrow-2-mg-2-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCyAAAAEAUAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYlsDbAFGzKY+sgMWLBkt17ll0mC9N95gAD+3p+MlEhJwiUKQUAitnIPOfv03Jgs+jKZl5B1k9yALPcBtj4egwOZAoQeY/00E7wGBcnv//ojo+k4BkvsoK6mel7hq3E5MKfyRJJUP8g/YiwhEESSdl0DkJeWPfBFXjZlkanpHLjXeWnGs5TUFajl918kWqNwUJ32edsplAAAAA==",
+    "alpha": true
+  },
+  "med-loperamide-arrow-2-mg-2-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRr4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggtAAAAFAFAJ0BKhgAGAA+7WKsUCmlJCKwGAgBMB2JZgDHFCf/BbcwtjY24FUz8nhjdejhOIsAAAD+0zvsujVmxjJivvQX8wMIpXC+braKPjC1qffom0ESGvhpG+FWrnrar4ohwnsvaMZ6dlVVCC424clvBOBi0Q9RamBWUkufeYPsBsJodr01ZAofst9bSZR46WMF9s+lfO3m2xoECprwVL9MNTAVl3mo7h2Hh2gWfhgIa9rPwZoAAA==",
+    "alpha": true
+  },
+  "med-doliprane-2-4-suspension-buvable-2-4-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgQCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSNQAAAANkFvb2rJF5+Lu7ikhoVsJrjFVQEYHRJRgVXgOqUPoDiPfe8e+92OtaSAiJoB0CbDJbvPF5V0Vejp/zSKz0R1cfTIux0FuFUZ1tyZrctuIdYMc59xkeRWxQm4Sp8AQFr2HQY5RqFonyXey1rz0KKcplGzzo8Dox8Li/Iuc5p7CH4UByP0+9nyUEyJKyLEBROE3YkOODCAwGaW/yGSR/l/5yyDkRIS4n3kh+Us5OVHm+HFEApyzU06I0MtUMtBezuv1bi44DfO+v3/1AiCZ+FxhgRPzT1ZQOCAKAQAAkAUAnQEqGAAYAD7tZKhNqaWjojAIATAdiWwAwdgTn9nfSAcAAPA/zr5Ladv3Ergp69ondKAA/ucfr955G4LCYt8fyt0WDwpcAOlbPNEKTGHTfStnjCQYSSVAkTyud7oK0Rrow8HImkf//1i0ZCvMPNyoM+/fMdSr+v+cMlzyXv/G/CP8H4T/cH45S3v8WSfdxXd59YT9ecG/nDMJsLjiYfcOF8ATNcYyMkdrGGDKZGJ/F6A1GkPP5Z+f+Q5HaytDGNvkN5aiuRH1MiaI07tFk8bBjPyHCY0g/Y8pn4/NYvDdHcokHVlRaX1OZzQi8pbjTmu/DWdsZSwVND+zt+7VWY1KcgOKGKjTQAA=",
+    "alpha": true
+  },
+  "med-doliprane-2-4-suspension-buvable-2-4-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSL8AAAABgFtbe8Lm+/VrC59U9gTJBszpcjJCshF3zMw8ibtwa5bkLyTJ3iAiJgDdF1VV6USnBcWR0dGxIiTHYrXS9FyC5i03mo4LeQa9X+RXH0yOouedfClAMwz6y/Se5QFIkmLW0Yfg6WZgUgxOWQ8hhAYvoAkiuGTrT4v3acBD7DbnmZ4kPa/TBA+x85zb2EkSBFexgzSDw9h2msUaG8451+RammK6wTbZZmsKJgVAaW5hf29hvoRcQVRyYNRaa9Wg6wBWUDgg0AAAABAFAJ0BKhgAGAA+7WSpTamlo6IwCAEwHYlmAFSBTMyIyF/rB8All/86svzeJEYTGgAA/u/DWIzChMQyTOyDzEYvE8axUGmJKZvKmYoMPYl0f9yKXJSr74BOue5sDHu5ViZhx++Px4bgNiy9TmZMrvZt7RBawnqB37XAdcwUtwLZ26Ll8DpO6jf3m7AJf7lYSguvv3V28WJEyV3ushJrSsG6THz4lIfUypl7fdg5p4vhD5SlfYDP/tqQFevDR8h+O6NH/+ffRn5v/in9OBeIAAA=",
+    "alpha": true
+  },
+  "med-doliprane-2-4-suspension-buvable-2-4-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRqwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMAAAAABgFtt2/Lk+d4vwXUEtzoL4L5CPCNknUyAlc4GdEwArVXRTx7s/98fJoiICUBKsVbwrxeOTxYzsDgIMXIXVldm8KzoBBuv3fbHjg7AxPLiKLI0U7OzU1kILrudK1iVYOSRfMpDFAbz93SOD/MwqQRzz/QheL7MQdJYVNgLIYQui7DpGnQ/BqzpfIwxOlY1dQaS9H9Q0dSSyppKUlHXd865vkZQ6DKSkf0CJA2A9Wbr7LTVXIfWINFoILmctTkrSARWUDggxgAAAPAEAJ0BKhgAGAA+4V6oTailJCIwDAEQHAlmAMulixjfq2CvZ9rLXmIDG5pVO6zfwAD+9NPWkGXekrfuZAbUwwAJs5k8yK+pwuQ1/XXfDe1rF0q0W+6U9gCSw7Fs5kgV/Jm9BhXR21GkMg+kJtcHqHBzLtgKaYqZV6j9f5887YjPqlEBa1KCwN2XMzbaL9bu6mAj+KQKrJ1fii8tRwCftdhx+ffR3X5z0EuBhnAcrqAOy/TopJZZNU1AH0MuI4mn9jgQJ0AAAA==",
+    "alpha": true
+  },
+  "med-adiaril-sro-200-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRv4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMgAAAANgFrbtmtlnRvI0YEClWMrFMGgHFTsAkUhDDwWicrvnU249wAdRMQE8L8Jk8mEyYQHPHny5EmY55Fu8uOTu/XH5RebfFp5OLq+Sf7DnFP2WGUGFllj45y2KIz0cxnUwibJASbfZGrkgkXq6LRzJmhM+NArEagK5F/w8UcTPvQK1jOqBlMrE64aaOcSm9BHw1SJVw0NmFRswntTRI1svckQsvrRmdBoCtT6YQJMMyQjOvPMT/F4OxC0uoN+OPdnKMAb+A+wTHwUAFZQOCAQAQAAkAYAnQEqGAAYAD7tbKpRqaWjoqgKqTAdiWwAnTlBOAiQEsAbx+jQNoIQo8hmL3XoPucOJJkkNqu1wNFD2AD+w5cKBjaTPD6xFKvTZ9ToEQVmbqwmMw3yXlf11JtZ3qhTAVBCZ80pBo/ndGLvjWzfbDlRzwbTvnOQiXuJzcDyVP3WJMnbXX/DiH4XcJwHphRgxusoeeDMRnZn9CG/AnD6yEOs4YS4baLeHZvV3PNBbeHLIO1ZzU+ElVY861VLlsjuyMa7uS7+FxkpbhRlX+pc6l/4r8onDk2wyOI6TgN7JyhY0CPwN1TbWeQ58KiR1Tc/zZvyAFUM6t2AAm5vK8InWQRLN99vt16/t9nU3ZkAAAA=",
+    "alpha": true
+  },
+  "med-adiaril-sro-200-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRhACAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOQAAAANgFvbtmpl7/tl/Ax3dw2dnJ4I6UVboAJ3d3eHSN+/G3n3jEEHETEB+HcyhqKXDT5GEMxUUbFPJZCmCuYeqAB9YqT9PRIieawPOR9SWTUyFAQg5xXWSngn4u8ujFQz4BB/ZGuCGEOb0BBQ4uMZCjByVSBieJswALk5FhipwlQAuEIiMjRALnAEI9UMHzqwAE0QA0eWLGpB/FXSX0MB+kwhwncOYSo/D84LdOKtgwLC20RzeyEB+cQ1EpHheXjlqXigp7M2gRPYk18321Nz54muwRLIFNGR/vlocRLwJkgSSDIrxAJWUDggBgEAAPAGAJ0BKhgAGAA+7WaqTymlo6IoDVEwHYlsAJ0vbRQIMB/6Jgl9ADpOSIXMMGIKBCsKdOtY8ItSBHRJC+2m6AAA/vYJcJIrCPllcNi0GHN8gXEd2heKYOqQKlAj62EbbpyIAGkP6RGhwvE85jkjvHU6S8e4EJGJUZw47J9sGjrK3ZSp748TC23Nrc15fxOpWjPiU1OU7ogZL2xwRk/plem12346SXBydkeFKQgAGH0EXtOUMgQpuyM7kaXvSOj4+beKPbQSOcmby5TsAcm1359qtfuvb8ZpddUF/Pl3jvPpnPLfFwtcBsTWW+Pc5bWPJRD19v+4wErxdn/glo3Bl/M7wL6AAAA=",
+    "alpha": true
+  },
+  "med-uvedose-100-000-ui-100-000-ui-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSNQAAAANkFvb2rJF5+Lu7ikhoVsJrjFVQEYHRJRgVXgOqUPoDiPfe8e+92OtaSAiJoB0CbDJbvPF5V0Vejp/zSKz0R1cfTIux0FuFUZ1tyZrctuIdYMc59xkeRWxQm4Sp8AQFr2HQY5RqFonyXey1rz0KKcplGzzo8Dox8Li/Iuc5p7CH4UByP0+9nyUEyJKyLEBROE3YkOODCAwGaW/yGSR/l/5yyDkRIS4n3kh+Us5OVHm+HFEApyzU06I0MtUMtBezuv1bi44DfO+v3/1AiCZ+FxhgRPzT1ZQOCAMAQAAkAUAnQEqGAAYAD7tbKpPKaYjojAYCAEwHYlsALsdgEyS7yqAyEF1ZWX76vpKfxdXZJN8MQAA/ucfr955G4LCYt8fyt0WDwpcAOlbKqbNwarpLiGybx17zjzlImw4qPRxpn5P7iUf4Sxp27f//NdBt0jo8Jx3uFh/aLFLszkvf+N+Ef4Pwn+4OljP7/Evfv7hGf4CZ3gr/o/AHzJLcYK+4/436MdFxMLkMbnvDiD5vwhJU+qoir8ZQvW8862Pz/vByiAigoqAEeZhoJssS7GKHfYtXcr3wtW6DAaK6nAS+P/ybQFx518nOAm/gFuCAZUwWCYMtl6CRJkDVHQSMsuZfpE5ebLevc6KuYAAAA==",
+    "alpha": true
+  },
+  "med-uvedose-100-000-ui-100-000-ui-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSL8AAAABgFtbe8Lm+/VrC59U9gTJBszpcjJCshF3zMw8ibtwa5bkLyTJ3iAiJgDdF1VV6USnBcWR0dGxIiTHYrXS9FyC5i03mo4LeQa9X+RXH0yOouedfClAMwz6y/Se5QFIkmLW0Yfg6WZgUgxOWQ8hhAYvoAkiuGTrT4v3acBD7DbnmZ4kPa/TBA+x85zb2EkSBFexgzSDw9h2msUaG8451+RammK6wTbZZmsKJgVAaW5hf29hvoRcQVRyYNRaa9Wg6wBWUDgg2gAAANAFAJ0BKhgAGAA+7WisTymmJCIwGAgBMB2JagDIqfZ2Rmdv751m+1n3R9jFv8c9dPXoDGrdClAA/u/DWKh5TQHj8/cFcHZoJvwnLsOnDNx7rnktpmoyMPyQc+ymL2DECwkZn6/AUxfhep9TclJgjHQNoKOZN978DHPhJT12ZML7w3nvBTLxJNWMoit8YZcFv3cxSv94OIuXxXKrH0xr1dj1PCa2xRvKoCZNlfPY9Kv2fc6NruR9C9UYcRyA9am/1J+MQzzIM/7akmefPpNh1PvKPrzBo2T1eAAA",
+    "alpha": true
+  },
+  "med-uvedose-100-000-ui-100-000-ui-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRq4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMAAAAABgFtt2/Lk+d4vwXUEtzoL4L5CPCNknUyAlc4GdEwArVXRTx7s/98fJoiICUBKsVbwrxeOTxYzsDgIMXIXVldm8KzoBBuv3fbHjg7AxPLiKLI0U7OzU1kILrudK1iVYOSRfMpDFAbz93SOD/MwqQRzz/QheL7MQdJYVNgLIYQui7DpGnQ/BqzpfIwxOlY1dQaS9H9Q0dSSyppKUlHXd865vkZQ6DKSkf0CJA2A9Wbr7LTVXIfWINFoILmctTkrSARWUDggyAAAABAFAJ0BKhgAGAA+7WCnTamlI6IwCAEwHYlmAMfli4bbi3FFaB/iyLESya0eae732jAA/vN1MeKlIKxNsRRScVxxG7OJaphsAUWuYZM8uAuYroAiXHCaCwUcHAkqMbTI0MHjlbRDO+YVRL9ScPzMHyyRIdh01/X+fQhlRjvnsg0zrAMjMbdZ/pdjTzhT53fsFmh+l9PCL8mTP1gq6ML8YpDKsm7bnQGbNeflzR8TqmEYY5VZ2Xdn/S+QEoSzfjv9Mtsz9n8D5AAA",
+    "alpha": true
+  },
+  "med-magne-b6-48-mg-5-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg7gAAANAFAJ0BKhgAGAA+7WSsUCmlJCKwGAgBMB2JbABV6dADeQCVN+TogTXa7kBzddXlcgt5Oo2ttAAA/up8QrHhSgBJzlkJ7hGuAOGGy5SKC/gxmFKYLVVEn+Ia5iqXPS11/8Q1hyu4Grad+na3YT2PRzuPQJReQ/MgUZISmZk9gLa4LGTYRsrp3r3qYDE2S2Gh65YyHmy6imxKzu9jmcyJvK41iM43xP5g5LLyl9YPzZefEvfvrph96BVEuJ9R+30bfDx3S7nl8vUOnhjb+vn8Cqx+4QcucmVG0ABnoyC31iH0ss1AUc055r77lq1AAAA=",
+    "alpha": true
+  },
+  "med-magne-b6-48-mg-5-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCyAAAA0AQAnQEqGAAYAD7taLBQKaWkoqgKqTAdiWwNsAUE46bf+ySQFDGl8x3G4yGghEAA/t7sP2Yi1TxChD6TsXujhwC3tgZVVWP5idC7RHHWPsf+NcMFAZ/PgODoy0e1LUFiZ+RfzjX//24MRWy/e/ZDO5GN5kiu6PRvtTgjw6jqdzNPa7it8/6M5b/zvpr8/Tdhw2/QUwcByr5mxExVhZejCjOFF0Qq6tpqw1CiEcpr9l0AAA==",
+    "alpha": true
+  },
+  "med-magne-b6-48-mg-5-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRr4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggtAAAANAEAJ0BKhgAGAA+7WKsUCmlJCKwGAgBMB2JagCzkfti2OzbgVTPyQ1n3ylIkKwAAP7TO+y6NfKsqbtfOzsmOZWzjPTgiyqCvbp5a8T0si+W86cr4C46J8sGknH0+3SYLiE2ATYsSUcA5hCtTHuCeCxOfvLebSNrg4CgZnooHWMWbnpRDhAhDsXm4avUwR65Udg9FFufzDAjfQKvUmxR4x070Gk8c9Xh2gWfhgIa9yE1DIAAAA==",
+    "alpha": true
+  },
+  "med-supradyn-intensia-30-comprimes-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg7AAAALAFAJ0BKhgAGAA+7WirT6mlo6IwGAgBMB2JbAC7ISD2PyIvC8jmOEIsmS6gCckzKKy6LH6RIAD+6nxC678M+C2PdnI7nuOB25u89rlz4mvnOFMT2skmTwgU8zfuTEgrajewCceiqpub/LzfV1Iyps9nIcH4KZzZYdBXFKTbd1aRy/63NWEjreX1FZRWbqY5vePPyw8ApP3fXsnBpxRJo6XnOV3yfdVxh2JfQDzN3DF9Ti02nqSG9yga5JXeMZS5gOHvbLVVKw9JMNt4apTiBjoM0Zycuv3ZzBcse7aK7U+KCql1/nmfvuWsqYAA",
+    "alpha": true
+  },
+  "med-supradyn-intensia-30-comprimes-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCyAAAA8AQAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYlsDbAFBOOm3/skwBRxpfVfgaNrQ3LgAP7e7D9mItU8QoQ+k7F7o4cAt7YGVVVj+YnR3I/Toh3wbOa2GLsMrTMUWfha0LK8Exhi7Wv//aJaL+Ok53tjuRjCJAEb/yp02bup/K3AoCMyNgcBxubEFqjYP5aAtCb4vOMPmv5vUSLWe1XDg3y+O9YsywycySLVG4KE77PO2VYAAA==",
+    "alpha": true
+  },
+  "med-supradyn-intensia-30-comprimes-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggrAAAANAEAJ0BKhgAGAA+7WSsT6mlJCIwGAgBMB2JagCzkfqi1/zbgVTPyQvymsYnN1uQAP7TO+y5KIWP7oaD1vS8IX2HIwHLlooiBHyGqh5Ntkq1OuMyEaLEraryBHukwWOqsAltWWm74Mt9KVstiaR6n/62gMdBTiIrGlNZlu9THtqjPAmnrTyX2Llhl3LI3nXVJZFmflvvURok2w9rQX7w2heHaBZ+GAhr3a9dgAA=",
+    "alpha": true
+  },
+  "med-biafine-emulsion-0-67-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRmYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMIAAAANgBXJtmtl9jnknEED6MALhQa+wAKFCQoBSIDvaOHlnN8768WzkRARE8DKYCyd4E1a5g63p2NDa9V3ZZnSw40FEn+PphyZ+lsJCENCyjERCQBrY5GrmGrHMqCEKQdT5ZTFAu7ihS0UPaJ4wWLBA8ULWyj+W9kjSuegNTVRHrTirowmXtEdHCNrCeVBd3gko4W/NzwU1sZSnsKkcgaUCQ7g6e6K0jPCmeLH5z0vxJFnufjHxOuXXZN84vtNIB9YZCJWA1ZQOCB+AAAAkAQAnQEqGAAYAD7pXqhNqSUkIjf1WAEgHQlAGeyIrhq3o65qA9D0eCjHU8IAAP736ZIZxsJhfzVBAFTyzYD5YIuAsMAmLxvSEIn8TpIu2JwrJQ/s35g3/fm9f7f1LawrTONFy00cGD/gUk6oeAFEfS49w5c7p5cy9UmMAAAA",
+    "alpha": true
+  },
+  "med-biafine-emulsion-0-67-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRmABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKoAAAABgBvbtuvk3PvkICT1hKS+GF+QMkY14L33nkgRGSGhLYD5T+8EMufRQURMAHo1M0NGN0N+C6YY+lZPT2+emxNwxV4YE3/HNDzwr+DvuGS4Y0z8HFTgOGNs8WMAJgQcsmjxvT/DTtubZ9hmEdmEQdpre4UrjmPGyHsE7aTtUgvYYxF5opWw1raeo9HW0ALmmRIXNDjqZB0OOWA+cQVBc0yePMzBtf80d8+jAlZQOCCQAAAAUAQAnQEqGAAYAD7tZKxOKaWkoigNUTAdiWIA0BhGGV4MR279lKEcwcixAAD++LHBKq7yfNHB3TSe8kYhLFagJbE30FJ0UiBDR6UpUePFMAwRaJMue86j/7suKut+wLkvJecfQO3TuykOOv69DIfNhhfYstf+hDEG4ZmCTr9piNaTukH02p3/P1iMnBi+coAA",
+    "alpha": true
+  },
+  "med-biafine-emulsion-0-67-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRnwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMEAAAABgFvbtmplX8FidwuJPHVogEHkFrk7Nfwafg1YA0Tk7hr9DIvevfdt/AAVRMQE4Fttv9T4pxqNYyOjoyNjDVA/s1ikJz0XYCQzjEKIOC0xmKAnPcdl3QyfumRNjMnAZolGNcmYoQZaUvrKOOZjlUQh+4Eh8D4HSpJ18OkoXYY9es99aAgNNuk8d2EkFslPyd9IMIqYkBn0MA7skUFhI5XagIJcobISCnKN9rOrTmiZQT/ZDyNTyF9cLoCS/aWyVv0EAFZQOCCUAAAAsAQAnQEqGAAYAD7tZKpNqaWkIjAYDAEwHYliAACQh2A1jeH3P9sdJfWygt3uAAD+3pn/n05xlwq/SBWjmwL0GGmpVLW+J8YdTyrjjAY+5DWtH2+bAGGJoUWPAr2Kc5sAHB/kHRIl/nnUeOFO4JUPUU6uDw673HiNuxod5ACTgp+3/ogRxUWOs/ZaO799/Sscw8AAAA==",
+    "alpha": true
+  },
+  "med-cicalfate-creme-40-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRmQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMIAAAANgBXJtmtl9jnknEED6MALhQa+wAKFCQoBSIDvaOHlnN8768WzkRARE8DKYCyd4E1a5g63p2NDa9V3ZZnSw40FEn+PphyZ+lsJCENCyjERCQBrY5GrmGrHMqCEKQdT5ZTFAu7ihS0UPaJ4wWLBA8ULWyj+W9kjSuegNTVRHrTirowmXtEdHCNrCeVBd3gko4W/NzwU1sZSnsKkcgaUCQ7g6e6K0jPCmeLH5z0vxJFnufjHxOuXXZN84vtNIB9YZCJWA1ZQOCB8AAAAcAQAnQEqGAAYAD7pXKhNqSUkIjf1WAEgHQlBtgCx1Tt73FVJaeF3plZ+nAAA/vfpeze+Ng5m5rETh+fVE4LKHDaEchAoSPy1n2+WFYSjd45diFt+jxMZN/Fds8ffd1PWHaKOPsuiMOnLghgBf1y0r1ndmXfjQPDdwAAAAA==",
+    "alpha": true
+  },
+  "med-cicalfate-creme-40-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRmABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKoAAAABgBvbtuvk3PvkICT1hKS+GF+QMkY14L33nkgRGSGhLYD5T+8EMufRQURMAHo1M0NGN0N+C6YY+lZPT2+emxNwxV4YE3/HNDzwr+DvuGS4Y0z8HFTgOGNs8WMAJgQcsmjxvT/DTtubZ9hmEdmEQdpre4UrjmPGyHsE7aTtUgvYYxF5opWw1raeo9HW0ALmmRIXNDjqZB0OOWA+cQVBc0yePMzBtf80d8+jAlZQOCCQAAAAUAQAnQEqGAAYAD7tZKxOKaWkoigNUTAdiWIA0BhGGV4MR279lKEc2BB5kAD++LHBKq7yfNHB3TSe8kYhLFagJbE30FJ0UiBDR6UpUePFSuiVvVAk6+4Jf+pmDV5ZNp4Pwfjp0Dt07spDjr+vQyHzYYX2LLX/oQwj6JBnP+bixqEcsvRSegvX5T/4OJ5NgAAA",
+    "alpha": true
+  },
+  "med-cicalfate-creme-40-ml-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRnwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMEAAAABgFvbtmplX8FidwuJPHVogEHkFrk7Nfwafg1YA0Tk7hr9DIvevfdt/AAVRMQE4Fttv9T4pxqNYyOjoyNjDVA/s1ikJz0XYCQzjEKIOC0xmKAnPcdl3QyfumRNjMnAZolGNcmYoQZaUvrKOOZjlUQh+4Eh8D4HSpJ18OkoXYY9es99aAgNNuk8d2EkFslPyd9IMIqYkBn0MA7skUFhI5XagIJcobISCnKN9rOrTmiZQT/ZDyNTyF9cLoCS/aWyVv0EAFZQOCCUAAAAMAUAnQEqGAAYAD7tZKpNqaWkIjAYDAEwHYliAAPkw8AK4lDhPF/D8YXn7PhpueOeBAAA/t6Z9GIrH1jLP3EPt7/onW5vWePz+BX9tPJksAk0enLb+0zs1aZsTxs4ckInz8gBHTnBeMz5500Ttc4h68fGfvsCnrdimi2a2ADog/eR/ew5qyhF1ufCMr77+neQdAAAAA==",
+    "alpha": true
+  },
+  "med-hydrocortisone-kerapharm-1-1-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRmoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMIAAAANgBXJtmtl9jnknEED6MALhQa+wAKFCQoBSIDvaOHlnN8768WzkRARE8DKYCyd4E1a5g63p2NDa9V3ZZnSw40FEn+PphyZ+lsJCENCyjERCQBrY5GrmGrHMqCEKQdT5ZTFAu7ihS0UPaJ4wWLBA8ULWyj+W9kjSuegNTVRHrTirowmXtEdHCNrCeVBd3gko4W/NzwU1sZSnsKkcgaUCQ7g6e6K0jPCmeLH5z0vxJFnufjHxOuXXZN84vtNIB9YZCJWA1ZQOCCCAAAA8AQAnQEqGAAYAD7pXKhNqSSkIjf1WAEgHQlAGeyxgnjN3FVJpkp78FcAxedw2ZUAAP736XsxKE1wJGqF5sUxMOd3hcpaimxcer1S9oNwABxp4FN8dSTSJNFcysegjnW4NDZ+PJS6fDEEXwi8CwLcQAM5eWles7sy78aB3GgIAAAAAA==",
+    "alpha": true
+  },
+  "med-hydrocortisone-kerapharm-1-1-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRloBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKoAAAABgBvbtuvk3PvkICT1hKS+GF+QMkY14L33nkgRGSGhLYD5T+8EMufRQURMAHo1M0NGN0N+C6YY+lZPT2+emxNwxV4YE3/HNDzwr+DvuGS4Y0z8HFTgOGNs8WMAJgQcsmjxvT/DTtubZ9hmEdmEQdpre4UrjmPGyHsE7aTtUgvYYxF5opWw1raeo9HW0ALmmRIXNDjqZB0OOWA+cQVBc0yePMzBtf80d8+jAlZQOCCKAAAAEAQAnQEqGAAYAD7tZKtOqaWkIigNUTAdiWIAA+OUQZWJO9hZ1MqgZuAA/vltJ8fjnAuWbhJs97v5syHlyrgRjQfBRVBpcqPlWQevn+ySnt1Jugm/+pmDV5ZNp4Pwfjp0G4nF/FHapJAzmRm6m/3RrfDa2JwNTuP/m4sahHLL1QV6Hz9YjJwYvQAA",
+    "alpha": true
+  },
+  "med-hydrocortisone-kerapharm-1-1-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRoABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMEAAAABgFvbtmplX8FidwuJPHVogEHkFrk7Nfwafg1YA0Tk7hr9DIvevfdt/AAVRMQE4Fttv9T4pxqNYyOjoyNjDVA/s1ikJz0XYCQzjEKIOC0xmKAnPcdl3QyfumRNjMnAZolGNcmYoQZaUvrKOOZjlUQh+4Eh8D4HSpJ18OkoXYY9es99aAgNNuk8d2EkFslPyd9IMIqYkBn0MA7skUFhI5XagIJcobISCnKN9rOrTmiZQT/ZDyNTyF9cLoCS/aWyVv0EAFZQOCCYAAAAUAQAnQEqGAAYAD7tYKpNqaWkIjAYDAEwHYliAACPp3bAn4RShCrdA4afAAD+3pdAtjUVy4VfpAqyY0Hjn8oG1K709P+qj5VgSRIawxoqaPWUX/SuFbecLBusoXf/uxv83HGNgA4ZtE1q+CPzzRrt3Hx/rU3UKhJLXb3HiMj1S68gBJwU/b/0QI4qLHWfstHd++/5BLDAAAA=",
+    "alpha": true
+  },
+  "med-voltarene-emulgel-1-1-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRl4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMIAAAANgBXJtmtl9jnknEED6MALhQa+wAKFCQoBSIDvaOHlnN8768WzkRARE8DKYCyd4E1a5g63p2NDa9V3ZZnSw40FEn+PphyZ+lsJCENCyjERCQBrY5GrmGrHMqCEKQdT5ZTFAu7ihS0UPaJ4wWLBA8ULWyj+W9kjSuegNTVRHrTirowmXtEdHCNrCeVBd3gko4W/NzwU1sZSnsKkcgaUCQ7g6e6K0jPCmeLH5z0vxJFnufjHxOuXXZN84vtNIB9YZCJWA1ZQOCB2AAAA8AMAnQEqGAAYAD7pXKZNqSUjojf1WAEgHQljAAC8G4RmS92vaJ3Q2AD+9+l7N742DmbWYLk4iA13Ikj9I4Aqv8bP3kv+lcGIgoe/A0gQBUoAAS/52Gor8flh9lzIWCzNlFs9/4ArWZvLD4qbqFBbwHz2d5AAAA==",
+    "alpha": true
+  },
+  "med-voltarene-emulgel-1-1-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRl4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKoAAAABgBvbtuvk3PvkICT1hKS+GF+QMkY14L33nkgRGSGhLYD5T+8EMufRQURMAHo1M0NGN0N+C6YY+lZPT2+emxNwxV4YE3/HNDzwr+DvuGS4Y0z8HFTgOGNs8WMAJgQcsmjxvT/DTtubZ9hmEdmEQdpre4UrjmPGyHsE7aTtUgvYYxF5opWw1raeo9HW0ALmmRIXNDjqZB0OOWA+cQVBc0yePMzBtf80d8+jAlZQOCCOAAAAMAQAnQEqGAAYAD7tZqtPKaWjoigNUTAdiUAAfGyIMrFmeTyZT4jg2dagAP75bSfH45wLlm4SbPe7+bMdjeviMrk81EdBC1UF/gzT0ynhasq8ln7yX/6K0MaVk2ng/B+OnQuhqBglvL5RoaFWuKb606m/I+bMAAAnGWI5OYO/hIOHAxK319gcX+6O0z7AAA==",
+    "alpha": true
+  },
+  "med-voltarene-emulgel-1-1-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRnQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMEAAAABgFvbtmplX8FidwuJPHVogEHkFrk7Nfwafg1YA0Tk7hr9DIvevfdt/AAVRMQE4Fttv9T4pxqNYyOjoyNjDVA/s1ikJz0XYCQzjEKIOC0xmKAnPcdl3QyfumRNjMnAZolGNcmYoQZaUvrKOOZjlUQh+4Eh8D4HSpJ18OkoXYY9es99aAgNNuk8d2EkFslPyd9IMIqYkBn0MA7skUFhI5XagIJcobISCnKN9rOrTmiZQT/ZDyNTyF9cLoCS/aWyVv0EAFZQOCCMAAAAkAQAnQEqGAAYAD7hVKVNqKQjojf6qAEQHAlAGXwowH6gDU/Ml9EiWg7D4OzQAP7TmyG6SMG1G9LE0voo17xBRHGx2xZrTiACSNIeyfAq//Mir6/lk6eQVUn/uZr8VhFzK0Nr6rxvMV69sWcJ0nMatpaMigkyHw3UdkLAAa12pAV7NgQuAvTv84AAAAA=",
+    "alpha": true
+  },
+  "med-maalox-maux-d-estomac-400-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg7AAAABAGAJ0BKhgAGAA+7WipTymmI6IwGAgBMB2JbAC7FQAuwDeUSVM+RMgTXqGvecTy4dmZKhQAe7f+4AD+7UklrT5HCUv5PKf5H3B8sOZH5BdOnU39UTngCPxYVXLhiNoX+x0ZmLpSjShXe/R/93taLwYSq9z6OCQ5WWNG9lpNB9nVGUxrzj/493aWZ3XQEVD+8d0DWvm2620IWMZKWH6C/Q5n6p/n/wAJoyuWqzkwgEecR9xUrtChZOiUyUUELIFvm+7svJPeVneFaDxMuGZ6bDoM15yapslcaXdjj9DZcK7ezdrHk56X/8y0jgAA",
+    "alpha": true
+  },
+  "med-maalox-maux-d-estomac-400-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCyAAAA8AQAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYlsDbAFPKnt+qgMWLBkt1jqugjbQYgAAP7en4yUSEnCJQpBQCK2cg85+/TcmCz6MpmXkHV2F5zsOlEPbo2SQ3dp0M8x/pk6ceQtDnx//9EdH0nAMl9lBXUz0vcNW4nJf+IlqF/nGb/bbBnX8flinDL2HUKdy6VagQxh81/N6iRExVhZfEQfvbrwMXZ0cDP5j4Hx6WYAwwAAAA==",
+    "alpha": true
+  },
+  "med-maalox-maux-d-estomac-400-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggsgAAAFAFAJ0BKhgAGAA+7WKsUCmlJCKwGAgBMB2JZgDHFCf/Bbcwtgk24FUz8u8EB6A84z9oQAD+0zvsuUErxjJg+2UfMJqZEw8/6cYgbzIlskJdelkXhRnTlWyOwZBMGzlz4ND/bZ7pe7QU5LPEJHQoOBiz1Q156latSIPTn8i2YtzO8JcVzw6i/H7XHUoUkfuwnsHngS3QU8NdmLEs6aCc/gcn6j456vDtAs/DAQ17S6Q6wAA=",
+    "alpha": true
+  },
+  "med-gaviscon-suspension-buvable-250-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSNQAAAANkFvb2rJF5+Lu7ikhoVsJrjFVQEYHRJRgVXgOqUPoDiPfe8e+92OtaSAiJoB0CbDJbvPF5V0Vejp/zSKz0R1cfTIux0FuFUZ1tyZrctuIdYMc59xkeRWxQm4Sp8AQFr2HQY5RqFonyXey1rz0KKcplGzzo8Dox8Li/Iuc5p7CH4UByP0+9nyUEyJKyLEBROE3YkOODCAwGaW/yGSR/l/5yyDkRIS4n3kh+Us5OVHm+HFEApyzU06I0MtUMtBezuv1bi44DfO+v3/1AiCZ+FxhgRPzT1ZQOCAMAQAAcAUAnQEqGAAYAD7taqtPKaYjojAYCAEwHYlsALsdgEyS7ywAyEF1ZWX5nAMX/PHJgcSFAAD+5x+v3nkbgsJi3x/K3RYPClwA6Vsqps3BqukuIbJvHXvOPOUiZthGE/ShxwHuKSA0rHnXM//5roNukdHhOO9wsP7RYpdmcl7/xr1v4Pwn+4OlTXv8S9+/uFOpyKavBYDrWAPpNA3wV9x/xwEYj9dSrMvrWd+d6Ogl2BLspWbihiPsLLTCoffn/eDlEBFBRg7k8WE/TUwjMDK8Kan69bnn3f5DziY+8UWvj/8m0BcfAaBB3Wayx+RdNPKto93iq78M3LCXXZn7g/gP3k+Xnm3r3WfzwEAAAA==",
+    "alpha": true
+  },
+  "med-gaviscon-suspension-buvable-250-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSL8AAAABgFtbe8Lm+/VrC59U9gTJBszpcjJCshF3zMw8ibtwa5bkLyTJ3iAiJgDdF1VV6USnBcWR0dGxIiTHYrXS9FyC5i03mo4LeQa9X+RXH0yOouedfClAMwz6y/Se5QFIkmLW0Yfg6WZgUgxOWQ8hhAYvoAkiuGTrT4v3acBD7DbnmZ4kPa/TBA+x85zb2EkSBFexgzSDw9h2msUaG8451+RammK6wTbZZmsKJgVAaW5hf29hvoRcQVRyYNRaa9Wg6wBWUDgg0AAAAHAFAJ0BKhgAGAA+7WisT6mmJCIwGAgBMB2JagDGiBSyI0C/1iKAS73+kYG6cXuyLnnx3AAA/u/DWIzHVN4q+eyDzlSQ08i9NZqBHeOPdc596bQR4YPj7ZOvFdOhLVnWAer58yZC/H48LTiY+hvyySfduA+AQmA1Jb5+5LQIdp0nL/i0SlgjCpiduH7prKZ/g7fNGUMLy0B6KQZeMVf2ALKFTExIKUB0BFtizioFejkXEZ7TQ4P5re+Er3Rqv9GzXHbs4LFpy3OsVvMK8reQAAA=",
+    "alpha": true
+  },
+  "med-gaviscon-suspension-buvable-250-ml-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRqwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMAAAAABgFtt2/Lk+d4vwXUEtzoL4L5CPCNknUyAlc4GdEwArVXRTx7s/98fJoiICUBKsVbwrxeOTxYzsDgIMXIXVldm8KzoBBuv3fbHjg7AxPLiKLI0U7OzU1kILrudK1iVYOSRfMpDFAbz93SOD/MwqQRzz/QheL7MQdJYVNgLIYQui7DpGnQ/BqzpfIwxOlY1dQaS9H9Q0dSSyppKUlHXd865vkZQ6DKSkf0CJA2A9Wbr7LTVXIfWINFoILmctTkrSARWUDggxgAAAPAEAJ0BKhgAGAA+7WSoTamlo6IwCAEwHYlkAMoBi1Tbi3FGWf+CUp9u5kfYNrCewAD+83Ux4pUY2rUkjuZxXGsNDWHFm0U55Gl7mkYmWSKoFCJccFndp5DRHcw/tMGkPm1GTvD+1BYq0kcZoMyFeDQX5Gvfr/PnnoQ4+AJCAC+t+oWx+80PGdhWaHr4wQeTZRu5WbL2031MJoB+hpPvdFuqqRa6lVfX4M3w+ffyB401NAs9wiMlAMjXHCPPXJoLde/4AAAAAA==",
+    "alpha": true
+  },
+  "med-helicidine-sirop-10-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgICAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSNQAAAANkFvb2rJF5+Lu7ikhoVsJrjFVQEYHRJRgVXgOqUPoDiPfe8e+92OtaSAiJoB0CbDJbvPF5V0Vejp/zSKz0R1cfTIux0FuFUZ1tyZrctuIdYMc59xkeRWxQm4Sp8AQFr2HQY5RqFonyXey1rz0KKcplGzzo8Dox8Li/Iuc5p7CH4UByP0+9nyUEyJKyLEBROE3YkOODCAwGaW/yGSR/l/5yyDkRIS4n3kh+Us5OVHm+HFEApyzU06I0MtUMtBezuv1bi44DfO+v3/1AiCZ+FxhgRPzT1ZQOCAIAQAA0AUAnQEqGAAYAD7tYKdNqaWjojAIATAdiWwNiAHcFYPCVskD9lfSAA1wAHJFbuuR0U/KEoHHQAD+5x+v3nkbgsJi3x/K3RYPClwA6Vs80QpMYdN9K2eMJBhJJUCRPIwRJa1vezgGb5Y5slf//WLRkK8u32S6oPvXTE8T6+llkMl7/xse/wfhP9wZeUfv8WSfdxoO6+tmiH7LyktyZz/xGafLJKBJQxGcH27b1N2G7aispXtKqbsaa0p/n/eDlAZeU/3iJ0UezeP0VYGo/atRtRaCR0SrT4bjbswD8fnn4ESX9DnRvzfHfaAhbwBNt7/P878MmY5jnUJ1jRjzUx034X0QmVK9AAAA",
+    "alpha": true
+  },
+  "med-helicidine-sirop-10-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSL8AAAABgFtbe8Lm+/VrC59U9gTJBszpcjJCshF3zMw8ibtwa5bkLyTJ3iAiJgDdF1VV6USnBcWR0dGxIiTHYrXS9FyC5i03mo4LeQa9X+RXH0yOouedfClAMwz6y/Se5QFIkmLW0Yfg6WZgUgxOWQ8hhAYvoAkiuGTrT4v3acBD7DbnmZ4kPa/TBA+x85zb2EkSBFexgzSDw9h2msUaG8451+RammK6wTbZZmsKJgVAaW5hf29hvoRcQVRyYNRaa9Wg6wBWUDgg1gAAAFAFAJ0BKhgAGAA+7WqrTymmI6IwGAgBMB2JZgDM3BMyI2C/1g+AQjvf6RgeihQMxBhS4AD+78NYjMz9F+r77IPe5i8VqNNQaYkp08gnAQw9iajdgNFBaP33OgRXCja558Ia1pXRT48K3G9csr8QnC/7RCLfuAJGb1XYM1tqzXQ9v/d9OqtWaE7rv3cxSv5nLYcApBVJbK8b9La/ogolCeSiPcAYsBwZVmTDrA3Lyp8Gv2N5+IVKr4VYWfZC58GI5+jZrjt4UgrCB+/BYz83/xS3yF8AAAA=",
+    "alpha": true
+  },
+  "med-helicidine-sirop-10-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMAAAAABgFtt2/Lk+d4vwXUEtzoL4L5CPCNknUyAlc4GdEwArVXRTx7s/98fJoiICUBKsVbwrxeOTxYzsDgIMXIXVldm8KzoBBuv3fbHjg7AxPLiKLI0U7OzU1kILrudK1iVYOSRfMpDFAbz93SOD/MwqQRzz/QheL7MQdJYVNgLIYQui7DpGnQ/BqzpfIwxOlY1dQaS9H9Q0dSSyppKUlHXd865vkZQ6DKSkf0CJA2A9Wbr7LTVXIfWINFoILmctTkrSARWUDggygAAAFAFAJ0BKhgAGAA+4ValTaiko6I3+qgBEBwJZgDOSfti1h24evema+bMXkpIOyJZagz2gAD+9NPWkGXWGnQeEgbUwv/5mtxzgvet/95sCYY389vBIfS8ktEAgrkbzyLTn+jNQQhhmOR9kFgG+HTu6H7XB6gboYWfs9MVEq9R+v8+fbaQ/n60WQG4Rh6aIKpLd2U5NNMNbXw01tHwB1e881jchekMyyzJwOXLSGLn2SrXKWQavQwk5rD/nCzXWYzsu3ofy75DUW0eIAA=",
+    "alpha": true
+  },
+  "med-spasfon-80-mg-80-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg6gAAAPAFAJ0BKhgAGAA+7WaqT6mlI6IwGAgBMB2JbAC7IQC6AuwDeTyIzC8jlj783CyAwhQbuqEcNdwAAP7tSSWtPkmTqN42cNLmaqx+kkuQGgcnqDOw5+LG5HRbxGoguwL3PInDh60EVezJg8f5yyOmJfc6t5SLR7uRgKsdkdgqZs22onQRmGADaMiTNAFPNcvGho05EOVHg4o9/3zAQOe6mfwlJB/IBEpOq2iKbEBHgroOGk+UKkgnbelyQGTC2D12NZ1fZVh5dxj181Splgx0Gbc9NtEZXi8yq3iwPNdxnImTkTz0kf5lloAAAA==",
+    "alpha": true
+  },
+  "med-spasfon-80-mg-80-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCyAAAAEAUAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYlsDbAFBOOi+uAMWLBkDbh74e//5gfuAAD+3p+MlEhJwiUKQUAitnIPOfv03JgstmqQq9Q63G99pRnMnd5oAopQI8XjC1LueoBa3Mx//6I6PpOAZL7KCupnpe4atxOS/8Z9Ssq1LZsNSdB5VFHNbh5P1FOdyfGb10mA2Xo+m84iYqwsviIWsj5HIxYCyLVG4KE77PO2dQQAAA==",
+    "alpha": true
+  },
+  "med-spasfon-80-mg-80-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDgguAAAAFAFAJ0BKhgAGAA+7WCsUCmlJCKwGAgBMB2JZgDE+F7/BbcwtkA24FUz85aZzbNuGF/eAAD+0zvsuk6lx71mFH5KzzX0GE0/8B6/t+cYBxAyqrcPReK5gmOk/semYiqurtuWdsFgn0KBqn6ufYTQjlNossZh7y95b49uwzhnEl6Thr8RSrIrnh1F+7IvNw2Ixio8W9jS3Yrr66muqeA3UWBvzhUpxALV5T/0JmChkKtQExSMRY6AAAA=",
+    "alpha": true
+  },
+  "med-fervex-adultes-500-mg-25-mg-200-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRvwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMgAAAANgFrbtmtlnRvI0YEClWMrFMGgHFTsAkUhDDwWicrvnU249wAdRMQE8L8Jk8mEyYQHPHny5EmY55Fu8uOTu/XH5RebfFp5OLq+Sf7DnFP2WGUGFllj45y2KIz0cxnUwibJASbfZGrkgkXq6LRzJmhM+NArEagK5F/w8UcTPvQK1jOqBlMrE64aaOcSm9BHw1SJVw0NmFRswntTRI1svckQsvrRmdBoCtT6YQJMMyQjOvPMT/F4OxC0uoN+OPdnKMAb+A+wTHwUAFZQOCAOAQAAcAYAnQEqGAAYAD7tbKtRKaWjoqgKqTAdiWwAnTlBOoTwBvNSNXyJ6z0jYEuMz+wq7O24fa10/1ArS2QAAP6NI3qhIzcE5Kkw4WT5YsfPLc1H7dl3W6ednC7Cdq858+h6aTqbh181Usvm/z5JpFHu4+8dnjwqncoWhYwNgrKPbU/96SrIkYHZ2OBX9FNLtlpLHsXRfHpmQhlrjA7QEk9KWx6bi+E5UmmJsSgu2aAHU9rp22Lqa+KBVJ7QL0qKcwpMGlkh8Pcu17218xq+yJwyKPRZ97oqHgwAgDcgucNym9N/1MrouFk0Ycm86yBOiR77Br9yo4xtrTdNvJyB5OLlgMfbHbr2bGfnneDUIAAA",
+    "alpha": true
+  },
+  "med-fervex-adultes-500-mg-25-mg-200-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgYCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOQAAAANgFvbtmpl7/tl/Ax3dw2dnJ4I6UVboAJ3d3eHSN+/G3n3jEEHETEB+HcyhqKXDT5GEMxUUbFPJZCmCuYeqAB9YqT9PRIieawPOR9SWTUyFAQg5xXWSngn4u8ujFQz4BB/ZGuCGEOb0BBQ4uMZCjByVSBieJswALk5FhipwlQAuEIiMjRALnAEI9UMHzqwAE0QA0eWLGpB/FXSX0MB+kwhwncOYSo/D84LdOKtgwLC20RzeyEB+cQ1EpHheXjlqXigp7M2gRPYk18321Nz54muwRLIFNGR/vlocRLwJkgSSDIrxAJWUDgg/AAAALAGAJ0BKhgAGAA+7VypTamkpCI39VgBMB2JbACdLwGUBMku8YERDu4Di/lpUyHKMP5SbCG9b0RdcljgaIQAAP7x0EAQZO6XKGaAUoAeCp5gJuWxQGfYxCaxUL62BwEudKipvlAi5jzWjSzI48d999ju3VbJfKqbQhw52R+0091GxJ3va1nEtiwlu5fZ4xFbsf1gP6w5xaxzNNFJ+typhhpuyP0fN05J3C9ZV1VJJWrlcdpeLl/HW4TgBxt7JIo1gCurja4mkFOe33yb8dN4dT8IIvrfxQP/sRdyejIZwYYi8bzneZeUrI2765PXX/p/yl7PPb+438//8zwAAA==",
+    "alpha": true
+  },
+  "med-lysopaine-20-mg-5-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRmIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJ8AAAANgF5bb9vmgYCc3rfKLjmZJbvUpXovJL8/Ak5GiIgJYNWMXKIqFcqms5OZtKeHQptX57+xMpb7Cx+J2CVID95MCQRozaKLVCwY6fJHapOFYnQlQFR8VKwUHVPiVpORNscyZ1BopEbQK55BaFRaxal4KVRp/+dYyZR4o+jWydvUWDM3m4mpbeFrsDV6Ij6vYyauM5Q9X76jtQ4ZEFSHAAAAVlA4IJwAAADQBACdASoYABgAPu1orU6ppiSiMAgBMB2JZwAD46JgA1BNa7fgoe63Mrl7rey7AAD+3t7b7hmVkJ5wJoL3R/+Vdrrq3TnEjnPAJQ2GHDB5dfg9nUeOwSP5ptia5WIckPYy4M1K4w5Ix1KRRs+u4QkHj8exCbnv75Qze/kDO0frO7e6vu90IXfHH8YI8fIXnBSb00LEs6PIxqLAAAA=",
+    "alpha": true
+  },
+  "med-lysopaine-20-mg-5-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRp4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSNYAAAANgFvbtmplnfvdLcKhAAaRQ0on1gKl0YATOZG7u8O7B7n//F9CREwAjQoodokpinoa1oimivbMxJKpRDJe3piOROs5P9jnASJeVrGKdvMlCMSOiH0boIeY8P8Is6cdIbhvkihZq3dgglIu5DgxiVYS/Ff38I2aOlH3T66dCXpQCSHeINodgjOcRemqd4BVvmlFCO6bIF9qjmghH3KcmqAVj4pT9/SJmjL3VQSN4lfO5JmbaBnr7+123CHeAHqxPbd8GB8czyJqwon4u52VWfDYvSoiglfCVlA4IKIAAADQBACdASoYABgAPt1epE2opaOiN/qoARAbiWkAA+JaDw3Wg+zADvB0KrTNTxcMgAD+8czTYw3ABodYl7gJZTAp/VIsF6atDlnCqySqyqYcJGxpOf4Bof38il2itr87CEYY2Dq6R2qs4yEADvdMnY4vjnAAAEsK1eADb4maAGDSQa1lPDrN+9oQlFBoDqi3bG+zeThEhl6LHWttIUGALNYAAAA=",
+    "alpha": true
+  },
+  "med-dexeryl-creme-250-g-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRmQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMIAAAANgBXJtmtl9jnknEED6MALhQa+wAKFCQoBSIDvaOHlnN8768WzkRARE8DKYCyd4E1a5g63p2NDa9V3ZZnSw40FEn+PphyZ+lsJCENCyjERCQBrY5GrmGrHMqCEKQdT5ZTFAu7ihS0UPaJ4wWLBA8ULWyj+W9kjSuegNTVRHrTirowmXtEdHCNrCeVBd3gko4W/NzwU1sZSnsKkcgaUCQ7g6e6K0jPCmeLH5z0vxJFnufjHxOuXXZN84vtNIB9YZCJWA1ZQOCB8AAAAcAQAnQEqGAAYAD7pXKhNqSUkIjf1WAEgHQlBtgCx1Tt73FVJaeF3plZ+nAAA/vfpeze+Ng5m5rETh+fVE4LKHDaEchAoSPy1n2+WFYSjd45diFt+jxMZN/Fds8ffd1PWHaKOPsuiMOnLghgBf1y0r1ndmXfjQPDdwAAAAA==",
+    "alpha": true
+  },
+  "med-dexeryl-creme-250-g-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRloBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKoAAAABgBvbtuvk3PvkICT1hKS+GF+QMkY14L33nkgRGSGhLYD5T+8EMufRQURMAHo1M0NGN0N+C6YY+lZPT2+emxNwxV4YE3/HNDzwr+DvuGS4Y0z8HFTgOGNs8WMAJgQcsmjxvT/DTtubZ9hmEdmEQdpre4UrjmPGyHsE7aTtUgvYYxF5opWw1raeo9HW0ALmmRIXNDjqZB0OOWA+cQVBc0yePMzBtf80d8+jAlZQOCCKAAAAEAQAnQEqGAAYAD7tZKtOKaWkIigNUTAdiWIAA+OUQZWJO9hZ1MqgZuAA/vltJ8fjnAuWbhJs97v5syHlyrgRjQfBRVBpcqPlWQevn+ySnt1Jujff+pmDV5ZNp4Pwfjp0G4nF/FHapJAzmRm6m/3RrfDa2JwNTuP/m4sahHLL1QV6Hz9YjJwYvQAA",
+    "alpha": true
+  },
+  "med-dexeryl-creme-250-g-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRnoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMEAAAABgFvbtmplX8FidwuJPHVogEHkFrk7Nfwafg1YA0Tk7hr9DIvevfdt/AAVRMQE4Fttv9T4pxqNYyOjoyNjDVA/s1ikJz0XYCQzjEKIOC0xmKAnPcdl3QyfumRNjMnAZolGNcmYoQZaUvrKOOZjlUQh+4Eh8D4HSpJ18OkoXYY9es99aAgNNuk8d2EkFslPyd9IMIqYkBn0MA7skUFhI5XagIJcobISCnKN9rOrTmiZQT/ZDyNTyF9cLoCS/aWyVv0EAFZQOCCSAAAA8AQAnQEqGAAYAD7pZKpNqSWkIjAYDAEgHQliAANYAVxKHCeL+H4wvP2fDZmA88CAAP7emf+fTmjrBRm94RO13bOyjR+jsdtJ8lEnxdXAd7FpWt9boP5rzYnjZ4PjOZweQAjpzgwoSVTzHAoMmLoaT4RFybv80Pl7YeLYAOiD95H97DmrKKW5F/hGV99/QTIw8AA=",
+    "alpha": true
+  },
+  "med-humex-rhume-des-foins-spray-20-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRm4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJ8AAAANgFvbtmpl7fv94y51EJITeUYT5HTg3b2MQezuenbEfVJBREwAmRI2VdpUPLLcubt2ufbvwY4/1y/kMjBE/d+fKiJhUT6YgE7nvVTrZ59g6nTvVc4zqzix8nBeBizAVCgA4XIWgGm4q7Co082RLQurjH6Hs6TQZcJ5KdaI9Nc6ovWbZ84mF/66RUGQHxS7MTrRRWVAl3cf91JQ2gkUwf8AVlA4IKgAAACQBACdASoYABgAPu1wrVIppiQiqAqpMB2JbADH5BEcy5NZ3M0fxG2JaD9ZrnAA/tMtfqzte8KVnmikj8tzLO8tUL4OwHVYh7fksDtGZFojU2rBRI08cF58TB6Se6PAZS/mGvntgvRKpOPBo9wvlrQayl+g2dH4oMZQ+VBj1d+cJWJkLzwrD6heTL2ddhyPrtyoGduVxLq1yf8ytN5LpH/s8cXHa1AAAAA=",
+    "alpha": true
+  },
+  "med-humex-rhume-des-foins-spray-20-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSM0AAAABgGJrezLn/ZIyg2NYQBU7XAO3apZRx8ySdW0VM1dVciurpnrOn+R1SZYQERMAbxFBXAF0nMIiQUyNrfTpbDEkSHBLfpWECSp/ySMohI05wwXoEI1+WsPDbEhAFjaY0LIL2k8EFzSOphnKT6EmTWf5Uw4JaaGj4SUU/DVGaGm4CR2QhXEaGqYizNI4x86gbBwwsfyrgvITFL3SWj5B4K3QeEvHDPeh/bIwwYxJ+N8H5afQ/kbLqyYIAgWFqZeVPCgEi0CLUogoWrQgrsAfAFZQOCDMAAAAsAQAnQEqGAAYAD7tZKtOqaWkIigNUTAdiWwAI8AHJmIOwADu3WhD1DZxWFT4AAD+9CU/dIfUgeVhGfjXy/NENHOqw/ndROg0+HSVUeKbo9S8XAedFbVMlXtQdbrAQDJ1+mh0+bB1PPPks3//a5X4ZQxL/dKQT9M9/Y68uSU/8KHAkX1mMrInMcu4deJskAqZDBa0jleRT9rMUA38BhBrx1j4j4fmGdl7H0Efi+YhZcastSM7OLqYEds5f29I1ah7o7L4I8CxIUPPSNAA",
+    "alpha": true
+  },
+  "med-augmentin-1-g-125-mg-1-g-125-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgQCAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMgAAAANgFrbtmtlnRvI0YEClWMrFMGgHFTsAkUhDDwWicrvnU249wAdRMQE8L8Jk8mEyYQHPHny5EmY55Fu8uOTu/XH5RebfFp5OLq+Sf7DnFP2WGUGFllj45y2KIz0cxnUwibJASbfZGrkgkXq6LRzJmhM+NArEagK5F/w8UcTPvQK1jOqBlMrE64aaOcSm9BHw1SJVw0NmFRswntTRI1svckQsvrRmdBoCtT6YQJMMyQjOvPMT/F4OxC0uoN+OPdnKMAb+A+wTHwUAFZQOCAWAQAAEAYAnQEqGAAYAD7tbq5SqaYkIqgIATAdiWwAnSDZsAG8mr8CpyCZIK5pQD4ACVEpx38XthSxTX7gAP5UUZUpqSkV6HTtdndWW5LuaTcx9P/E5XRX+OPE9QPnF5l3xpikE7Y4yeocJ+QiJe0E5ms/0UBtYnX4rEh+ss4Q2ntfgawVsflDUOiJuZzNeOuTZ/tT/vX1VV9ICbIZ6zQO1J16/r1Q/Iof2WZfeU1nXA0nGnp08+/h1p3B8vF218jve9OYJEF2q1r37hq01jL2HxH2wcneY6oXiIE0j0Yin/xhFeLTJ9sVvH723FQP9mHucytTRyHhyrlV6TTVvduQ3TkU+YOiFkFhvwRkXZ/b7OpuWbbcaSCnAAA=",
+    "alpha": true
+  },
+  "med-augmentin-1-g-125-mg-1-g-125-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRgICAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOQAAAANgFvbtmpl7/tl/Ax3dw2dnJ4I6UVboAJ3d3eHSN+/G3n3jEEHETEB+HcyhqKXDT5GEMxUUbFPJZCmCuYeqAB9YqT9PRIieawPOR9SWTUyFAQg5xXWSngn4u8ujFQz4BB/ZGuCGEOb0BBQ4uMZCjByVSBieJswALk5FhipwlQAuEIiMjRALnAEI9UMHzqwAE0QA0eWLGpB/FXSX0MB+kwhwncOYSo/D84LdOKtgwLC20RzeyEB+cQ1EpHheXjlqXigp7M2gRPYk18321Nz54muwRLIFNGR/vlocRLwJkgSSDIrxAJWUDgg+AAAABAGAJ0BKhgAGAA+3VylTailI6I3+qgBEBuJbACw+XAOk9IhY9i2sI+CXBMnB1Sw8y6MikUXdABMAAD+83SwBEfKbM0B0goBdtCrWsflInhB4jobJ3Zi1UeqlDBfxwW+vYAHzlDTiQP1j8b+tZKvk9eiqxveejTtjqfFQ8GEUq95ziExhsopdJMnZASrtzUixMhDQMax990ogQtYriCDlCNODQZ0NOak0PjO38d/toKuA7qSLh+hOQEVP/zDwQs3T11GbDXx/ybQXEePsOexqbcuz+aEdxvPb1W3rmw1eSYFtBk5ejDPZ/4JKXt6fsA0DNoyDgKD3AAA",
+    "alpha": true
+  },
+  "med-clamoxyl-500-mg-5-ml-500-mg-5-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRv4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSNQAAAANkFvb2rJF5+Lu7ikhoVsJrjFVQEYHRJRgVXgOqUPoDiPfe8e+92OtaSAiJoB0CbDJbvPF5V0Vejp/zSKz0R1cfTIux0FuFUZ1tyZrctuIdYMc59xkeRWxQm4Sp8AQFr2HQY5RqFonyXey1rz0KKcplGzzo8Dox8Li/Iuc5p7CH4UByP0+9nyUEyJKyLEBROE3YkOODCAwGaW/yGSR/l/5yyDkRIS4n3kh+Us5OVHm+HFEApyzU06I0MtUMtBezuv1bi44DfO+v3/1AiCZ+FxhgRPzT1ZQOCAEAQAAUAUAnQEqGAAYAD7lYqNNqSWjIjAMASAciWwNiAHcGCRQCaMwMZCNcRZchGDlD/5HoHMYAP7qeEbPZ+9XCOn9X1FEF5LouheCjmwcYHO0HBEhDZBqyvTLw4EOkhpudZ2aZ2atYN+vwyh//1FN56mqt9kuqD710xPE+vpZZDJe/8bHv8H4T/cGXlH7/FknlfNDd1X1YVtEvxhzgEtvn7j/pssGLpWcU1kprXHbO/kopuYfBEjfy6h7Dfz/vBygMvKf7lKkOZAr4cUI+pAsWCsofI166V3wWDmd6/6f/k2i8MuYYJDDI7O4i82sJUPg/6N1pezk/JmzxgjMhoTS9tgN0oAAAAA=",
+    "alpha": true
+  },
+  "med-clamoxyl-500-mg-5-ml-500-mg-5-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSL8AAAABgFtbe8Lm+/VrC59U9gTJBszpcjJCshF3zMw8ibtwa5bkLyTJ3iAiJgDdF1VV6USnBcWR0dGxIiTHYrXS9FyC5i03mo4LeQa9X+RXH0yOouedfClAMwz6y/Se5QFIkmLW0Yfg6WZgUgxOWQ8hhAYvoAkiuGTrT4v3acBD7DbnmZ4kPa/TBA+x85zb2EkSBFexgzSDw9h2msUaG8451+RammK6wTbZZmsKJgVAaW5hf29hvoRcQVRyYNRaa9Wg6wBWUDggzAAAADAFAJ0BKhgAGAA+7WSpTamlpCIwCAEwHYlmAMoMEiIjrbABwtZ9y8t7+60b7wj+9Yt4AP7vw1iM2c1Siv5Mg/BkJfE+2wBydOJRd3OpReXl7uGD5G9J7xXT5yTAbHq6Su5NwWNbmkeYquk/grNQAFruyYeY2t+RHi313PoDxOUjT6jnFuS3+dV8G9XVy+GvFJ5Q6ytEF2GpASi4evjrhHDioBp6O76CJHrMPfr3lPfBiOfo3bCCQ4TuQKX42a3/X30Z+b/3v/HBvgAAAA==",
+    "alpha": true
+  },
+  "med-clamoxyl-500-mg-5-ml-500-mg-5-ml-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRq4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMAAAAABgFtt2/Lk+d4vwXUEtzoL4L5CPCNknUyAlc4GdEwArVXRTx7s/98fJoiICUBKsVbwrxeOTxYzsDgIMXIXVldm8KzoBBuv3fbHjg7AxPLiKLI0U7OzU1kILrudK1iVYOSRfMpDFAbz93SOD/MwqQRzz/QheL7MQdJYVNgLIYQui7DpGnQ/BqzpfIwxOlY1dQaS9H9Q0dSSyppKUlHXd865vkZQ6DKSkf0CJA2A9Wbr7LTVXIfWINFoILmctTkrSARWUDggyAAAAJAEAJ0BKhgAGAA+4WCrTaimJKIwDAEQHAlmAAPiog6ToRUZYY+fk6Lfw6LaNAD+9NPWkGXekrfuZAbUwwAJs5k8yK+pwuQ1/XXfDe1rF0q0W+6TCqpkjU+Ln/3kl0szTARBUQTQwg64MZX9f061lleepsRiU3xWwjl+qaEmQv81aKlY2XmTsKTNCw2BXuzg0Ys2Pcwo85Ija4ETNA/5SjMPvU2HRnuxPoYpgPNw3+uwYmJ5rXw/lZxv7XYheWuDt06FCyAcDQAA",
+    "alpha": true
+  },
+  "med-azithromycine-sandoz-250-mg-250-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg6gAAAPAFAJ0BKhgAGAA+7WCrUCmlI6KwGAgBMB2JbAC7ISG6AmjlGgbUMgTLJjtNCixh3nIaDX+/IGIAAP7qe+eOESS1NnNwtmnQWlDQwWHPSJ10jLlS0CUkwDYikB9NFktn6JuDxXSGcPEqFVkAABPO3z5+aY0bAQpBwIwHP2tcra3+aokcju44udEpDzKIzKffp7XK/S7IYzMaZyK1eyD9hUyiJ2g1FEpobxOuDYVRUzD4gI8L/xVnvnE/go6ZfKJx9xZkGuGLuey6xkS9xsZvWQdvqxm9ccyJ0X4gAJ/fcSr/j9h6ofbBBAAAAA==",
+    "alpha": true
+  },
+  "med-azithromycine-sandoz-250-mg-250-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC0AAAAsAQAnQEqGAAYAD7taKpPqaWjojAYCAEwHYloDbAFat3HEz3kYBRp3FCBrsVzAAD+05uRzFHfJGXsiv6AkFmbB/GAtmGs/v+TnwKzwnQR9iX6JWvch2DYlh+TzkDTktdLYMkes6xVnH//wSoTP3CeH3B9/gnInJ+1vEoaiTdaqqJfCJnW2WWm9ntk2+77kFJ38BNW4VdZKF6PpvOLWe1URJG3MFMICEqIYI3BQnwwTWl83wAA",
+    "alpha": true
+  },
+  "med-azithromycine-sandoz-250-mg-250-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggqgAAAJAEAJ0BKhgAGAA+7WirTymmI6IwGAgBMB2JZgAD4/ECbFRPSl1yQtRd7p1TgAD+w6O9el+rBAqSS1sfISD54kLtutooT4rbj3utNcE7mkA/5dGbiQsvvooPiR5AHpSB3yB5pYEkUHE4KWl3JA8KuqLbupRYFKwe8y3BLlD8HIAyRoLDuiUlCOwdqGki5ksqVX+0tjGrbdCN55ctNnzHanoOfd0ob18+HgAA",
+    "alpha": true
+  },
+  "med-amoxicilline-sandoz-1-g-1-g-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg6AAAANAFAJ0BKhgAGAA+7WCrUCmko6KwGAgBMB2JbADHCQAmjNGgbUAgTLJVrLiyrVipksgfAUnrlKAA/up754wLYxQ0CJa/jiAH0PBdxrOIvN4pd1s31cEd9lgINgIalcoAvIfCU/RzdCJX3oKBoMaqksSMcJoOMt8cVIbkZrwgFBvM/PCNs/q5kPOshwZvFKyQp+l2Qql+kxbz6Oh260coPfEPIcecvTB2soewNpkWmSEEBX/jgndT/TkpJyau6cEDj/EygjvDal261/FlPLCHbsOu6XeyI69HcBnf99xKF9ilbw64h5gAAAA=",
+    "alpha": true
+  },
+  "med-amoxicilline-sandoz-1-g-1-g-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC2AAAAkAQAnQEqGAAYAD7tZqpPqaWjojAYCAEwHYloDbAFat3HEz3kYBRp3FB8hysAAP7Tm5HMUd8kZeyK/oCQWZsH8YC2Yaz+/5OfArPCdBH2JfolbAIgerxlK31DBQznq4XKeNTgHP3jX//4JUJpeutpX3B9/gnInJ+1vEoallAXc1Vf2qnwC6HBeo1EbewUFQ4z29RDMRdYHaiZT2OX4tZ7VREkbcwUwgISohgjcFCfDBNaXzfAAAA=",
+    "alpha": true
+  },
+  "med-amoxicilline-sandoz-1-g-1-g-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggrAAAAJAEAJ0BKhgAGAA+7WirTymmI6IwGAgBMB2JZgAD5FECbFRPPZ+3OXCELXCrAAD+w6O9erknCvK/We5845iOpApTwHr+amEyTON9lQENOuuMxs9+SsswMHOKD4keQB6Ugd8geaWBJFB5Z74DJL3usqLULZWciYAqcifTs+c8OXnAIJyRQj5uy7Otnegt5KPOupEoxTO8tfkaEyFU9KmX09DPoOfd0ob18+HgAAA=",
+    "alpha": true
+  },
+  "med-glucophage-850-mg-850-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg3AAAABAGAJ0BKhgAGAA+7WaqTymlo6IoDVEwHYlsADUATSwRGAYdA+tgu1QUsfRSze1v2UK5SeHvZ247AAD+5yCYBak67yGmyQgQJtYtOWPjI0hUodFq+h0iZgy5FTtUeI8tQITkxwJ82CoAEh7gnGFJ95z8XCl7ra5P9U8rTCd1IHFUoIrRLn1qFSn6iC2gkfNBv86IuMu8oeDWEqJmYuuzRlc0W5+z2Ipx1ZFtMQoN98aymskmfFpdnMdb8vc+O7on9q/FkF8DHUvXKAFpp5WcFDrImiu5fHIRH5y2AAA=",
+    "alpha": true
+  },
+  "med-glucophage-850-mg-850-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCwAAAAsAQAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYloAM5YcCCyCM2DH3ujbO+boUovAAD+3ux94+eVEePZ29hzyGl+3cuuvKWYG8K+7X+S5tqQCSZzRpnt0hF3IBakAzSl/n41pLBdnPICW8RC+Okm8txY7ppzY4SZBSMLXjvcApiv41/Z+5/wSPjsn1OXTtJZaQJk+1IiXj/gTFrOfkZDZG3ciYVM07S2TK1Vox43svwAAAA=",
+    "alpha": true
+  },
+  "med-glucophage-850-mg-850-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggrAAAAJAEAJ0BKhgAGAA+7WiwUCmlpSKoCqkwHYlAGJsxjs3k/iI+ixdcrHM90T0bAAD+w6O9fG57cmrWKiITYjZ0Rf9uW62ij4eox42pnoFhBDsdCVma3DIGf/tjBeGdjmhWLiWPJmNTbByo8gI3lqSlnyQ/ESksJbD8d0LmGyAD4tAv9hVMSadbOg4b25eaoFMu1w8uMZVzX6rlJEezawaP3WkIdFgQBtpt8WAAAAA=",
+    "alpha": true
+  },
+  "med-metformine-biogaran-850-mg-850-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg5gAAAHAGAJ0BKhgAGAA+7WqtUSmlpCKoCqkwHYlsAL9NACaXEaBtHyIJQVeeQHsg+1rfp0hHZtj2jNbmIUOoAAD+5yCYCB+zGoDmfF47yXGw2Uz9BYwmJSjDYA73Ks/Sn7US1dAtAsEqzaQU10053y4DjZQq3lFk5bsSUpG5obF8NYP50B80PPDbp4PjdVYPXGO/UCwrsSmi9OTbswOfNYWo2Dy66nzJvGgTHv4ZOCavkoPZm8CRVQyr1L6FykX4St86oHKN6xvb2mpy7xS/rhgH3SqmVOThL8misDXo5jXSVk0PHcPANiAA",
+    "alpha": true
+  },
+  "med-metformine-biogaran-850-mg-850-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCCqAAAAkAQAnQEqGAAYAD7tZKtQKaUjorAYCAEwHYloAM45i8xSYHty0AU20Wv+VPSAAP7e7H3j5OVLj14DBo5V3Chby668TPgbuHg5yZLm2pAFOcElLZRM8r/4AFQa0b03Y1TcilcJkLFPGByRS6JM9wEqQ0U7pkFDcmY3T5HLa6za0XqlWlW/FvJwhJGIMocr2DfqBm0RMkIoMKQ1D5kMRohgjcMgE6HGlbLsAAA=",
+    "alpha": true
+  },
+  "med-metformine-biogaran-850-mg-850-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggrAAAAJAEAJ0BKhgAGAA+7WiwUCmlpKKoCqkwHYlAGJsxjs3k/iI+j9K01A9oira8gAD+w6O9fG57cmrWKiITYjZ0Rf9uW62ij4eox42pnoFhBDsdCVma3DHpmHrBxyqLXyJAfh97A9n0KlFXuyNPg3FV0NWCxqwSwTH47oXMNkAHxaBf7CqYksAwKvEJzkCMn9lrXDy4xjuTgGGgCl14L+oMtplda1aUs/6GE4gAAAA=",
+    "alpha": true
+  },
+  "med-lantus-solostar-100-ui-ml-100-ui-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRoYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKcAAAABgGLb2rLl3OfB3aFZJGmkkWmukSFYYwIk2j8B3CcA3RuJ5CR3+d2hR8QE8K8rVZJylBIK88BdyRiNh/uTDaAcS6bjOxi8C3TngbkSQHQsXASDPwdTLSB3xQFRM7r7Egw+bPSVg9wVyxxonTsL/gbP57tySFRuUNy7eh8Mfu7NDuWjWIC5oGX69Oc3eF2PJQByg4KexWAAJ1lzQxNtKCmQGyLFnrJ/EgBWUDgguAAAADAFAJ0BKhgAGAA+7WKrUCmlI6KwGAgBMB2JYg2wANYaIiEL0/cSQUhGtr5e+/xk9JqgAP7xw+H1j5WwlFvQBPks7gMYrjPIJ05zeqFMzlnULioI8+fZ3G6gOGRdzXupt/2e/PIj06ei2YpLvsfSpEwOXXTlkkMWBGzM4pHxTGtX1c/c1Kd0lHl7povanHyc///V+Zr8quOuEi08H+AsOwRSlFQbDnEkKlTGFXWMun+T0e8ZWyMyAAA=",
+    "alpha": true
+  },
+  "med-lantus-solostar-100-ui-ml-100-ui-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRpABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKYAAAABgKJtt2rlW2vtGwVtJHfG4DYKnwWZBM0hQaW5DIFoleTQ3VZcGxlAREwA/6tqLtAsQl0jJjGh4upzEtMM5Uv3ORONoDSfum8VsQhC7bH7ST0pglJYcr/uIUkAVRb8+2Ua0wBizPi3z5toADHGXr59uxILQGLg0f20naQBEt0X7o+jhDCKG/79tNeOBFBh1l99E4ugiRW/70ZDCOX1YZScggh5TPmTVlA4IMQAAACQBACdASoYABgAPu1qrVCppaQiqAqpMB2JYgDKAYsOZb+kWzsyRDle2b/5YAAA/u1hcwZZmClcuzNdC3UGMpxRBlWfZ6So/G+UyzgdjieSZawMTahukQd5gA2qTGKnufFSV/8jyVPIOcei8JLETxPg1piu1N/67MoD2r5hkbMs+/g//7+hz0v3vP8q3J9h0+d/b9abN6quvBVaYjygRNLhHOip9fZQTJXXSCRoUSgGBEM89mk/wdF7r+FArpNTQDZuAAAA",
+    "alpha": true
+  },
+  "med-novorapid-flexpen-100-u-ml-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRogBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKcAAAABgGLb2rLl3OfB3aFZJGmkkWmukSFYYwIk2j8B3CcA3RuJ5CR3+d2hR8QE8K8rVZJylBIK88BdyRiNh/uTDaAcS6bjOxi8C3TngbkSQHQsXASDPwdTLSB3xQFRM7r7Egw+bPSVg9wVyxxonTsL/gbP57tySFRuUNy7eh8Mfu7NDuWjWIC5oGX69Oc3eF2PJQByg4KexWAAJ1lzQxNtKCmQGyLFnrJ/EgBWUDggugAAAHAFAJ0BKhgAGAA+7WCmTqmlIyIwGAwBMB2JYg2wXuYCbGiIjC9P3EkFIPztfL3/y91rXIAA/vHD4fXc54WzGJC66G43MwC698oPtoVka0sRaUvuKgjz6Ioo70JTNamJe6m3+4g2xO7cFbcz2q6r3pMe4dxfh49t/y+Prd+5ghbGtWSttgs9RxP3TNyRp+Q5//7Vspjn4lJI8kUnsL/QL6jvkZtMgzrACV24BSwm9g565dr35vtoNAAAAA==",
+    "alpha": true
+  },
+  "med-novorapid-flexpen-100-u-ml-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRo4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSKYAAAABgKJtt2rlW2vtGwVtJHfG4DYKnwWZBM0hQaW5DIFoleTQ3VZcGxlAREwA/6tqLtAsQl0jJjGh4upzEtMM5Uv3ORONoDSfum8VsQhC7bH7ST0pglJYcr/uIUkAVRb8+2Ua0wBizPi3z5toADHGXr59uxILQGLg0f20naQBEt0X7o+jhDCKG/79tNeOBFBh1l99E4ugiRW/70ZDCOX1YZScggh5TPmTVlA4IMIAAACQBACdASoYABgAPu1qr1CppaQiqAqpMB2JQBkcv1Ratxlv6PVMexj1o/Bs/QAA/u1hcwYRF9X8E7sXVpQXHP61RlWfGdmmZn1zClP10+Rp9XnZvaCDxJ9kBBeAV/5rDMaHRf5zQWehMB0rBL4+nIKcwNqg+gv/1tPpewWnSD74T+YY//39Dnpfvef5VuT7Dp87+36ymVvXbIYbEuMt055zfvw693mG1PoyoeZwFLmPo5u9Egzh/IU8UwIDPW0FvJMAAA==",
+    "alpha": true
+  },
+  "med-amlor-5-mg-5-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRuABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg9AAAADAGAJ0BKhgAGAA+7WirT6mlo6IwGAgBMB2JbAC/WMDwAbyESqryekDXXcPRfl24GRBMaPI5l0ou24AA/up8XyG/g27Lzwm3Bf6YAbaTI/0PWhweHi0LrocAquvwpWj30KJUwXoP/k0AGi/4+8gVEaPNRgEdGsdU0T1MF6Ly2KEnAVZiDhde9kFi8EI75mDPoOS5s/2uKjFsswYmWSOziJOgAujugKODv1Kqx9U0O6euac1YQ5vBV+Wp5VlRQb/OmV+MKBS1g6rHktQR2Szc+TjX5FMtPzVtjJZOOeM1jz3uNTnjRLyV9SV+x/uecy+5atQAAAA=",
+    "alpha": true
+  },
+  "med-amlor-5-mg-5-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRsoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC4AAAAEAUAnQEqGAAYAD7taq5QqaWkIqgKqTAdiWwAtPQUAiJAt9mosyFofKkd9Vf78jzN2AD+w94h5nZPWCyMkAdMQe9v3wAfA7Td7bVt+COSuLtOGZtBYzoTXTyjKBbbcCg+vwalAHcS6Ye9KvcsdzBYBUfYs7/QburuKo6w7SEkBcr+OTcgT67FIcptjJR19kC+PLIi4mPPmLE1UBjREw36Yq4e/fDtqFVJ6SLH/1TWe0OS2ItbUYAAAA==",
+    "alpha": true
+  },
+  "med-amlor-5-mg-5-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggrAAAAPAEAJ0BKhgAGAA+7WCsUCmlJCKwGAgBMB2JbADE+NiguQvI6t388hvvKsYw9flWAAD+w6O9e9UYbeHQk9hGx4FVgDbraKMA+rFnYn8EHHYaRuRVWkra06MXodYLT3NimBNisvMiji3JdCLOs75w5RdJbJjrzLOpmxh8ZFfKL2CTntPbEagxUd3BN1drvvVD5jPVnDU78wy57IgFI/dyADvsqGQq1ATE7JmmAAA=",
+    "alpha": true
+  },
+  "med-amlodipine-zentiva-5-mg-5-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRtwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg8AAAAJAFAJ0BKhgAGAA+7WapTamlpCIwCAEwHYlsALbZ+3ZIBEfi9PaLPDuUzRDSMIYEag6SeatAAP7qfGNVtsllRTSezyLQpU0a1xNDD+fcFh7freiR6isek8+NJxAbZcSXD3Z4Fd0OL3kClkS+gyP/3sjfIOe8FG9IGDjqmyzOsADKPwx3D17iA7UUw8suaSybd2IpHs17K3zQjnyXcYLLuwmq9muOHVLc2ChM+64Q5A+WSygrNAdAPvLAubacpfXsQ9C+60cwNyeL8nFPhwL4ypfrQiBuRkKPQGmvUMF0tM9UWsvI85rHY/388199y0jgAA==",
     "alpha": true
   }
 }

@@ -11,7 +11,7 @@ import { ContactShadows, Environment } from '@react-three/drei';
 import { Bloom, EffectComposer, N8AO, ToneMapping } from '@react-three/postprocessing';
 import { ToneMappingMode } from 'postprocessing';
 import { Model } from '../three/PageScene';
-import { shotById, type Shot } from './library';
+import { shotById, shotFromParams, type Shot } from './library';
 
 /** Opaque shots: the gradient is the scene background (so post-processing keeps it in the pixels). */
 function GradientBackground({ top, bottom }: { top: string; bottom: string }) {
@@ -134,7 +134,7 @@ export default function RenderStudio() {
     document.body.style.background = 'transparent';
   }, []);
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
-  const shot = useMemo(() => shotById(params.get('shot') ?? ''), [params]);
+  const shot = useMemo(() => shotById(params.get('shot') ?? '') ?? shotFromParams(params), [params]);
   if (!shot) return <p data-testid="render-missing" />;
   const bg = shot.bg === 'transparent' ? 'transparent' : `linear-gradient(180deg, ${shot.bg[0]}, ${shot.bg[1]})`;
   return (

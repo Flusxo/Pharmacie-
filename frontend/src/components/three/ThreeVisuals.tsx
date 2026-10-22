@@ -9,6 +9,7 @@ import { useI18n } from '../../i18n';
 import { useCanvasSlot, useGraphics } from '../../lib/graphics';
 import { useSettings } from '../../lib/settings';
 import { PackImage, colorsFor } from '../PackImage';
+import { MedicineGallery } from '../MedicineGallery';
 import { useLocation } from 'react-router-dom';
 import { compositionFor } from '../../three/compositions';
 
@@ -137,7 +138,14 @@ export function ProductVisual(m: ProductVisualProps) {
   const [dark, light] = colorsFor(m.category);
   const show3D = can3D && mode === '3d';
   const photo = (
-    <PackImage name={m.name} dosage={m.dosage} form={m.form} category={m.category} imageUrl={m.imageUrl} rx={m.requiresPrescription} />
+    <MedicineGallery
+      name={m.name}
+      dosage={m.dosage}
+      form={m.form}
+      category={m.category}
+      imageUrl={m.imageUrl}
+      rx={m.requiresPrescription}
+    />
   );
   const explodable = ['lozenge', 'tablet'].includes(m.form);
 

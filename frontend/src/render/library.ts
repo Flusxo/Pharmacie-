@@ -9,7 +9,7 @@ import type { LabelSpec } from '../three/textures';
 export interface Shot {
   id: string;
   /** largest width rendered (3840 for heroes) */
-  width: 3840 | 1920 | 1600;
+  width: 3840 | 1920 | 1600 | 1024;
   /** width / height */
   aspect: number;
   /** transparent = cut-out with alpha (floating objects with a soft shadow) */
@@ -20,6 +20,8 @@ export interface Shot {
   shadowY?: number;
   /** share of the frame the objects fill (camera auto-framing); default 0.8, > 1 bleeds off the edges */
   fit?: number;
+  /** query string of the /render page (medicine packs) */
+  query?: string;
 }
 
 const L = (name: string, dosage: string, color: string, light: string, cip = '3400930001234'): LabelSpec => ({
@@ -383,3 +385,90 @@ export const SHOTS: Shot[] = [
 ];
 
 export const shotById = (id: string) => SHOTS.find((s) => s.id === id);
+
+// ---- medicine packs (Part G): one picture per medicine and view, 1024 px cut-outs ----
+
+export interface MedSpec {
+  name: string;
+  dosage: string;
+  form: string;
+  category: string;
+  rx: boolean;
+}
+export const MED_SLUG = (name: string, dosage: string) =>
+  `${name} ${dosage}`
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+/** Forms whose cap comes off (the "open" view). */
+export const OPENABLE = ['syrup', 'drops', 'tablet', 'capsule', 'cream'];
+export const medViews = (form: string): ('front' | 'angle' | 'open')[] =>
+  OPENABLE.includes(form) ? ['front', 'angle', 'open'] : ['front', 'angle'];
+
+const CATEGORY_LABEL: Record<string, [string, string]> = {
+  pain: ['#065F46', '#A7F3D0'],
+  allergy: ['#7C3AED', '#DDD6FE'],
+  cold: ['#0369A1', '#BAE6FD'],
+  digestion: ['#B45309', '#FDE68A'],
+  vitamins: ['#C2410C', '#FED7AA'],
+  skin: ['#BE185D', '#FBCFE8'],
+  antibiotics: ['#1D4ED8', '#BFDBFE'],
+  diabetes: ['#0F766E', '#99F6E4'],
+  cardio: ['#B91C1C', '#FECACA'],
+  respiratory: ['#4338CA', '#C7D2FE'],
+  hormones: ['#6D28D9', '#E9D5FF'],
+};
+
+export function medicineShot(m: MedSpec, view: 'front' | 'angle' | 'open'): Shot & { query: string } {
+  const [color, light] = CATEGORY_LABEL[m.category] ?? ['#334155', '#E2E8F0'];
+  const flat = m.form === 'pen' || m.form === 'inhaler' || m.form === 'spray';
+  const rot: [number, number, number] =
+    view === 'angle' ? [0.1, -0.62, flat ? -0.2 : 0] : [0, flat ? -0.25 : 0, flat && view === 'open' ? -0.2 : 0];
+  const query = new URLSearchParams({
+    med: MED_SLUG(m.name, m.dosage),
+    view,
+    name: m.name,
+    dosage: m.dosage,
+    form: m.form,
+    category: m.category,
+    rx: m.rx ? '1' : '0',
+  }).toString();
+  return {
+    id: `med-${MED_SLUG(m.name, m.dosage)}-${view}`,
+    width: 1024,
+    aspect: 1,
+    bg: 'transparent',
+    camera: { pos: [0, 0.5, 5], target: [0, 0.3, 0], fov: 28 },
+    shadowY: undefined,
+    fit: 0.82,
+    items: [
+      {
+        kind: 'product',
+        form: m.form,
+        pos: [0, 0, 0],
+        rot,
+        scale: 1.5,
+        open: view === 'open' ? 1 : 0,
+        label: { name: m.name, dosage: m.dosage, color, light, cip: '3400930000000', rx: m.rx },
+      },
+    ],
+    query,
+  };
+}
+
+/** Rebuilds a medicine shot from the /render URL (used by the dev-only render page). */
+export function shotFromParams(p: URLSearchParams): Shot | undefined {
+  if (!p.get('med')) return undefined;
+  return medicineShot(
+    {
+      name: p.get('name') ?? '',
+      dosage: p.get('dosage') ?? '',
+      form: p.get('form') ?? 'tablet',
+      category: p.get('category') ?? '',
+      rx: p.get('rx') === '1',
+    },
+    (p.get('view') as 'front' | 'angle' | 'open') ?? 'front',
+  );
+}

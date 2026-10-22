@@ -8,6 +8,7 @@ import { requireRole } from '../middleware/auth.js';
 import { notify } from '../notify.js';
 import { addRoutes } from '../openapi.js';
 import { cancelOrderByPatient, getPatientOrder, listPatientOrders } from '../services/orders.js';
+import { getPayment, getReceipt, startPayment } from '../services/payments.js';
 import { getProfile } from '../services/profile.js';
 import {
   cancelRequest,
@@ -75,6 +76,22 @@ patientRouter.get('/orders', async (req, res) => {
 patientRouter.get('/orders/:id', async (req, res) => {
   const { id } = idParam.parse(req.params);
   res.json({ order: await getPatientOrder(id, req.user!.id) });
+});
+
+// Payment (Stripe test mode): only for an accepted order, on Stripe's own page; the amount is computed on the server.
+patientRouter.post('/orders/:id/pay', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json(await startPayment(id, req.user!.id));
+});
+
+patientRouter.get('/orders/:id/payment', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json(await getPayment(id, { patientId: req.user!.id }));
+});
+
+patientRouter.get('/orders/:id/receipt', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json(await getReceipt(id, req.user!.id));
 });
 
 patientRouter.post('/orders/:id/cancel', async (req, res) => {
@@ -204,6 +221,9 @@ addRoutes([
   ['post', '/api/patient/requests/:id/substitutions/:substitutionId', 'Patient', 'Approve or decline a proposed generic', 'bearer'],
   ['get', '/api/patient/orders', 'Patient', 'List my orders', 'bearer'],
   ['get', '/api/patient/orders/:id', 'Patient', 'Order details with history', 'bearer'],
+  ['post', '/api/patient/orders/:id/pay', 'Patient', 'Start the Stripe test payment (hosted page, authorisation only)', 'bearer'],
+  ['get', '/api/patient/orders/:id/payment', 'Patient', 'Payment status of an order', 'bearer'],
+  ['get', '/api/patient/orders/:id/receipt', 'Patient', 'Receipt of a paid order', 'bearer'],
   ['post', '/api/patient/orders/:id/cancel', 'Patient', 'Cancel (accepted) or ask to cancel (later)', 'bearer'],
   ['get', '/api/patient/doctors', 'Patient', 'My doctor links', 'bearer'],
   ['post', '/api/patient/doctors/:doctorId/confirm', 'Patient', 'Confirm a doctor link', 'bearer'],
