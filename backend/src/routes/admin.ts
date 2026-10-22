@@ -41,6 +41,7 @@ adminRouter.get('/stats', async (_req, res) => {
        (SELECT count(*) FROM requests WHERE (created_at AT TIME ZONE 'Europe/Paris')::date = (now() AT TIME ZONE 'Europe/Paris')::date)::int AS "requestsToday",
        (SELECT coalesce(json_object_agg(status, n), '{}') FROM (SELECT status, count(*)::int n FROM orders GROUP BY status) x) AS "ordersByStatus",
        (SELECT count(*) FROM reports WHERE status = 'open')::int AS "openReports",
+       (SELECT count(*) FROM contact_messages WHERE handled_at IS NULL)::int AS "openContactMessages",
        (SELECT round(avg(extract(epoch FROM responded_at - sent_at) / 60)::numeric, 1)::float FROM request_pharmacies
          WHERE response IN ('accepted', 'refused') AND sent_at > now() - interval '7 days') AS "avgResponseMinutes7d"`,
   );
@@ -144,6 +145,34 @@ adminRouter.get('/reports', async (req, res) => {
       [q.status ?? null],
     ),
   });
+});
+
+adminRouter.get('/contact-messages', async (req, res) => {
+  const q = z.object({ status: z.enum(['open', 'handled']).optional() }).parse(req.query);
+  res.json({
+    items: await query(
+      `SELECT m.id, m.name, m.email, m.topic, m.subject, m.message, m.language, m.created_at AS "createdAt",
+              m.handled_at AS "handledAt", u.email AS "handledBy"
+         FROM contact_messages m LEFT JOIN users u ON u.id = m.handled_by
+        WHERE ($1::text IS NULL OR ($1 = 'open' AND m.handled_at IS NULL) OR ($1 = 'handled' AND m.handled_at IS NOT NULL))
+        ORDER BY m.created_at DESC LIMIT 200`,
+      [q.status ?? null],
+    ),
+  });
+});
+
+/** Any staff member can mark a contact message as handled (audited). */
+adminRouter.post('/contact-messages/:id/handle', async (req, res) => {
+  const { id } = z.object({ id: z.coerce.number().int().positive() }).parse(req.params);
+  await tx(async (c) => {
+    const r = await c.query('UPDATE contact_messages SET handled_at = now(), handled_by = $2 WHERE id = $1 AND handled_at IS NULL', [
+      id,
+      req.user!.id,
+    ]);
+    if (!r.rowCount) throw notFound('No open message with this id.');
+    await audit(c, req.user!.id, 'handle_contact_message', `contact:${id}`, null);
+  });
+  res.json({ ok: true });
 });
 
 adminRouter.get('/audit', async (_req, res) => {
@@ -383,6 +412,8 @@ addRoutes([
   ['get', '/api/admin/medicines', 'Admin', 'Medicines (q, includeDeleted)', 'bearer'],
   ['get', '/api/admin/orders', 'Admin', 'Orders (status filter)', 'bearer'],
   ['get', '/api/admin/reports', 'Admin', 'Reports', 'bearer'],
+  ['get', '/api/admin/contact-messages', 'Admin', 'Messages from the public Contact page (status=open|handled)', 'bearer'],
+  ['post', '/api/admin/contact-messages/:id/handle', 'Admin', 'Mark a contact message as handled', 'bearer'],
   ['get', '/api/admin/audit', 'Admin', 'Audit log', 'bearer'],
   ['get', '/api/admin/performance', 'Admin', 'Pharmacy performance table', 'bearer'],
   ['post', '/api/admin/verify/:kind/:id', 'Admin', 'Approve or reject (with reason) a doctor or pharmacy — admin, moderator', 'bearer'],

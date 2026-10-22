@@ -153,6 +153,15 @@ export const FR: Record<string, string> = {
     'La pharmacie propose un générique équivalent. Acceptez ou refusez.',
   'A patient cancelled a request sent to you.': 'Un patient a annulé une demande qui vous était adressée.',
 
+  // Contact page
+  'Too many messages from this network. Please try again later.': 'Trop de messages depuis ce réseau. Réessayez plus tard.',
+  'Thank you. Your message has been sent to our team.': 'Merci. Votre message a été transmis à notre équipe.',
+  'No open message with this id.': 'Aucun message en attente avec cet identifiant.',
+  'please confirm that you are not sending health data': 'confirmez que vous n’envoyez pas de données de santé',
+  'must be empty': 'doit rester vide',
+  'must be at least 3 characters': 'doit contenir au moins 3 caractères',
+  'must be at least 10 characters': 'doit contenir au moins 10 caractères',
+
   // Validation messages (zod custom messages; the field name is added in front)
   'is required': 'est obligatoire',
   'is empty': 'est vide',
@@ -233,6 +242,9 @@ export const FR_FIELDS: Record<string, string> = {
   items: 'produits',
   message: 'message',
   subject: 'objet',
+  topic: 'sujet',
+  noHealthData: 'données de santé',
+  website: 'site web',
   '(body)': '(requête)',
 };
 

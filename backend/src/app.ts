@@ -15,6 +15,7 @@ import { patientRouter } from './routes/patient.js';
 import { doctorRouter } from './routes/doctor.js';
 import { pharmacyRouter } from './routes/pharmacy.js';
 import { commonRouter } from './routes/common.js';
+import { contactRouter } from './routes/contact.js';
 import { adminRouter } from './routes/admin.js';
 import { openapiSpec } from './openapi.js';
 
@@ -92,6 +93,7 @@ export function createApp(): Express {
   app.use('/api', authenticate);
   app.use('/api/auth', authRouter);
   app.use('/api', publicRouter);
+  app.use('/api', contactRouter);
   app.use('/api', commonRouter);
   app.use('/api/patient', patientRouter);
   app.use('/api/doctor', doctorRouter);

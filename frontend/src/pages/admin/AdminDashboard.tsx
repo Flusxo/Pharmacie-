@@ -12,7 +12,7 @@ import { AnimatedNumber } from '../../components/motion';
 import { duration, easeOut, stagger } from '../../motion';
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 
-type Tab = 'verify' | 'users' | 'pharmacies' | 'doctors' | 'medicines' | 'orders' | 'reports' | 'audit' | 'performance';
+type Tab = 'verify' | 'users' | 'pharmacies' | 'doctors' | 'medicines' | 'orders' | 'reports' | 'messages' | 'audit' | 'performance';
 type Row = Record<string, unknown>;
 
 interface Stats {
@@ -21,6 +21,7 @@ interface Stats {
   requestsToday: number;
   ordersByStatus: Record<string, number>;
   openReports: number;
+  openContactMessages: number;
   avgResponseMinutes7d: number | null;
 }
 interface Dialog {
@@ -135,12 +136,14 @@ export function AdminDashboard() {
   const medicines = useList<Medicine & { deletedAt: string | null }>('/admin/medicines', { q: medQ || undefined });
   const orders = useList('/admin/orders', { status: orderStatus || undefined });
   const reports = useList('/admin/reports');
+  const [messageStatus, setMessageStatus] = useState<'open' | 'handled' | ''>('open');
+  const messages = useList('/admin/contact-messages', { status: messageStatus || undefined });
   const audit = useList('/admin/audit');
   const performance = useList('/admin/performance');
 
   const refreshAll = () => {
     loadStats();
-    for (const l of [verifications, users, pharmacies, doctors, medicines, reports, audit, performance]) l.load();
+    for (const l of [verifications, users, pharmacies, doctors, medicines, reports, messages, audit, performance]) l.load();
   };
   const run = async (fn: () => Promise<unknown>, ok?: string) => {
     setError(null);
@@ -217,6 +220,11 @@ export function AdminDashboard() {
           <Kpi label={t('adm.kpiRequests')} value={<AnimatedNumber value={stats.requestsToday} />} tone="info" />
           <Kpi label={t('adm.kpiActiveOrders')} value={<AnimatedNumber value={activeOrders} />} tone="info" />
           <Kpi label={t('adm.kpiReports')} value={<AnimatedNumber value={stats.openReports} />} tone={stats.openReports ? 'warn' : 'ok'} />
+          <Kpi
+            label={t('adm.kpiMessages')}
+            value={<AnimatedNumber value={stats.openContactMessages} />}
+            tone={stats.openContactMessages ? 'info' : 'ok'}
+          />
           <Kpi label={t('adm.kpiUsers')} value={<AnimatedNumber value={totalUsers} />} />
           <Kpi
             label={t('adm.kpiResponse')}
@@ -232,12 +240,12 @@ export function AdminDashboard() {
         label={t('adm.title')}
         value={tab}
         onChange={setTab}
-        tabs={(['verify', 'users', 'pharmacies', 'doctors', 'medicines', 'orders', 'reports', 'audit', 'performance'] as const).map(
-          (k) => ({
-            key: k,
-            label: t(`adm.tab${k === 'verify' ? 'Verify' : k.charAt(0).toUpperCase() + k.slice(1)}` as MessageKey),
-          }),
-        )}
+        tabs={(
+          ['verify', 'users', 'pharmacies', 'doctors', 'medicines', 'orders', 'reports', 'messages', 'audit', 'performance'] as const
+        ).map((k) => ({
+          key: k,
+          label: t(`adm.tab${k === 'verify' ? 'Verify' : k.charAt(0).toUpperCase() + k.slice(1)}` as MessageKey),
+        }))}
       />
 
       {tab === 'verify' &&
@@ -698,6 +706,58 @@ export function AdminDashboard() {
             </div>
           ))
         ))}
+
+      {tab === 'messages' && (
+        <div className="stack" data-testid="contact-messages">
+          <div className="row">
+            <label className="sr-only" htmlFor="msg-status">
+              {t('dash.status')}
+            </label>
+            <select
+              id="msg-status"
+              className="input"
+              style={{ width: 'auto' }}
+              value={messageStatus}
+              onChange={(e) => setMessageStatus(e.target.value as 'open' | 'handled' | '')}
+            >
+              <option value="open">{t('adm.msgOpen')}</option>
+              <option value="handled">{t('adm.msgHandled')}</option>
+              <option value="">{t('adm.msgAll')}</option>
+            </select>
+          </div>
+          {!messages.items ? (
+            <CardSkeleton />
+          ) : messages.items.length === 0 ? (
+            <Empty>{t('dash.empty')}</Empty>
+          ) : (
+            messages.items.map((m) => (
+              <article key={str(m.id)} className="card stack" data-testid="contact-message">
+                <div className="row between">
+                  <strong>{str(m.subject)}</strong>
+                  <span className={`badge ${m.handledAt ? 'ok' : 'info'}`}>{m.handledAt ? t('adm.msgHandled') : t('adm.msgOpen')}</span>
+                </div>
+                <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{str(m.message)}</p>
+                <span className="muted small">
+                  {str(m.name)} · {str(m.email)} · {t(`pub.contact.topic.${str(m.topic)}` as MessageKey)} · {str(m.language).toUpperCase()}{' '}
+                  · {formatDateTime(str(m.createdAt), locale)}
+                </span>
+                {m.handledAt ? (
+                  <span className="small muted">{t('adm.msgHandledBy', { who: str(m.handledBy) })}</span>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn secondary small"
+                    style={{ alignSelf: 'flex-start' }}
+                    onClick={() => void run(() => api(`/admin/contact-messages/${str(m.id)}/handle`, { method: 'POST' }), t('adm.msgDone'))}
+                  >
+                    {t('adm.msgMark')}
+                  </button>
+                )}
+              </article>
+            ))
+          )}
+        </div>
+      )}
 
       {tab === 'audit' &&
         (!audit.items ? (

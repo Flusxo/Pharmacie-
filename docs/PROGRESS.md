@@ -4,11 +4,19 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-User steps 1–7 are done and committed. Add-on: **Part G (languages) done first** (see below). **Next: Part A (public website)**, then B, D (palette), C/C2 (3D per page), G (medicine pictures), E (Stripe test mode), F (screenshots, report). Commit after each part only when build, lint and tests pass.
+**STOPPED on 2026-10-22 (usage limit), after committing add-on Part A.**
+
+- **Done and committed**: user steps 1–7 (dashboards, map, 3D, animations, pack labels + design pass, extras: TOTP / order slip / tour, README + checks); add-on **Part G languages** (i18next, account language, translated API / notifications / emails / medicine texts); **Part D palette** (lighter aqua/teal/mint, contrast test); **Part A public website** (10 pages, big Log in, Contact form → staff Messages tab). Also fixed while finishing Part A: the waiting page's "check again" now goes to the role's dashboard (it went to "/", which is now the public home).
+- **In progress**: nothing half-done in the code. Part A's "How it works" page has full static content; its animation is Part B.
+- **Exact next step**: **Part B** — make `/how-it-works` (`frontend/src/pages/public/PublicPages.tsx`, `HowItWorksPage`) a scroll-driven walkthrough: pinned section, connected diagram patient ↔ counter. ↔ pharmacy with animated arrows, small 3D objects travelling along the flow (lazy, with `HeroArt kind="how"` as fallback), the 5 steps and the status tracker (Accepted → Preparing → Ready → Out for delivery (simulated) → Delivered); keep the doctor/pharmacy sections, FAQ and the "payments and delivery are simulated" note; add an e2e check.
+- **Remaining add-on list (in order)**: B (animated How it works) → C/C2 (3D on every page: big scene on login/sign-up, a different scene per public page, calmer one after login, scroll-driven, tilt/mouse, fallbacks) → D renders (4K WebP/AVIF from our scenes, srcset, blur-up, image animation, ASSETS.md) → G pictures (rendered medicine photos per form, several angles, used everywhere) → E payments (Stripe TEST MODE only, after pharmacy acceptance, authorise/capture/refund, webhooks, tests, README) → F (screenshots 1440/390, light/dark, fr/en; review; fresh-clone check; hand replay of the README demo script; final report).
+- **Known bugs / limits**: see "Known issues" below. New: the public hero visuals are 2D illustrations until Part C; seeded contact messages appear only after a `db:reset` (Neon got the table through `db:migrate`, without demo rows).
+- **How to run**: `npm run dev` (API :4000 + web :5173 on Neon), `npm test` (local PostgreSQL :5433, never Neon), `npm run e2e` (own database and ports), `npm run build`, `npm run lint`, `npm run format:check`. After pulling new migrations: `npm run db:migrate` (keeps data). Screenshot review: `node scripts/design-sweep.mjs <outDir> 390,1440 light fr` with `npm run dev` running.
 
 ### Add-on plan (requested 2026-10-22, starts after step 7)
 
-- [ ] Part A — Multi-page public site: Home, How it works, For patients, For pharmacies, For doctors, About us, Contact, FAQ, Privacy, Terms; shared top bar with a big "Log in" + secondary "Create account"; shared footer; Contact form saved to the DB, validated, success state, listed for staff in the admin dashboard; fake demo contact details; fr/en; responsive.
+- [x] Part A (2026-10-22): public site with Home, How it works (content; animation in Part B), For patients, For pharmacies, For doctors, About, Contact, FAQ, Privacy, Terms; shared top bar (big "Log in", "Create account", phone menu) and footer (fictional contact details); login and sign-up inside it; Contact form → `contact_messages` → staff "Messages" tab; fr/en; responsive. Verified: backend `contact.test.ts` (4), Playwright `public.spec.ts` (5: all 10 pages with top bar/footer/notice and no shop wording, navigation and login button, phone menu without horizontal scroll, English, contact validation → success → staff sees and handles it), screenshots at 1440 and 390 px reviewed.
+- [x] Part D, palette only: lighter aqua/teal/mint gradient, teal-green brand, green accent, dark theme; contrast test. (4K renders and image animation still to do.)
 - [ ] Part B — "How it works": scroll-driven walkthrough of the real flow (search → choose + send, Rx rule → pharmacy accepts/refuses, 30 min, fallback → prepare + pay after acceptance → tracker), connected diagram with animated arrows and small 3D objects travelling patient ↔ platform ↔ pharmacy; doctor and pharmacy sections; FAQ; "Prototype: payments and delivery are simulated".
 - [ ] Part C / C2 — 3D on every page: big 3D background on login + sign-up, calmer one after login, a different scene per public page, scroll-driven scenes (camera travel, drift/spin, assemble/explode), mouse + tilt reaction, glass panels for readability; shared scene manager and assets; tiers, fallbacks, reduced motion, one heavy canvas on mobile.
 - [ ] Part D — Lighter aqua/teal/mint palette with green accent, good dark theme, strong contrast; 4K renders of our own scenes (WebP/AVIF, srcset, lazy, blur-up), varied render library per page, parallax / slow zoom / hover tilt / pinned scrollytelling; licences in `docs/ASSETS.md`.
@@ -121,11 +129,11 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified: in the browser on the user's running dev server, /map now shows the key-rejected message, no "Invalid key" tiles, 1 pin and the attribution. Vitest (`map.test.tsx`, 6 tests): resolver (full URL, bare key, empty, `{s}`, style.json, malformed), fallback text. Playwright (`map.spec.ts`, 8 tests): no key → message + attribution + no external tile request; stand-in tiles 200 → tiles shown; 403 text → message; 403 + image (MapTiler behaviour) → tiles hidden + key message (repeated 5×, stable); no pharmacy in range → message → widen → Terreaux listed; geolocation denied; details popup; tracking map.
   - README started with the map-key section (where to get the key, full URL or bare key, restart, Allowed HTTP origins, keys are public).
 
-## Last check results (2026-10-22, after add-on Part G languages)
+## Last check results (2026-10-22, after add-on Part A)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 115 + frontend 37 tests passed (local PG :5433, never Neon).
-- `npm run e2e`: 34 Playwright tests passed (5 cycle + 8 map + 4 patient + 3 extras + 10 language + 4 3D in their own browser); test ports released.
+- `npm test`: backend 119 + frontend 39 tests passed (local PG :5433, never Neon).
+- `npm run e2e`: 39 Playwright tests passed (5 cycle + 8 map + 4 patient + 3 extras + 10 language + 5 public + 4 3D in their own browser); test ports released.
 - 3D screenshots (step 3): 18/18 taken with software GL (`docs/screenshots/`, ~32 min); 7 re-taken after fixes.
 
 ## Known issues / To fix

@@ -277,6 +277,23 @@ export async function seed(c: pg.ClientBase): Promise<void> {
     `INSERT INTO notifications (user_id, kind, body, link, created_at) VALUES ($1,'order_status','Update on your request: your order is being prepared.',$2,$3)`,
     [userId.patient('alice'), `/orders/${sid('order:o1')}`, ago(20)],
   );
+  // Demo messages from the public Contact page (fictional people, example.com addresses).
+  await c.query(
+    `INSERT INTO contact_messages (name, email, topic, subject, message, language, created_at) VALUES
+       ($1,$2,'pharmacy',$3,$4,'fr',$5), ($6,$7,'press',$8,$9,'en',$10)`,
+    [
+      'Léa Bonnet',
+      'lea.bonnet@example.com',
+      'Rejoindre counter.',
+      'Bonjour, notre officine à Montélimar aimerait tester la plateforme. Comment se passe la vérification ?',
+      ago(60 * 5),
+      'Sam Taylor',
+      'sam.taylor@example.com',
+      'Interview request',
+      'Hello, I am writing about digital health in France. Could we talk about the prototype?',
+      ago(60 * 30),
+    ],
+  );
   await c.query(`INSERT INTO reports (reporter_user_id, subject, message, created_at) VALUES ($1,$2,$3,$4)`, [
     userId.patient('emma'),
     'Horaires incorrects',

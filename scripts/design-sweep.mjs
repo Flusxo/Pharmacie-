@@ -6,6 +6,16 @@ const [, , out, widthsArg = '360,768,1440', scheme = 'light', lang = 'fr', filte
 const base = 'http://localhost:5173';
 mkdirSync(out, { recursive: true });
 const pages = [
+  { who: null, name: 'pub-home', path: '/' },
+  { who: null, name: 'pub-how', path: '/how-it-works' },
+  { who: null, name: 'pub-patients', path: '/patients' },
+  { who: null, name: 'pub-pharmacies', path: '/pharmacies' },
+  { who: null, name: 'pub-doctors', path: '/doctors' },
+  { who: null, name: 'pub-about', path: '/about' },
+  { who: null, name: 'pub-contact', path: '/contact' },
+  { who: null, name: 'pub-faq', path: '/faq' },
+  { who: null, name: 'pub-privacy', path: '/privacy' },
+  { who: null, name: 'pub-terms', path: '/terms' },
   { who: null, name: 'login', path: '/login' },
   { who: null, name: 'register', path: '/register' },
   { who: 'alice@pharmacie.test', name: 'home', path: '/home' },

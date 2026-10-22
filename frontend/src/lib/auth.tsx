@@ -9,7 +9,8 @@ interface Auth {
   login: (email: string, password: string, code?: string) => Promise<User>;
   acceptSession: (token: string, user: User) => void;
   logout: () => void;
-  refresh: () => Promise<void>;
+  /** Reloads the current user; returns it (null when logged out). */
+  refresh: () => Promise<User | null>;
 }
 const Ctx = createContext<Auth | null>(null);
 
@@ -26,9 +27,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refresh = useCallback(async () => {
-    if (!getToken()) return;
+    if (!getToken()) return null;
     const r = await api<{ user: User }>('/auth/me');
     setUser(r.user);
+    return r.user;
   }, []);
 
   useEffect(() => {

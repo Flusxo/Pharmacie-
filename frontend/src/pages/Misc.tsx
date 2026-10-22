@@ -18,17 +18,6 @@ export function NotFoundPage() {
   );
 }
 
-export function LegalPage({ kind }: { kind: 'terms' | 'privacy' }) {
-  const { t } = useI18n();
-  return (
-    <article className="card stack" style={{ maxWidth: 760, margin: '0 auto' }}>
-      <h1>{t(kind === 'terms' ? 'legal.termsTitle' : 'legal.privacyTitle')}</h1>
-      <p>{t('legal.placeholder')}</p>
-      <p className="muted">{t('app.notice')}</p>
-    </article>
-  );
-}
-
 /** Doctors and pharmacies that are not verified yet land here. */
 export function WaitingPage() {
   const { t } = useI18n();
@@ -51,9 +40,10 @@ export function WaitingPage() {
         disabled={busy}
         onClick={async () => {
           setBusy(true);
-          await refresh().catch(() => {});
+          const fresh = await refresh().catch(() => null);
           setBusy(false);
-          navigate('/', { replace: true });
+          // Verified now → the dashboard; still pending → stays here (RequireRole sends it back).
+          navigate(fresh ? homeFor(fresh) : '/login', { replace: true });
         }}
       >
         {t('waiting.refresh')}
@@ -63,7 +53,3 @@ export function WaitingPage() {
 }
 
 /** "/" sends each role to its home. */
-export function RootRedirect() {
-  const { user } = useAuth();
-  return <Navigate to={user ? homeFor(user) : '/login'} replace />;
-}

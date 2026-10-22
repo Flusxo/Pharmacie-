@@ -24,7 +24,20 @@ import { DoctorDashboard } from './pages/doctor/DoctorDashboard';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { ProfilePage } from './pages/Profile';
 import { OrderSlipPage } from './pages/OrderSlip';
-import { LegalPage, NotFoundPage, RootRedirect, WaitingPage } from './pages/Misc';
+import { NotFoundPage, WaitingPage } from './pages/Misc';
+import { PublicLayout } from './components/public/PublicLayout';
+import {
+  AboutPage,
+  FaqPage,
+  ForDoctorsPage,
+  ForPatientsPage,
+  ForPharmaciesPage,
+  HowItWorksPage,
+  PrivacyPage,
+  PublicHome,
+  TermsPage,
+} from './pages/public/PublicPages';
+import { ContactPage } from './pages/public/ContactPage';
 
 /** Requires a logged-in user with one of the roles; unverified professionals go to /waiting. */
 function RequireRole({ roles, children }: { roles: Role[]; children: ReactNode }) {
@@ -49,8 +62,18 @@ export function AppRoutes() {
   if (!ready) return null;
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<RootRedirect />} />
+      {/* Public website and sign-in pages (before login). */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<PublicHome />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/patients" element={<ForPatientsPage />} />
+        <Route path="/pharmacies" element={<ForPharmaciesPage />} />
+        <Route path="/doctors" element={<ForDoctorsPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FaqPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
         <Route
           path="/login"
           element={
@@ -77,9 +100,11 @@ export function AppRoutes() {
         />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+      </Route>
+
+      {/* The app (after login). */}
+      <Route element={<Layout />}>
         <Route path="/waiting" element={<WaitingPage />} />
-        <Route path="/terms" element={<LegalPage kind="terms" />} />
-        <Route path="/privacy" element={<LegalPage kind="privacy" />} />
 
         <Route
           path="/home"
