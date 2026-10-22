@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
-import type { MessageKey } from '../../i18n/fr';
+import type { MessageKey } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
 import { usePlace } from '../../lib/location';
 import { formatKm, formatPrice } from '../../lib/format';
@@ -12,10 +12,11 @@ import { LazyMap } from '../../components/map/LazyMap';
 import { LocationControl } from '../../components/LocationControl';
 import { CardSkeleton, Empty, ErrorBox, OpenBadge, RxBadge } from '../../components/ui';
 import { AvailabilityText, MedicineCard } from './Search';
+import { medicineText } from '../../lib/medicine';
 
 export function MedicineDetailsPage() {
   const { id = '' } = useParams();
-  const { t, locale } = useI18n();
+  const { t, locale, lang } = useI18n();
   const { place } = usePlace();
   const [data, setData] = useState<{ medicine: Medicine; generics: Medicine[] } | null>(null);
   const [pharmacies, setPharmacies] = useState<NearbyPharmacy[] | null>(null);
@@ -65,7 +66,7 @@ export function MedicineDetailsPage() {
           </div>
           <h1 style={{ marginBottom: 0 }}>{m.name}</h1>
           <p className="muted" style={{ fontSize: '1.05rem' }}>
-            {m.description}
+            {medicineText(m, lang).description}
           </p>
           <dl className="grid cols-2" style={{ margin: 0 }}>
             <div>
@@ -82,7 +83,7 @@ export function MedicineDetailsPage() {
             </div>
             <div>
               <dt className="muted small">{t('med.age')}</dt>
-              <dd style={{ margin: 0 }}>{m.ageNote}</dd>
+              <dd style={{ margin: 0 }}>{medicineText(m, lang).ageNote}</dd>
             </div>
             <div>
               <dt className="muted small">{t('med.cip')}</dt>

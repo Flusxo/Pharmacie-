@@ -3,10 +3,11 @@ import { AnimatePresence, m as motion } from 'framer-motion';
 import { duration, easeOut, stagger } from '../../motion';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
-import type { MessageKey } from '../../i18n/fr';
+import type { MessageKey } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
 import { usePlace } from '../../lib/location';
 import type { Medicine } from '../../lib/types';
+import { medicineText } from '../../lib/medicine';
 import { PackImage } from '../../components/PackImage';
 import { SearchBox } from '../../components/SearchBox';
 import { LocationControl } from '../../components/LocationControl';
@@ -28,7 +29,7 @@ export function AvailabilityText({ n }: { n: number | undefined }) {
 }
 
 export function MedicineCard({ m }: { m: Medicine }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <Link to={`/medicines/${m.id}`} className="card lift med-card" data-testid="medicine-card">
       <PackImage name={m.name} dosage={m.dosage} form={m.form} category={m.category} imageUrl={m.imageUrl} rx={m.requiresPrescription} />
@@ -41,7 +42,7 @@ export function MedicineCard({ m }: { m: Medicine }) {
           <AvailabilityText n={m.availableAt} />
           <RxBadge rx={m.requiresPrescription} />
         </div>
-        {m.ageNote && <span className="muted small">{m.ageNote}</span>}
+        {m.ageNote && <span className="muted small">{medicineText(m, lang).ageNote}</span>}
       </div>
     </Link>
   );
@@ -150,7 +151,7 @@ export function SearchPage() {
             </motion.div>
           )}
           {data.pages > 1 && (
-            <nav className="row" style={{ justifyContent: 'center' }} aria-label="Pagination">
+            <nav className="row" style={{ justifyContent: 'center' }} aria-label={t('search.pagination')}>
               <button type="button" className="btn secondary small" disabled={page <= 1} onClick={() => update({ page: String(page - 1) })}>
                 {t('search.prev')}
               </button>

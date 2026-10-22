@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { api, getToken, setToken, setUnauthorizedHandler } from './api';
 import type { User } from './types';
+import { useI18n, type Lang } from '../i18n';
 
 interface Auth {
   user: User | null;
@@ -15,6 +16,9 @@ const Ctx = createContext<Auth | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
+  const { setLang } = useI18n();
+  // The account's language wins when a session starts (login or reload); switching later saves it.
+  const applyAccountLanguage = useCallback((u: User) => u.language && setLang(u.language), [setLang]);
 
   const logout = useCallback(() => {
     setToken(null);
@@ -33,15 +37,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setReady(true);
       return;
     }
-    refresh()
+    api<{ user: User }>('/auth/me')
+      .then((r) => {
+        setUser(r.user);
+        applyAccountLanguage(r.user);
+      })
       .catch(() => logout())
       .finally(() => setReady(true));
-  }, [logout, refresh]);
+  }, [logout, applyAccountLanguage]);
 
-  const acceptSession = useCallback((token: string, u: User) => {
-    setToken(token);
-    setUser(u);
-  }, []);
+  const acceptSession = useCallback(
+    (token: string, u: User) => {
+      setToken(token);
+      setUser(u);
+      applyAccountLanguage(u);
+    },
+    [applyAccountLanguage],
+  );
 
   const login = useCallback(
     async (email: string, password: string, code?: string) => {
@@ -66,6 +78,19 @@ export function useAuth(): Auth {
   const c = useContext(Ctx);
   if (!c) throw new Error('useAuth must be used inside AuthProvider');
   return c;
+}
+
+/** Changes the UI language and, when logged in, saves it on the account (used for emails too). */
+export function useChangeLanguage(): (l: Lang) => void {
+  const { setLang } = useI18n();
+  const user = useContext(Ctx)?.user;
+  return useCallback(
+    (l: Lang) => {
+      setLang(l);
+      if (user) void api('/auth/me/preferences', { method: 'PATCH', body: { language: l } }).catch(() => {});
+    },
+    [setLang, user],
+  );
 }
 
 /** Where each role lands after login. */

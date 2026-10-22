@@ -5,6 +5,7 @@ import { notFound } from '../errors.js';
 import { requireAuth } from '../middleware/auth.js';
 import { addRoutes } from '../openapi.js';
 import { getShared } from '../services/orders.js';
+import { langOf, tr } from '../i18n/index.js';
 
 /** Routes for every logged-in role, plus the public share link. */
 export const commonRouter = Router();
@@ -18,7 +19,9 @@ commonRouter.get('/notifications', requireAuth, async (req, res) => {
   const unread = await query<{ n: number }>('SELECT count(*)::int AS n FROM notifications WHERE user_id = $1 AND read_at IS NULL', [
     req.user!.id,
   ]);
-  res.json({ items, unread: unread[0]?.n ?? 0 });
+  // Bodies are stored in English and shown in the reader's language.
+  const lang = langOf(req);
+  res.json({ items: items.map((n) => ({ ...n, body: tr(String(n.body), lang) })), unread: unread[0]?.n ?? 0 });
 });
 
 commonRouter.post('/notifications/read-all', requireAuth, async (req, res) => {

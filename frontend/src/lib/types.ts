@@ -10,6 +10,7 @@ export interface User {
   displayName: string;
   emailNotifications: boolean;
   totpEnabled?: boolean;
+  language?: 'fr' | 'en';
   patient?: {
     firstName: string;
     lastName: string;
@@ -49,6 +50,9 @@ export interface Medicine {
   imageUrl: string | null;
   description: string;
   ageNote: string;
+  /** English versions (empty: fall back to French). */
+  descriptionEn?: string;
+  ageNoteEn?: string;
   availableAt?: number;
 }
 

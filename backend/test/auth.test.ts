@@ -160,7 +160,8 @@ describe('password reset', () => {
     expect(a.body.message).toBe(b.body.message);
 
     const mail = sentMails.filter((m) => m.to === 'emma@pharmacie.test').at(-1);
-    expect(mail?.subject).toBe('Reset your password');
+    // Emma's account language is French (the default), so the email is in French.
+    expect(mail?.subject).toBe('Réinitialisez votre mot de passe');
     expect(sentMails.some((m) => m.to === 'ghost@pharmacie.test')).toBe(false);
     const token = mail!.body.match(/token=([a-f0-9]{64})/)![1];
 

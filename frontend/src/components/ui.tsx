@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { m as motion } from 'framer-motion';
 import { spring } from '../motion';
 import { useI18n } from '../i18n';
-import type { MessageKey } from '../i18n/fr';
+import type { MessageKey } from '../i18n';
 import { openState } from '../lib/format';
 import type { OpeningHours } from '../lib/types';
 

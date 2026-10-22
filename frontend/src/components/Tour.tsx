@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { useI18n } from '../i18n';
-import type { MessageKey } from '../i18n/fr';
+import type { MessageKey } from '../i18n';
 import { duration, easeOut } from '../motion';
 
 export const TOUR_KEY = 'counter.tour';

@@ -11,6 +11,7 @@ import { ContactShadows, Float, RoundedBox } from '@react-three/drei';
 import { Scene3D } from './Scene3D';
 import { AmberBottle, Capsule, GreenCross, PharmaBox, Tablet } from './models';
 import { marbleTexture } from './textures';
+import { useI18n } from '../i18n';
 
 // Fictional brands only (no real trademarks on props).
 const BRANDS: [string, string][] = [
@@ -126,7 +127,7 @@ function Props({ reduced }: { reduced: boolean }) {
       <Float speed={reduced ? 0 : 1.2} rotationIntensity={0.15} floatIntensity={0.12} floatingRange={[0, 0.05]}>
         <group position={[0.35, 0, 0.1]} scale={0.55}>
           <AmberBottle
-            label={{ name: 'Apaisa sirop', dosage: '150 ml', color: '#065F46', light: '#A7F3D0', cip: '3400930001234' }}
+            label={{ name: 'Apaisa', dosage: '150 ml', color: '#065F46', light: '#A7F3D0', cip: '3400930001234' }}
             quality="high"
             open={0}
           />
@@ -157,11 +158,12 @@ export default function HeroScene({
   onSlow?: () => void;
   onReady?: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <Scene3D
       tier={tier}
       reduced={reduced}
-      label="Comptoir de pharmacie en 3D : flacon en verre ambré, gélules et comprimés, étagère de boîtes et croix verte."
+      label={t('three.heroLabel')}
       className="hero-canvas"
       camera={{ position: [0.6, 1.25, 2.6], fov: 38 }}
       // Focus on the counter (~2.5 units of a 100-unit depth range); the shelf behind falls softly out of focus.

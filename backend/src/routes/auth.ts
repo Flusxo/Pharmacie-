@@ -11,6 +11,7 @@ import { getProfile } from '../services/profile.js';
 import { emailField, latitude, longitude, passwordField } from '../validate.js';
 import { sendMail } from '../notify.js';
 import { log, maskEmail } from '../logger.js';
+import { langOf, tr, type Lang } from '../i18n/index.js';
 import { decryptSecret, encryptSecret, newSecret, otpauthUrl, base32Encode, verifyTotp } from '../totp.js';
 
 export const authRouter = Router();
@@ -39,25 +40,27 @@ const resetLimiter = rateLimit({
   message: { error: 'Too many password reset requests. Please wait a few minutes.' },
 });
 
-async function createUser(email: string, password: string, role: Role, status: 'active' | 'pending', db: Db = pool) {
+async function createUser(email: string, password: string, role: Role, status: 'active' | 'pending', language: Lang, db: Db = pool) {
   const exists = await one('SELECT 1 FROM users WHERE email = $1', [email], db);
   if (exists) throw conflict('An account with this email already exists. Try logging in or resetting your password.');
   const hash = await bcrypt.hash(password, 10);
   const u = await one<{ id: string }>(
-    'INSERT INTO users (email, password_hash, role, status) VALUES ($1,$2,$3,$4) RETURNING id',
-    [email, hash, role, status],
+    'INSERT INTO users (email, password_hash, role, status, language) VALUES ($1,$2,$3,$4,$5) RETURNING id',
+    [email, hash, role, status, language],
     db,
   );
   return u!.id;
 }
 
 const name = z.string().trim().min(1, 'is required').max(80);
+const language = z.enum(['fr', 'en']).optional();
 
 authRouter.post('/register/patient', registerLimiter, async (req, res) => {
   const body = z
     .object({
       email: emailField,
       password: passwordField,
+      language,
       firstName: name,
       lastName: name,
       birthDate: z.iso.date().optional(),
@@ -68,7 +71,7 @@ authRouter.post('/register/patient', registerLimiter, async (req, res) => {
     })
     .parse(req.body);
   const id = await tx(async (c) => {
-    const uid = await createUser(body.email, body.password, 'patient', 'active', c);
+    const uid = await createUser(body.email, body.password, 'patient', 'active', body.language ?? langOf(req), c);
     await c.query(
       `INSERT INTO patients (user_id, first_name, last_name, birth_date, phone, address, latitude, longitude) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
       [
@@ -92,6 +95,7 @@ authRouter.post('/register/doctor', registerLimiter, async (req, res) => {
     .object({
       email: emailField,
       password: passwordField,
+      language,
       firstName: name,
       lastName: name,
       rpps: z.string().regex(/^\d{11}$/, 'must be the 11-digit RPPS number'),
@@ -101,7 +105,7 @@ authRouter.post('/register/doctor', registerLimiter, async (req, res) => {
   const id = await tx(async (c) => {
     const taken = await one('SELECT 1 FROM doctors WHERE rpps = $1', [body.rpps], c);
     if (taken) throw conflict('This RPPS number is already registered.');
-    const uid = await createUser(body.email, body.password, 'doctor', 'pending', c);
+    const uid = await createUser(body.email, body.password, 'doctor', 'pending', body.language ?? langOf(req), c);
     await c.query(`INSERT INTO doctors (user_id, first_name, last_name, rpps, speciality) VALUES ($1,$2,$3,$4,$5)`, [
       uid,
       body.firstName,
@@ -119,6 +123,7 @@ authRouter.post('/register/pharmacy', registerLimiter, async (req, res) => {
     .object({
       email: emailField,
       password: passwordField,
+      language,
       name: z.string().trim().min(3).max(120),
       finess: z.string().regex(/^\d{9}$/, 'must be the 9-digit FINESS number'),
       address: z.string().trim().min(5).max(200),
@@ -131,7 +136,7 @@ authRouter.post('/register/pharmacy', registerLimiter, async (req, res) => {
   const id = await tx(async (c) => {
     const taken = await one('SELECT 1 FROM pharmacies WHERE finess = $1', [body.finess], c);
     if (taken) throw conflict('This FINESS number is already registered.');
-    const uid = await createUser(body.email, body.password, 'pharmacy', 'pending', c);
+    const uid = await createUser(body.email, body.password, 'pharmacy', 'pending', body.language ?? langOf(req), c);
     await c.query(
       `INSERT INTO pharmacies (user_id, name, finess, address, city, phone, latitude, longitude, opening_hours)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
@@ -237,8 +242,14 @@ authRouter.get('/me', requireAuth, async (req, res) => {
 });
 
 authRouter.patch('/me/preferences', requireAuth, async (req, res) => {
-  const body = z.object({ emailNotifications: z.boolean() }).parse(req.body);
-  await pool.query('UPDATE users SET email_notifications = $2 WHERE id = $1', [req.user!.id, body.emailNotifications]);
+  const body = z
+    .object({ emailNotifications: z.boolean().optional(), language: z.enum(['fr', 'en']).optional() })
+    .refine((b) => b.emailNotifications !== undefined || b.language !== undefined, 'is empty')
+    .parse(req.body);
+  await pool.query(
+    'UPDATE users SET email_notifications = COALESCE($2, email_notifications), language = COALESCE($3, language) WHERE id = $1',
+    [req.user!.id, body.emailNotifications ?? null, body.language ?? null],
+  );
   res.json({ user: await getProfile(req.user!.id) });
 });
 
@@ -246,7 +257,7 @@ const sha256 = (s: string) => crypto.createHash('sha256').update(s).digest('hex'
 
 authRouter.post('/forgot-password', resetLimiter, async (req, res) => {
   const { email } = z.object({ email: emailField }).parse(req.body);
-  const u = await one<{ id: string }>('SELECT id FROM users WHERE email = $1 AND deleted_at IS NULL', [email]);
+  const u = await one<{ id: string; language: Lang }>('SELECT id, language FROM users WHERE email = $1 AND deleted_at IS NULL', [email]);
   if (u) {
     const token = crypto.randomBytes(32).toString('hex');
     await pool.query(`INSERT INTO password_resets (token_hash, user_id, expires_at) VALUES ($1,$2, now() + make_interval(mins => $3))`, [
@@ -256,8 +267,8 @@ authRouter.post('/forgot-password', resetLimiter, async (req, res) => {
     ]);
     sendMail(
       email,
-      'Reset your password',
-      `Use this link within ${RULES.RESET_TOKEN_MINUTES} minutes: ${config.FRONTEND_URL}/reset-password?token=${token}`,
+      tr('Reset your password', u.language),
+      tr(`Use this link within ${RULES.RESET_TOKEN_MINUTES} minutes: ${config.FRONTEND_URL}/reset-password?token=${token}`, u.language),
     );
   }
   // Same answer whether or not the email exists.

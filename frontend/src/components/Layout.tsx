@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AnimatedOutlet } from './motion';
 import { useI18n } from '../i18n';
-import { useAuth } from '../lib/auth';
+import { useAuth, useChangeLanguage } from '../lib/auth';
 import { useSettings } from '../lib/settings';
 import { api } from '../lib/api';
 import type { Notification } from '../lib/types';
@@ -31,7 +31,8 @@ function useScrolled(): boolean {
 }
 
 export function LanguageSwitch() {
-  const { lang, setLang, t } = useI18n();
+  const { lang, t } = useI18n();
+  const setLang = useChangeLanguage();
   return (
     <label className="row" style={{ gap: 6 }}>
       <span className="sr-only">{t('nav.language')}</span>
@@ -205,10 +206,10 @@ export function Layout() {
         </a>
         <PrototypeNotice />
         <header className={`topbar ${scrolled ? 'scrolled' : ''}`}>
-          <Link to="/" className="brand" aria-label="counter. home">
+          <Link to="/" className="brand" aria-label={t('nav.brandHome')}>
             counter<span>.</span>
           </Link>
-          <nav className="topnav" aria-label="Main">
+          <nav className="topnav" aria-label={t('nav.main')}>
             {nav.map((n) => (
               <NavLink key={n.to} to={n.to} data-tour={n.tour}>
                 {n.label}
@@ -244,7 +245,7 @@ export function Layout() {
           </a>
         </footer>
         {nav.length > 0 && (
-          <nav className="tabbar" aria-label="Tabs">
+          <nav className="tabbar" aria-label={t('nav.tabs')}>
             {nav.map((n) => (
               <NavLink key={n.to} to={n.to} data-tour={n.tour}>
                 {n.icon}

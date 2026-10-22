@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useI18n } from '../i18n';
+import { specialityLabel, useI18n } from '../i18n';
 import { ApiError, api, getToken } from '../lib/api';
-import { useAuth } from '../lib/auth';
+import { useAuth, useChangeLanguage } from '../lib/auth';
 import { useSettings, type GraphicsPref, type ThemePref } from '../lib/settings';
 import { useToast } from '../lib/toast';
 import { TwoStepSection } from '../components/TwoStep';
@@ -17,7 +17,8 @@ interface DoctorLink {
 }
 
 export function ProfilePage() {
-  const { t, lang, setLang } = useI18n();
+  const { t, lang } = useI18n();
+  const setLang = useChangeLanguage();
   const { theme, setTheme, reduceMotion, setReduceMotion, graphics, setGraphics } = useSettings();
   const { user, refresh, logout } = useAuth();
   const toast = useToast();
@@ -80,7 +81,7 @@ export function ProfilePage() {
               </div>
               <div>
                 <dt className="muted small">{t('acc.speciality')}</dt>
-                <dd style={{ margin: 0 }}>{user.doctor.speciality}</dd>
+                <dd style={{ margin: 0 }}>{specialityLabel(user.doctor.speciality, t)}</dd>
               </div>
             </>
           )}
@@ -188,7 +189,7 @@ export function ProfilePage() {
                   Dr {d.firstName} {d.lastName}
                 </strong>
                 <span className="muted small">
-                  {d.speciality}
+                  {specialityLabel(d.speciality, t)}
                   {!d.confirmed ? ` · ${t('profile.pendingLink')}` : ''}
                 </span>
               </span>

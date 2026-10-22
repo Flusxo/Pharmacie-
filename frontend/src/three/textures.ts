@@ -3,6 +3,7 @@
  * Every texture is cached by key and must be disposed by its owner via releaseTextures().
  */
 import * as THREE from 'three';
+import { labelFooter } from './labelFooter';
 
 const cache = new Map<string, THREE.Texture>();
 
@@ -98,7 +99,7 @@ export interface LabelSpec {
 
 /** 2048 px label: name, dosage, green cross, CIP code and a small barcode. Crisp thanks to anisotropic filtering. */
 export function labelTexture(spec: LabelSpec, anisotropy = 8): THREE.Texture {
-  const key = `label:${spec.kind ?? 'wrap'}:${spec.name}:${spec.dosage}:${spec.color}:${spec.cip ?? ''}`;
+  const key = `label:${spec.kind ?? 'wrap'}:${spec.name}:${spec.dosage}:${spec.color}:${spec.cip ?? ''}:${labelFooter()}`;
   const hit = cache.get(key);
   if (hit) return hit;
   const wrap = (spec.kind ?? 'wrap') === 'wrap';
@@ -137,7 +138,7 @@ export function labelTexture(spec: LabelSpec, anisotropy = 8): THREE.Texture {
   ctx.textAlign = 'left';
   ctx.font = `600 ${wrap ? 36 : 54}px Inter Variable, Inter, Arial, sans-serif`;
   ctx.fillStyle = '#FFFFFF';
-  ctx.fillText('counter. · démo', 40, H * 0.955);
+  ctx.fillText(labelFooter(), 40, H * 0.955);
   return finish(key, c, { anisotropy });
 }
 

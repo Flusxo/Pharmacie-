@@ -7,6 +7,7 @@ import { config } from './config.js';
 import { pool } from './db.js';
 import { errorHandler, notFoundHandler } from './errors.js';
 import { log } from './logger.js';
+import { langOf, tr } from './i18n/index.js';
 import { authenticate } from './middleware/auth.js';
 import { authRouter } from './routes/auth.js';
 import { publicRouter } from './routes/public.js';
@@ -38,6 +39,25 @@ export function createApp(): Express {
         role: req.user?.role,
       });
     });
+    next();
+  });
+
+  // Answers in the request language: "error" and "message" texts are translated (catalogue in i18n/messages.ts).
+  app.use((req, res, next) => {
+    const lang = langOf(req);
+    res.locals.lang = lang;
+    res.setHeader('Content-Language', lang);
+    if (lang !== 'en') {
+      const json = res.json.bind(res);
+      res.json = (body: unknown) => {
+        if (body && typeof body === 'object' && !Array.isArray(body)) {
+          const b = body as Record<string, unknown>;
+          if (typeof b.error === 'string') b.error = tr(b.error, lang);
+          if (typeof b.message === 'string') b.message = tr(b.message, lang);
+        }
+        return json(body);
+      };
+    }
     next();
   });
 

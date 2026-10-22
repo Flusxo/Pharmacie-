@@ -21,7 +21,8 @@ export const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '
 const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
 
 export const MEDICINE_COLUMNS = `m.id, m.cip13, m.name, m.active_substance AS "activeSubstance", m.form, m.dosage, m.category,
-  m.requires_prescription AS "requiresPrescription", m.image_url AS "imageUrl", m.description, m.age_note AS "ageNote"`;
+  m.requires_prescription AS "requiresPrescription", m.image_url AS "imageUrl", m.description, m.age_note AS "ageNote",
+  m.description_en AS "descriptionEn", m.age_note_en AS "ageNoteEn"`;
 
 export interface SearchParams {
   q?: string;

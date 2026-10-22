@@ -82,7 +82,8 @@ test.describe('patient flow (real API + real frontend)', () => {
     await page.getByLabel('Adresse e-mail').fill('alice@pharmacie.test');
     await page.getByLabel('Mot de passe').fill('wrong-password');
     await page.getByRole('button', { name: 'Se connecter' }).click();
-    await expect(page.getByRole('alert')).toHaveText('Invalid email or password.');
+    // The API answers in the UI language (French here).
+    await expect(page.getByRole('alert')).toHaveText('E-mail ou mot de passe incorrect.');
   });
 
   test('staff can log in from the staff link', async ({ page }) => {

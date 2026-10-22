@@ -4,6 +4,7 @@ import { one, pool, query, tx } from '../db.js';
 import { badRequest, notFound } from '../errors.js';
 import { requireRole } from '../middleware/auth.js';
 import { addRoutes } from '../openapi.js';
+import { langOf, tr } from '../i18n/index.js';
 import {
   decideCancellation,
   getPharmacyOrder,
@@ -225,15 +226,15 @@ pharmacyRouter.post('/inventory/csv', async (req, res) => {
     };
   });
   const errors = rows.filter((r) => r.error).length;
+  // Row errors in the reader's language.
+  const lang = langOf(req);
+  const shown = (list: CsvRow[]) => list.map((r) => ({ ...r, error: r.error && tr(r.error, lang) }));
   if (body.dryRun) {
-    res.json({ dryRun: true, rows, errors, valid: rows.length - errors });
+    res.json({ dryRun: true, rows: shown(rows), errors, valid: rows.length - errors });
     return;
   }
   if (errors) {
-    throw badRequest(
-      `Fix the ${errors} row(s) with errors before applying.`,
-      rows.filter((r) => r.error),
-    );
+    throw badRequest(`Fix the ${errors} row(s) with errors before applying.`, shown(rows.filter((r) => r.error)));
   }
   await tx(async (c) => {
     for (const r of rows) {

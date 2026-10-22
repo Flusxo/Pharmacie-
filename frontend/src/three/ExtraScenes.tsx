@@ -8,6 +8,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, Float, Html, RoundedBox } from '@react-three/drei';
 import { Scene3D } from './Scene3D';
 import { Capsule, GreenCross, Tablet, plastic } from './models';
+import { useI18n } from '../i18n';
 
 type Tier = 'high' | 'medium';
 const rngFrom = (seed: number) => {
@@ -185,11 +186,12 @@ export function DeliveryScene({
   onSlow?: () => void;
   onReady?: () => void;
 }) {
+  const { t } = useI18n();
   return (
     <Scene3D
       tier={tier}
       reduced={reduced}
-      label="Suivi simulé : livreur en scooter sur le trajet entre la pharmacie et l’adresse de livraison."
+      label={t('three.deliveryLabel')}
       className="delivery-canvas"
       camera={{ position: [-5, 3.2, 4.5], fov: 40 }}
       onSlow={onSlow}
@@ -276,12 +278,13 @@ export function ShelfScene({
   onSlow?: () => void;
   onReady?: () => void;
 }) {
+  const { t } = useI18n();
   const rows = Math.ceil(items.length / 10);
   return (
     <Scene3D
       tier={tier}
       reduced={reduced}
-      label="Étagère de stock : la hauteur de chaque boîte correspond à la quantité, rouge quand le stock est faible."
+      label={t('three.shelfLabel')}
       className="shelf-canvas"
       camera={{ position: [0, 1 + rows * 0.75, 4.5 + rows * 1.2], fov: 40 }}
       onSlow={onSlow}
@@ -358,11 +361,12 @@ function MintBurst() {
 }
 
 export function CheckScene({ tier, reduced, onReady }: { tier: Tier; reduced: boolean; onReady?: () => void }) {
+  const { t } = useI18n();
   return (
     <Scene3D
       tier={tier}
       reduced={reduced}
-      label="Demande envoyée"
+      label={t('three.checkLabel')}
       className="check-canvas"
       camera={{ position: [0, 0, 3.2], fov: 35 }}
       onReady={onReady}
@@ -385,11 +389,12 @@ function Spinner({ reduced }: { reduced: boolean }) {
 }
 
 export function CapsuleScene({ tier, reduced, onReady }: { tier: Tier; reduced: boolean; onReady?: () => void }) {
+  const { t } = useI18n();
   return (
     <Scene3D
       tier={tier}
       reduced={reduced}
-      label="Gélule en 3D"
+      label={t('three.capsuleLabel')}
       className="capsule-canvas"
       camera={{ position: [0, 0.3, 3.4], fov: 35 }}
       onReady={onReady}

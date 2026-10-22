@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
-import { useI18n } from '../../i18n';
-import type { MessageKey } from '../../i18n/fr';
+import { specialityLabel, useI18n } from '../../i18n';
+import type { MessageKey } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 import { useToast } from '../../lib/toast';
@@ -177,6 +177,8 @@ export function AdminDashboard() {
       imageUrl: editing.imageUrl || null,
       description: editing.description ?? '',
       ageNote: editing.ageNote ?? '',
+      descriptionEn: editing.descriptionEn ?? '',
+      ageNoteEn: editing.ageNoteEn ?? '',
     };
     void run(
       () =>
@@ -468,7 +470,7 @@ export function AdminDashboard() {
                   Dr {str(d.firstName)} {str(d.lastName)}
                 </td>
                 <td>{str(d.rpps)}</td>
-                <td>{str(d.speciality)}</td>
+                <td>{specialityLabel(str(d.speciality), t)}</td>
                 <td>
                   <span className={`badge ${d.verified ? 'ok' : 'warn'}`}>{d.verified ? t('adm.verified') : t('adm.notVerified')}</span>{' '}
                   <StatusBadge status={str(d.status)} />
@@ -540,6 +542,7 @@ export function AdminDashboard() {
                 </div>
                 {medField('imageUrl', t('adm.imageUrl'), 'url')}
                 {medField('ageNote', t('adm.ageNote'))}
+                {medField('ageNoteEn', t('adm.ageNoteEn'))}
               </div>
               <div className="field">
                 <label htmlFor="m-desc">{t('adm.description')}</label>
@@ -548,6 +551,15 @@ export function AdminDashboard() {
                   className="input"
                   value={str(editing.description)}
                   onChange={(e) => setEditing((m) => ({ ...m, description: e.target.value }))}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="m-desc-en">{t('adm.descriptionEn')}</label>
+                <textarea
+                  id="m-desc-en"
+                  className="input"
+                  value={str(editing.descriptionEn)}
+                  onChange={(e) => setEditing((m) => ({ ...m, descriptionEn: e.target.value }))}
                 />
               </div>
               <label className="check">

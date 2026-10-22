@@ -3,6 +3,7 @@ import path from 'node:path';
 import { ROOT, isTest } from './config.js';
 import { one, pool, type Db } from './db.js';
 import { log, maskEmail } from './logger.js';
+import { tr, type Lang } from './i18n/index.js';
 
 export type NotificationKind =
   | 'request_sent'
@@ -66,12 +67,14 @@ export async function notify(
   db: Db = pool,
 ): Promise<void> {
   await db.query('INSERT INTO notifications (user_id, kind, body, link) VALUES ($1,$2,$3,$4)', [userId, kind, body, link]);
-  const u = await one<{ email: string; email_notifications: boolean }>(
-    'SELECT email, email_notifications FROM users WHERE id = $1 AND deleted_at IS NULL',
+  const u = await one<{ email: string; email_notifications: boolean; language: Lang }>(
+    'SELECT email, email_notifications, language FROM users WHERE id = $1 AND deleted_at IS NULL',
     [userId],
     db,
   );
   if (u?.email_notifications) {
-    sendMail(u.email, SUBJECTS[kind], `${body}\n\nOpen counter. to see the details${link ? `: ${link}` : '.'}`);
+    // Email in the recipient's language (the in-app copy is translated when it is read).
+    const open = link ? `Open counter. to see the details: ${link}` : 'Open counter. to see the details.';
+    sendMail(u.email, tr(SUBJECTS[kind], u.language), `${tr(body, u.language)}\n\n${tr(open, u.language)}`);
   }
 }

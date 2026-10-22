@@ -291,6 +291,8 @@ const medicineBody = z.object({
     .optional(),
   description: z.string().trim().max(2000).optional(),
   ageNote: z.string().trim().max(200).optional(),
+  descriptionEn: z.string().trim().max(2000).optional(),
+  ageNoteEn: z.string().trim().max(200).optional(),
 });
 const COLS: Record<string, string> = {
   cip13: 'cip13',
@@ -303,14 +305,17 @@ const COLS: Record<string, string> = {
   imageUrl: 'image_url',
   description: 'description',
   ageNote: 'age_note',
+  descriptionEn: 'description_en',
+  ageNoteEn: 'age_note_en',
 };
 
 adminRouter.post('/medicines', canModerate, async (req, res) => {
   const b = medicineBody.parse(req.body);
   const id = await tx(async (c) => {
     const m = await one<{ id: string }>(
-      `INSERT INTO medicines (cip13, name, active_substance, form, dosage, category, requires_prescription, image_url, description, age_note)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+      `INSERT INTO medicines (cip13, name, active_substance, form, dosage, category, requires_prescription, image_url, description, age_note,
+                              description_en, age_note_en)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
       [
         b.cip13,
         b.name,
@@ -322,6 +327,8 @@ adminRouter.post('/medicines', canModerate, async (req, res) => {
         b.imageUrl ?? null,
         b.description ?? '',
         b.ageNote ?? '',
+        b.descriptionEn ?? '',
+        b.ageNoteEn ?? '',
       ],
       c,
     );

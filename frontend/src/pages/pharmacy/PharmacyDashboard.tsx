@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../i18n';
-import type { MessageKey } from '../../i18n/fr';
+import type { MessageKey } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 import { useToast } from '../../lib/toast';
@@ -727,7 +727,7 @@ function InventoryTab({ onChange }: { onChange: () => void }) {
                       {r.oldQuantity ?? '—'} → {r.quantity ?? '—'}
                     </td>
                     <td>{r.priceEur != null ? formatPrice(r.priceEur, locale) : '—'}</td>
-                    <td>{r.error ? <span className="badge bad">{r.error}</span> : <span className="badge ok">OK</span>}</td>
+                    <td>{r.error ? <span className="badge bad">{r.error}</span> : <span className="badge ok">{t('ph.csvRowOk')}</span>}</td>
                   </tr>
                 ))}
               </tbody>

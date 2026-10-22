@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../i18n';
-import type { MessageKey } from '../../i18n/fr';
+import type { MessageKey } from '../../i18n';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 import { usePlace } from '../../lib/location';

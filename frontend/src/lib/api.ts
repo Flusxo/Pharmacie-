@@ -34,6 +34,14 @@ export function setUnauthorizedHandler(fn: () => void): void {
   onUnauthorized = fn;
 }
 
+import { translate, type Lang } from '../i18n';
+
+/** The UI language, sent as Accept-Language so the API answers (errors, messages) in it. */
+let apiLang: Lang = 'fr';
+export function setApiLanguage(l: Lang): void {
+  apiLang = l;
+}
+
 type Query = Record<string, string | number | boolean | undefined | null>;
 
 export async function api<T>(
@@ -47,7 +55,7 @@ export async function api<T>(
     const s = qs.toString();
     if (s) url += `?${s}`;
   }
-  const headers: Record<string, string> = { Accept: 'application/json' };
+  const headers: Record<string, string> = { Accept: 'application/json', 'Accept-Language': apiLang };
   if (opts.body !== undefined) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -61,7 +69,7 @@ export async function api<T>(
     });
   } catch (err) {
     if ((err as Error).name === 'AbortError') throw err;
-    throw new ApiError(0, 'The server cannot be reached. Is `npm run dev` running?', 'network');
+    throw new ApiError(0, translate(apiLang, 'api.network'), 'network');
   }
   const text = await res.text();
   let data: unknown = null;
@@ -73,15 +81,15 @@ export async function api<T>(
       throw new ApiError(
         res.status,
         res.status === 502 || res.status === 504 || res.status === 500
-          ? 'The API is not running. Start it with `npm run dev`.'
-          : `Unexpected answer (${res.status}).`,
+          ? translate(apiLang, 'api.down')
+          : translate(apiLang, 'api.unexpected', { status: res.status }),
       );
     }
   }
   if (!res.ok) {
     const body = (data ?? {}) as { error?: string; code?: string; details?: unknown };
     if (res.status === 401 && token && body.code !== 'invalid_credentials') onUnauthorized?.();
-    throw new ApiError(res.status, body.error ?? `Request failed (${res.status}).`, body.code, body.details);
+    throw new ApiError(res.status, body.error ?? translate(apiLang, 'api.failed', { status: res.status }), body.code, body.details);
   }
   return data as T;
 }

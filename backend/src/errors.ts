@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { log } from './logger.js';
+import { fieldName, issueMessage, langOf } from './i18n/index.js';
 
 export class HttpError extends Error {
   constructor(
@@ -27,8 +28,9 @@ export function notFoundHandler(req: Request, res: Response): void {
 export function errorHandler(err: unknown, req: Request, res: Response, _next: NextFunction): void {
   const requestId = res.locals.requestId as string | undefined;
   if (err instanceof ZodError) {
-    const details = err.issues.map((i) => ({ field: i.path.join('.') || '(body)', message: i.message }));
-    const summary = details.map((d) => `${d.field}: ${d.message}`).join('; ');
+    const lang = langOf(req);
+    const details = err.issues.map((i) => ({ field: i.path.join('.') || '(body)', message: issueMessage(i, lang) }));
+    const summary = details.map((d) => `${fieldName(d.field, lang)}${lang === 'fr' ? ' :' : ':'} ${d.message}`).join('; ');
     res.status(400).json({ error: `Invalid input — ${summary}`, details, requestId });
     return;
   }

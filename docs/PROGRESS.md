@@ -4,7 +4,7 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-User steps 1–7 are done and committed (dashboards, map, site-wide 3D, animations, pack labels + design pass, extras, README + checks). **Next: the add-on plan below, Part A first** (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
+User steps 1–7 are done and committed. Add-on: **Part G (languages) done first** (see below). **Next: Part A (public website)**, then B, D (palette), C/C2 (3D per page), G (medicine pictures), E (Stripe test mode), F (screenshots, report) (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
 
 ### Add-on plan (requested 2026-10-22, starts after step 7)
 
@@ -13,6 +13,7 @@ User steps 1–7 are done and committed (dashboards, map, site-wide 3D, animatio
 - [ ] Part C / C2 — 3D on every page: big 3D background on login + sign-up, calmer one after login, a different scene per public page, scroll-driven scenes (camera travel, drift/spin, assemble/explode), mouse + tilt reaction, glass panels for readability; shared scene manager and assets; tiers, fallbacks, reduced motion, one heavy canvas on mobile.
 - [ ] Part D — Lighter aqua/teal/mint palette with green accent, good dark theme, strong contrast; 4K renders of our own scenes (WebP/AVIF, srcset, lazy, blur-up), varied render library per page, parallax / slow zoom / hover tilt / pinned scrollytelling; licences in `docs/ASSETS.md`.
 - [ ] Part E — Stripe TEST MODE only: Payment Element / Checkout (card data never reaches our server), pay only after the pharmacy accepts, authorise then capture, refund on cancel, webhooks with signature check + idempotency, `payments` migration, status in tracker / pharmacy / admin, printable receipt, "Payments not configured" without keys, README setup (account, test mode, keys, Stripe CLI, 4242… and a declined card), tests (success, decline, pay-before-accept blocked, refund on cancel, duplicate webhook ignored, bad signature rejected), test-mode disclaimer.
+- [x] Part G, languages (done first, 2026-10-22): i18next + react-i18next with `locales/fr.json` / `en.json`; language saved in the browser and on the account (migration 004, applied to Neon); API errors, validation messages, notifications, emails, CSV row errors in the user's language; medicine descriptions/age notes in fr + en (migrations 004/005, applied to Neon); specialities; 3D labels and canvas descriptions. Verified: backend `i18n.test.ts` (9: every source message has French, placeholders, Accept-Language, validation with field names, notifications, account language + emails, medicine texts), frontend `i18n.test.tsx` (4: key parity, placeholders, no hard-coded text, live switch + `<html lang>`), Playwright `language.spec.ts` (10: switch on home, search, requests, map, account, pharmacy, doctor, admin dashboards; login errors and medicine details; account language restored in a fresh browser). What was broken before is listed in DECISIONS.
 - [ ] Part G — Medicine pictures rendered from the 3D models (≥ 2048 px, WebP/AVIF, several angles, fictional packs, Rx/OTC mark, labels always fit) used everywhere with hover zoom + float + fallback; language switch fixed with a real i18n setup (react-i18next, fr.json/en.json, every string, errors, formats, remembered, `lang` attribute, API errors translatable, fr/en medicine data in the DB), key-parity test, Playwright language-switch tests per main page.
 - [ ] Part F — Screenshots 1440/390, light/dark, fr/en of every public page, login, a dashboard with 3D, payment screens; critical review and fixes; docs + README; honest final report.
 
@@ -120,11 +121,11 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified: in the browser on the user's running dev server, /map now shows the key-rejected message, no "Invalid key" tiles, 1 pin and the attribution. Vitest (`map.test.tsx`, 6 tests): resolver (full URL, bare key, empty, `{s}`, style.json, malformed), fallback text. Playwright (`map.spec.ts`, 8 tests): no key → message + attribution + no external tile request; stand-in tiles 200 → tiles shown; 403 text → message; 403 + image (MapTiler behaviour) → tiles hidden + key message (repeated 5×, stable); no pharmacy in range → message → widen → Terreaux listed; geolocation denied; details popup; tracking map.
   - README started with the map-key section (where to get the key, full URL or bare key, restart, Allowed HTTP origins, keys are public).
 
-## Last check results (2026-10-22, after step 7)
+## Last check results (2026-10-22, after add-on Part G languages)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 106 + frontend 33 tests passed (local PG :5433, never Neon).
-- `npm run e2e`: 24 Playwright tests passed (5 cycle + 8 map + 4 patient + 3 extras + 4 3D in their own browser); test ports released.
+- `npm test`: backend 115 + frontend 37 tests passed (local PG :5433, never Neon).
+- `npm run e2e`: 34 Playwright tests passed (5 cycle + 8 map + 4 patient + 3 extras + 10 language + 4 3D in their own browser); test ports released.
 - 3D screenshots (step 3): 18/18 taken with software GL (`docs/screenshots/`, ~32 min); 7 re-taken after fixes.
 
 ## Known issues / To fix

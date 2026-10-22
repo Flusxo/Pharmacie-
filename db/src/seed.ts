@@ -2,7 +2,7 @@
 import crypto from 'node:crypto';
 import pg from 'pg';
 import bcrypt from 'bcryptjs';
-import { DOCTORS, MEDICINES, PATIENTS, PHARMACIES, STAFF, openingHours } from './data.js';
+import { DOCTORS, MEDICINES, MEDICINES_EN, PATIENTS, PHARMACIES, STAFF, openingHours } from './data.js';
 
 export const DEMO_PASSWORD = 'Password123!';
 // Fixed salt keeps the seed deterministic. Demo accounts only.
@@ -106,9 +106,23 @@ export async function seed(c: pg.ClientBase): Promise<void> {
   for (const [i, m] of MEDICINES.entries()) {
     const cip = `34009${String(3000000 + i * 1373).padStart(8, '0')}`;
     await c.query(
-      `INSERT INTO medicines (id, cip13, name, active_substance, form, dosage, category, requires_prescription, description, age_note)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
-      [medicineId(i), cip, m.name, m.substance, m.form, m.dosage, m.category, m.rx, m.description, m.age],
+      `INSERT INTO medicines (id, cip13, name, active_substance, form, dosage, category, requires_prescription, description, age_note,
+                              description_en, age_note_en)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [
+        medicineId(i),
+        cip,
+        m.name,
+        m.substance,
+        m.form,
+        m.dosage,
+        m.category,
+        m.rx,
+        m.description,
+        m.age,
+        MEDICINES_EN[i].description,
+        MEDICINES_EN[i].age,
+      ],
     );
   }
 

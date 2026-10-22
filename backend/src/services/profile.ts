@@ -10,10 +10,11 @@ export async function getProfile(userId: string, db: Db = pool): Promise<Record<
     status: string;
     email_notifications: boolean;
     totp_enabled: boolean;
+    language: 'fr' | 'en';
     created_at: Date;
     last_login_at: Date | null;
   }>(
-    `SELECT id, email, role, status, email_notifications, totp_enabled, created_at, last_login_at FROM users WHERE id = $1 AND deleted_at IS NULL`,
+    `SELECT id, email, role, status, email_notifications, totp_enabled, language, created_at, last_login_at FROM users WHERE id = $1 AND deleted_at IS NULL`,
     [userId],
     db,
   );
@@ -25,6 +26,7 @@ export async function getProfile(userId: string, db: Db = pool): Promise<Record<
     status: u.status,
     emailNotifications: u.email_notifications,
     totpEnabled: u.totp_enabled,
+    language: u.language,
     createdAt: u.created_at,
     lastLoginAt: u.last_login_at,
   };

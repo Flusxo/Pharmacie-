@@ -87,6 +87,7 @@ export function HeroPoster() {
 
 export function HeroVisual({ progress }: { progress: MutableRefObject<number> }) {
   const g = useGraphics();
+  const { lang } = useI18n();
   const fonts = useFontsReady();
   const draw = useCanvasSlot('hero', 2) && fonts;
   const [ready, setReady] = useState(false);
@@ -111,6 +112,7 @@ export function HeroVisual({ progress }: { progress: MutableRefObject<number> })
         <ThreeBoundary fallback={null}>
           <Suspense fallback={null}>
             <HeroScene
+              key={lang /* labels are drawn in the UI language */}
               tier={g.tier === 'high' ? 'high' : 'medium'}
               reduced={g.reduced}
               progress={progress}
@@ -136,7 +138,7 @@ interface ProductVisualProps {
 
 /** Medicine Details media: 3D product viewer with a "3D / Photo" toggle and a text alternative. */
 export function ProductVisual(m: ProductVisualProps) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const g = useGraphics();
   const fonts = useFontsReady();
   const can3D = useCanvasSlot('product', 2) && fonts;
@@ -166,6 +168,7 @@ export function ProductVisual(m: ProductVisualProps) {
           <ThreeBoundary fallback={null}>
             <Suspense fallback={null}>
               <ProductScene
+                key={lang /* labels are drawn in the UI language */}
                 tier={g.tier === 'high' ? 'high' : 'medium'}
                 reduced={g.reduced}
                 form={m.form}
