@@ -18,3 +18,22 @@ if (!window.matchMedia) {
       dispatchEvent: () => false,
     }) as unknown as MediaQueryList;
 }
+
+// jsdom has no IntersectionObserver: report every element as visible.
+if (!('IntersectionObserver' in window)) {
+  class IO {
+    constructor(private cb: IntersectionObserverCallback) {}
+    observe(el: Element) {
+      this.cb(
+        [{ isIntersecting: true, target: el, intersectionRatio: 1 } as IntersectionObserverEntry],
+        this as unknown as IntersectionObserver,
+      );
+    }
+    unobserve() {}
+    disconnect() {}
+    takeRecords() {
+      return [];
+    }
+  }
+  (window as unknown as { IntersectionObserver: unknown }).IntersectionObserver = IO;
+}

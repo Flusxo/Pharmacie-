@@ -9,6 +9,9 @@ import type { OrderStatus } from '../../lib/types';
 import { CountdownRing, Kpi, MedicinePicker, ReasonDialog, Tabs, type MedicineHit } from '../../components/dash';
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { ShelfVisual, useCan3D } from '../../components/three/ThreeVisuals';
+import { AnimatePresence, m as motion } from 'framer-motion';
+import { AnimatedNumber, Pop } from '../../components/motion';
+import { duration, easeOut } from '../../motion';
 
 interface IncomingItem {
   id: string;
@@ -91,6 +94,7 @@ export const NEXT_STATUS: Record<OrderStatus, OrderStatus[]> = {
 };
 
 type Tab = 'incoming' | 'orders' | 'inventory' | 'summary';
+const ORDER_STEPS: OrderStatus[] = ['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'];
 
 function useRun() {
   const { t } = useI18n();
@@ -152,64 +156,75 @@ function IncomingTab({ onChange }: { onChange: () => void }) {
     <div className="stack">
       {error && <ErrorBox message={error} />}
       {items.length === 0 && <Empty>{t('ph.noIncoming')}</Empty>}
-      {items.map((r) => (
-        <article key={r.id} className="card stack incoming-card" data-testid="incoming-request">
-          <div className="row between">
-            <div className="stack" style={{ gap: 2 }}>
-              <strong>{r.patientName}</strong>
-              <span className="muted small">
-                {formatDateTime(r.sentAt, locale)} · {t('ph.answerIn', { time: formatTime(r.answerBy, locale) })}
-              </span>
-            </div>
-            {r.status === 'awaiting_patient_approval' ? (
-              <span className="badge warn">{t('ph.waitingPatient')}</span>
-            ) : (
-              <CountdownRing until={r.answerBy} />
-            )}
-          </div>
-          <div className="row" style={{ gap: 6 }}>
-            {r.source === 'doctor' && <span className="badge info">{t('dash.fromDoctor')}</span>}
-            {r.hasPrescriptionNote && <span className="badge info">{t('dash.prescriptionStated')}</span>}
-          </div>
-          <ul className="plain-list">
-            {r.items.map((i) => (
-              <li key={i.id} className="row between" style={{ opacity: i.excluded ? 0.5 : 1 }}>
-                <span>
-                  <strong>
-                    {i.quantity} × {i.name}
-                  </strong>{' '}
-                  <span className={`badge ${i.inStock >= i.quantity ? 'ok' : 'bad'}`}>{t('ph.inStock', { n: i.inStock })}</span>{' '}
-                  <RxBadge rx={i.requiresPrescription} />
+      <AnimatePresence initial={false}>
+        {items.map((r) => (
+          <motion.article
+            key={r.id}
+            className="card stack incoming-card glow-in"
+            data-testid="incoming-request"
+            layout
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0, transition: { duration: duration.base, ease: easeOut } }}
+            exit={{ opacity: 0, rotateX: 75, y: -16, transition: { duration: duration.base, ease: easeOut } }}
+            style={{ transformPerspective: 800 }}
+          >
+            <div className="row between">
+              <div className="stack" style={{ gap: 2 }}>
+                <strong>{r.patientName}</strong>
+                <span className="muted small">
+                  {formatDateTime(r.sentAt, locale)} · {t('ph.answerIn', { time: formatTime(r.answerBy, locale) })}
                 </span>
-                {!i.excluded && r.status === 'sent_to_pharmacy' && (
-                  <button type="button" className="btn ghost small" onClick={() => void openGeneric(r.id, i)}>
-                    {t('ph.proposeGeneric')}
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-          {r.instructions && (
-            <p className="small">
-              <strong>{t('dash.instructions')} :</strong> {r.instructions}
-            </p>
-          )}
-          {r.status === 'sent_to_pharmacy' && (
-            <div className="row">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => void run(() => api(`/pharmacy/requests/${r.id}/accept`, { method: 'POST' }), t('ph.accepted')).then(after)}
-              >
-                {t('ph.accept')}
-              </button>
-              <button type="button" className="btn secondary" onClick={() => setRefuseId(r.id)}>
-                {t('ph.refuse')}
-              </button>
+              </div>
+              {r.status === 'awaiting_patient_approval' ? (
+                <span className="badge warn">{t('ph.waitingPatient')}</span>
+              ) : (
+                <CountdownRing until={r.answerBy} />
+              )}
             </div>
-          )}
-        </article>
-      ))}
+            <div className="row" style={{ gap: 6 }}>
+              {r.source === 'doctor' && <span className="badge info">{t('dash.fromDoctor')}</span>}
+              {r.hasPrescriptionNote && <span className="badge info">{t('dash.prescriptionStated')}</span>}
+            </div>
+            <ul className="plain-list">
+              {r.items.map((i) => (
+                <li key={i.id} className="row between" style={{ opacity: i.excluded ? 0.5 : 1 }}>
+                  <span>
+                    <strong>
+                      {i.quantity} × {i.name}
+                    </strong>{' '}
+                    <span className={`badge ${i.inStock >= i.quantity ? 'ok' : 'bad'}`}>{t('ph.inStock', { n: i.inStock })}</span>{' '}
+                    <RxBadge rx={i.requiresPrescription} />
+                  </span>
+                  {!i.excluded && r.status === 'sent_to_pharmacy' && (
+                    <button type="button" className="btn ghost small" onClick={() => void openGeneric(r.id, i)}>
+                      {t('ph.proposeGeneric')}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {r.instructions && (
+              <p className="small">
+                <strong>{t('dash.instructions')} :</strong> {r.instructions}
+              </p>
+            )}
+            {r.status === 'sent_to_pharmacy' && (
+              <div className="row">
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => void run(() => api(`/pharmacy/requests/${r.id}/accept`, { method: 'POST' }), t('ph.accepted')).then(after)}
+                >
+                  {t('ph.accept')}
+                </button>
+                <button type="button" className="btn secondary" onClick={() => setRefuseId(r.id)}>
+                  {t('ph.refuse')}
+                </button>
+              </div>
+            )}
+          </motion.article>
+        ))}
+      </AnimatePresence>
       {refuseId && (
         <ReasonDialog
           title={t('ph.refuse')}
@@ -276,6 +291,13 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
     ).then(onDone);
   return (
     <article className="card stack" data-testid="pharmacy-order">
+      <div className="order-progress" aria-hidden="true">
+        <motion.span
+          initial={false}
+          animate={{ scaleX: o.status === 'cancelled' ? 0 : ORDER_STEPS.indexOf(o.status) / (ORDER_STEPS.length - 1) }}
+          transition={{ duration: duration.slow, ease: easeOut }}
+        />
+      </div>
       <div className="row between">
         <div className="stack" style={{ gap: 2 }}>
           <strong>{o.patientName}</strong>
@@ -770,8 +792,32 @@ export function PharmacyDashboard() {
         value={tab}
         onChange={setTab}
         tabs={[
-          { key: 'incoming', label: `${t('ph.tabIncoming')}${summary?.pending ? ` (${summary.pending})` : ''}` },
-          { key: 'orders', label: `${t('ph.tabOrders')}${summary?.activeOrders ? ` (${summary.activeOrders})` : ''}` },
+          {
+            key: 'incoming',
+            label: (
+              <>
+                {t('ph.tabIncoming')}
+                {summary?.pending ? (
+                  <Pop k={summary.pending}>
+                    <span className="count-badge">{summary.pending}</span>
+                  </Pop>
+                ) : null}
+              </>
+            ),
+          },
+          {
+            key: 'orders',
+            label: (
+              <>
+                {t('ph.tabOrders')}
+                {summary?.activeOrders ? (
+                  <Pop k={summary.activeOrders}>
+                    <span className="count-badge">{summary.activeOrders}</span>
+                  </Pop>
+                ) : null}
+              </>
+            ),
+          },
           { key: 'inventory', label: t('ph.tabInventory') },
           { key: 'summary', label: t('ph.tabSummary') },
         ]}
@@ -782,17 +828,17 @@ export function PharmacyDashboard() {
       {tab === 'summary' &&
         (summary ? (
           <div className="grid cols-4">
-            <Kpi label={t('ph.sumReceived')} value={summary.received} tone="info" />
-            <Kpi label={t('ph.sumAccepted')} value={summary.accepted} tone="ok" />
-            <Kpi label={t('ph.sumRefused')} value={summary.refused} tone="bad" />
-            <Kpi label={t('ph.sumExpired')} value={summary.expired} tone="warn" />
-            <Kpi label={t('ph.sumPending')} value={summary.pending} tone="warn" />
+            <Kpi label={t('ph.sumReceived')} value={<AnimatedNumber value={summary.received} />} tone="info" />
+            <Kpi label={t('ph.sumAccepted')} value={<AnimatedNumber value={summary.accepted} />} tone="ok" />
+            <Kpi label={t('ph.sumRefused')} value={<AnimatedNumber value={summary.refused} />} tone="bad" />
+            <Kpi label={t('ph.sumExpired')} value={<AnimatedNumber value={summary.expired} />} tone="warn" />
+            <Kpi label={t('ph.sumPending')} value={<AnimatedNumber value={summary.pending} />} tone="warn" />
             <Kpi
               label={t('ph.sumAvg')}
               value={summary.avgResponseMinutes != null ? t('ph.minutes', { n: summary.avgResponseMinutes }) : '—'}
             />
-            <Kpi label={t('ph.sumActive')} value={summary.activeOrders} tone="info" />
-            <Kpi label={t('ph.sumLow')} value={summary.lowStock} tone={summary.lowStock ? 'warn' : 'ok'} />
+            <Kpi label={t('ph.sumActive')} value={<AnimatedNumber value={summary.activeOrders} />} tone="info" />
+            <Kpi label={t('ph.sumLow')} value={<AnimatedNumber value={summary.lowStock} />} tone={summary.lowStock ? 'warn' : 'ok'} />
           </div>
         ) : (
           <CardSkeleton />

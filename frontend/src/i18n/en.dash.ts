@@ -131,6 +131,7 @@ export const enDash: Record<keyof typeof frDash, string> = {
   'adm.kpiResponse': 'Average response (7 d)',
   'adm.kpiUsers': 'Users',
   'adm.kpiActiveOrders': 'Current orders',
+  'adm.ordersChart': 'Orders by status',
   'adm.approve': 'Approve',
   'adm.reject': 'Reject',
   'adm.approved': 'Account approved.',

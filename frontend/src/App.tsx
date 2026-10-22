@@ -2,7 +2,10 @@ import type { ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { AuthProvider, homeFor, useAuth } from './lib/auth';
-import { SettingsProvider } from './lib/settings';
+import { SettingsProvider, useSettings } from './lib/settings';
+import { LazyMotion, MotionConfig } from 'framer-motion';
+
+const loadMotionFeatures = () => import('./lib/motionFeatures').then((m) => m.default);
 import { GraphicsProvider } from './lib/graphics';
 import { LocationProvider } from './lib/location';
 import { ToastProvider } from './lib/toast';
@@ -173,22 +176,34 @@ export function AppRoutes() {
   );
 }
 
+/** "Reduce animations" forces reduced motion; otherwise framer-motion follows the OS setting. */
+function MotionRoot({ children }: { children: ReactNode }) {
+  const { reduceMotion } = useSettings();
+  return (
+    <LazyMotion features={loadMotionFeatures} strict>
+      <MotionConfig reducedMotion={reduceMotion ? 'always' : 'user'}>{children}</MotionConfig>
+    </LazyMotion>
+  );
+}
+
 export function App() {
   return (
     <SettingsProvider>
-      <GraphicsProvider>
-        <I18nProvider>
-          <AuthProvider>
-            <LocationProvider>
-              <ToastProvider>
-                <BrowserRouter>
-                  <AppRoutes />
-                </BrowserRouter>
-              </ToastProvider>
-            </LocationProvider>
-          </AuthProvider>
-        </I18nProvider>
-      </GraphicsProvider>
+      <MotionRoot>
+        <GraphicsProvider>
+          <I18nProvider>
+            <AuthProvider>
+              <LocationProvider>
+                <ToastProvider>
+                  <BrowserRouter>
+                    <AppRoutes />
+                  </BrowserRouter>
+                </ToastProvider>
+              </LocationProvider>
+            </AuthProvider>
+          </I18nProvider>
+        </GraphicsProvider>
+      </MotionRoot>
     </SettingsProvider>
   );
 }

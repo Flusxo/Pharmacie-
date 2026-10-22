@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { AnimatePresence, m as motion } from 'framer-motion';
+import { duration, easeOut, stagger } from '../../motion';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n/fr';
@@ -21,7 +23,8 @@ interface SearchResult {
 export function AvailabilityText({ n }: { n: number | undefined }) {
   const { t } = useI18n();
   if (!n) return <span className="badge neutral">{t('search.notNearby')}</span>;
-  return <span className="badge ok">{n === 1 ? t('search.inStockAtOne') : t('search.inStockAt', { n })}</span>;
+  // Pulses once when the data arrives.
+  return <span className="badge ok pulse-once">{n === 1 ? t('search.inStockAtOne') : t('search.inStockAt', { n })}</span>;
 }
 
 export function MedicineCard({ m }: { m: Medicine }) {
@@ -130,11 +133,21 @@ export function SearchPage() {
               )}
             </Empty>
           ) : (
-            <div className="grid cols-2">
-              {data.items.map((m) => (
-                <MedicineCard key={m.id} m={m} />
-              ))}
-            </div>
+            <motion.div className="grid cols-2" layout>
+              <AnimatePresence mode="popLayout" initial={false}>
+                {data.items.map((m, i) => (
+                  <motion.div
+                    key={m.id}
+                    layout
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0, transition: { duration: duration.base, ease: easeOut, delay: Math.min(i, 10) * stagger } }}
+                    exit={{ opacity: 0, scale: 0.97, transition: { duration: duration.fast } }}
+                  >
+                    <MedicineCard m={m} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           )}
           {data.pages > 1 && (
             <nav className="row" style={{ justifyContent: 'center' }} aria-label="Pagination">

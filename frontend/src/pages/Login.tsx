@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { homeFor, useAuth } from '../lib/auth';
 import { ApiError } from '../lib/api';
+import { m as motion } from 'framer-motion';
+import { Tabs } from '../components/dash';
+import { duration, easeOut } from '../motion';
 
 type Tab = 'patient' | 'doctor' | 'pharmacy' | 'staff';
 
@@ -49,6 +52,7 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [shake, setShake] = useState(0);
   const activeTab: Tab = staff ? 'staff' : tab === 'staff' ? 'patient' : tab;
 
   const submit = async (e: FormEvent) => {
@@ -60,6 +64,7 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
       navigate(homeFor(user), { replace: true });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('common.error'));
+      setShake((n) => n + 1);
     } finally {
       setBusy(false);
     }
@@ -81,40 +86,54 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
       <section className="card stack" aria-labelledby="login-title">
         <h2 id="login-title">{staff ? t('login.staffTitle') : t('login.title')}</h2>
         {!staff && (
-          <div className="tabs" role="tablist" aria-label={t('login.title')}>
-            {(['patient', 'doctor', 'pharmacy'] as const).map((r) => (
-              <button key={r} type="button" role="tab" aria-selected={activeTab === r} onClick={() => setTab(r)}>
-                {t(r === 'patient' ? 'login.tabPatient' : r === 'doctor' ? 'login.tabDoctor' : 'login.tabPharmacy')}
-              </button>
-            ))}
-          </div>
+          <Tabs<Tab>
+            label={t('login.title')}
+            value={activeTab}
+            onChange={setTab}
+            tabs={[
+              { key: 'patient', label: t('login.tabPatient') },
+              { key: 'doctor', label: t('login.tabDoctor') },
+              { key: 'pharmacy', label: t('login.tabPharmacy') },
+            ]}
+          />
         )}
         {!staff && <p className="muted small">{t('login.subtitle')}</p>}
 
-        <form className="stack" onSubmit={submit} noValidate>
-          <div className="field">
-            <label htmlFor="email">{t('login.email')}</label>
+        <motion.form
+          className="stack"
+          onSubmit={submit}
+          noValidate
+          animate={shake ? { x: [0, -10, 9, -6, 4, 0] } : { x: 0 }}
+          transition={{ duration: duration.slow * 0.8, ease: easeOut }}
+          key={shake}
+        >
+          <div className="field float">
             <input
               id="email"
               className="input"
+              placeholder=" "
+              aria-invalid={!!error}
               type="email"
               autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            <label htmlFor="email">{t('login.email')}</label>
           </div>
-          <div className="field">
-            <label htmlFor="password">{t('login.password')}</label>
+          <div className="field float">
             <input
               id="password"
               className="input"
+              placeholder=" "
+              aria-invalid={!!error}
               type="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <label htmlFor="password">{t('login.password')}</label>
           </div>
           {error && (
             <div className="alert error" role="alert">
@@ -124,7 +143,7 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
           <button className="btn block" type="submit" disabled={busy || !email || !password}>
             {busy ? t('login.submitting') : t('login.submit')}
           </button>
-        </form>
+        </motion.form>
 
         <div className="row between small">
           <Link to="/forgot-password">{t('login.forgot')}</Link>

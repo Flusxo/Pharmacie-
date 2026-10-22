@@ -35,6 +35,11 @@
   --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --topbar-h: 64px;
+  /* Motion tokens (mirror of src/motion.ts) */
+  --dur-fast: 0.15s;
+  --dur-base: 0.3s;
+  --dur-slow: 0.6s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --tabbar-h: 64px;
   color-scheme: light;
 }
@@ -267,7 +272,7 @@ img {
 }
 .card.lift {
   transition:
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    transform var(--dur-base) var(--ease-out),
     box-shadow 0.3s ease;
 }
 .card.lift:hover {
@@ -329,9 +334,9 @@ img {
   cursor: pointer;
   text-decoration: none;
   transition:
-    transform 0.15s ease,
-    background 0.15s ease,
-    opacity 0.15s ease;
+    transform var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out);
 }
 .btn:active {
   transform: scale(0.97);
@@ -828,7 +833,7 @@ textarea.input {
   border-radius: var(--radius-sm);
   padding: 12px 16px;
   box-shadow: var(--shadow-2);
-  animation: toast-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: toast-in var(--dur-base) var(--ease-out);
 }
 @keyframes toast-in {
   from {
@@ -1122,7 +1127,7 @@ table.table {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity var(--dur-slow) var(--ease-out);
 }
 .site-bg.ready .site-bg-canvas {
   opacity: 1;
@@ -1161,14 +1166,14 @@ table.table {
 }
 .hero-canvas {
   opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity var(--dur-slow) var(--ease-out);
 }
 .hero-visual.ready .hero-canvas {
   opacity: 1;
 }
 .hero-visual.ready .hero-poster {
   opacity: 0;
-  transition: opacity 0.6s ease 0.2s;
+  transition: opacity var(--dur-slow) var(--ease-out) 0.2s;
 }
 .hero-poster {
   background: radial-gradient(60% 60% at 70% 40%, #ffffff, transparent 70%), linear-gradient(180deg, #eef6f2 0%, #e4efe9 60%, #d9e6df 100%);
@@ -1236,8 +1241,8 @@ table.table {
   opacity: 0.25;
   transform: translateY(12px);
   transition:
-    opacity 0.6s ease,
-    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
 }
 .hero-steps li.on {
   opacity: 1;
@@ -1267,7 +1272,7 @@ table.table {
   inset: 12%;
   display: grid;
   place-items: center;
-  transition: opacity 0.4s ease;
+  transition: opacity var(--dur-base) var(--ease-out);
 }
 .product-visual[data-mode='3d'].ready .product-photo {
   opacity: 0;
@@ -1370,4 +1375,275 @@ table.table {
   display: flex;
   gap: 8px;
   box-shadow: var(--shadow-1);
+}
+
+/* ---------- Animation system (step 4) ---------- */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+/* Sliding tab indicator (framer-motion layoutId). */
+.tabs .tab-btn {
+  position: relative;
+  isolation: isolate;
+}
+.tabs button[aria-selected='true'].tab-btn {
+  background: transparent;
+  box-shadow: none;
+}
+.tab-indicator {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+.tab-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.count-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 0.72rem;
+}
+/* Floating-label inputs */
+.field.float {
+  position: relative;
+}
+.field.float .input {
+  padding-top: 20px;
+  min-height: 54px;
+}
+.field.float label {
+  position: absolute;
+  left: 14px;
+  top: 16px;
+  font-weight: 500;
+  color: var(--muted);
+  pointer-events: none;
+  transform-origin: left top;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+.field.float .input:focus + label,
+.field.float .input:not(:placeholder-shown) + label {
+  transform: translateY(-10px) scale(0.78);
+  color: var(--brand);
+}
+/* Card lift + soft glow (glow via an opacity-animated pseudo-element) */
+.card.lift {
+  position: relative;
+}
+.card.lift::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 10px 30px color-mix(in srgb, var(--accent) 22%, transparent);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+  pointer-events: none;
+}
+.card.lift:hover::after {
+  opacity: 1;
+}
+.tilt {
+  transition: transform var(--dur-fast) var(--ease-out);
+  will-change: transform;
+}
+.tilt > .card.lift:hover {
+  transform: none;
+}
+/* Search focus glow */
+.search-box .input:focus {
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 8px 30px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+/* Availability badges pulse once when data arrives */
+.pulse-once {
+  animation: pulse-once var(--dur-slow) var(--ease-out) 1;
+}
+@keyframes pulse-once {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.4;
+  }
+  60% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+/* Map: pulsing ring on the selected pharmacy */
+.pin-selected::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--green-500);
+  animation: ring 1.6s var(--ease-out) infinite;
+}
+.pin {
+  position: relative;
+}
+@keyframes ring {
+  from {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+/* Order stepper: the line fills like liquid; the current step pulses */
+.stepper li::after {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 30px;
+  bottom: -2px;
+  width: 3px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--green-500), var(--mint));
+  transform-origin: top;
+  transform: scaleY(0);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.stepper li:last-child::after {
+  display: none;
+}
+.stepper li.done::before {
+  background: var(--line);
+}
+.stepper li.done:not(.current)::after {
+  transform: scaleY(1);
+}
+.stepper li.current .dot {
+  animation: step-pulse 1.8s ease-in-out infinite;
+}
+@keyframes step-pulse {
+  50% {
+    transform: scale(1.08);
+  }
+}
+/* Celebration on each status change */
+.status-celebrate {
+  position: relative;
+  display: inline-block;
+}
+.celebrate-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+  border: 2px solid var(--green-500);
+  animation: celebrate var(--dur-slow) var(--ease-out) forwards;
+  pointer-events: none;
+}
+@keyframes celebrate {
+  from {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+.confetti-2d {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+}
+/* Pharmacy: new request glow (opacity of a pseudo-element), order progress bar */
+.glow-in::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  box-shadow:
+    0 0 0 2px var(--blue),
+    0 0 24px color-mix(in srgb, var(--blue) 45%, transparent);
+  opacity: 0;
+  animation: glow-in 1.2s var(--ease-out) 1;
+  pointer-events: none;
+}
+.incoming-card {
+  position: relative;
+}
+@keyframes glow-in {
+  30% {
+    opacity: 1;
+  }
+}
+.order-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.order-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--green-500), var(--mint));
+  transform-origin: left;
+}
+/* Admin chart */
+.bar-chart {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  height: 180px;
+  align-items: end;
+}
+.bar-col {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  align-items: end;
+  text-align: center;
+  gap: 4px;
+}
+.bar {
+  display: block;
+  width: 100%;
+  min-height: 2px;
+  border-radius: 10px 10px 4px 4px;
+  background: var(--blue);
+  align-self: end;
+}
+.bar-delivered,
+.bar-ready {
+  background: var(--green-500);
+}
+.bar-accepted,
+.bar-preparing {
+  background: var(--amber);
+}
+.bar-cancelled {
+  background: var(--red);
+}
+.bar-value {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.bar-label {
+  font-size: 0.7rem;
+  color: var(--muted);
 }

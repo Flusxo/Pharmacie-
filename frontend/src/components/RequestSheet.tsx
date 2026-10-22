@@ -4,6 +4,8 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AnimatePresence, m as motion } from 'framer-motion';
+import { duration, easeOut } from '../motion';
 import { useI18n } from '../i18n';
 import { ApiError, api } from '../lib/api';
 import { formatKm, formatPrice } from '../lib/format';
@@ -93,115 +95,125 @@ export function RequestSheet({ medicine, pharmacies, initialPharmacyId, onClose 
           </button>
         </div>
 
-        {step === 1 && (
-          <>
-            <p className="muted">{t('flow.chooseLead')}</p>
-            <div className="field" style={{ maxWidth: 200 }}>
-              <label htmlFor="qty">{t('flow.quantity')}</label>
-              <select id="qty" className="input" value={qty} onChange={(e) => setQty(Number(e.target.value))}>
-                {Array.from({ length: 10 }, (_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {eligible.length === 0 ? (
-              <div className="alert warn">{t('med.noPharmacies')}</div>
-            ) : (
-              <div role="radiogroup" aria-label={t('flow.step1')}>
-                {eligible.map((p) => (
-                  <label key={p.id} className={`pharmacy-row ${pharmacyId === p.id ? 'selected' : ''}`} style={{ cursor: 'pointer' }}>
-                    <span className="row" style={{ gap: 10 }}>
-                      <input type="radio" name="pharmacy" checked={pharmacyId === p.id} onChange={() => setPharmacyId(p.id)} />
-                      <span className="stack" style={{ gap: 2 }}>
-                        <strong>{p.name}</strong>
-                        <span className="muted small">
-                          {p.city} · {formatKm(p.distanceKm, locale)} · {formatPrice(p.priceEur ?? null, locale)}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={step}
+            className="stack"
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0, transition: { duration: duration.base, ease: easeOut } }}
+            exit={{ opacity: 0, x: -40, transition: { duration: duration.fast, ease: easeOut } }}
+          >
+            {step === 1 && (
+              <>
+                <p className="muted">{t('flow.chooseLead')}</p>
+                <div className="field" style={{ maxWidth: 200 }}>
+                  <label htmlFor="qty">{t('flow.quantity')}</label>
+                  <select id="qty" className="input" value={qty} onChange={(e) => setQty(Number(e.target.value))}>
+                    {Array.from({ length: 10 }, (_, i) => (
+                      <option key={i + 1} value={i + 1}>
+                        {i + 1}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {eligible.length === 0 ? (
+                  <div className="alert warn">{t('med.noPharmacies')}</div>
+                ) : (
+                  <div role="radiogroup" aria-label={t('flow.step1')}>
+                    {eligible.map((p) => (
+                      <label key={p.id} className={`pharmacy-row ${pharmacyId === p.id ? 'selected' : ''}`} style={{ cursor: 'pointer' }}>
+                        <span className="row" style={{ gap: 10 }}>
+                          <input type="radio" name="pharmacy" checked={pharmacyId === p.id} onChange={() => setPharmacyId(p.id)} />
+                          <span className="stack" style={{ gap: 2 }}>
+                            <strong>{p.name}</strong>
+                            <span className="muted small">
+                              {p.city} · {formatKm(p.distanceKm, locale)} · {formatPrice(p.priceEur ?? null, locale)}
+                            </span>
+                            <OpenBadge hours={p.openingHours} onDuty={p.onDuty} />
+                          </span>
                         </span>
-                        <OpenBadge hours={p.openingHours} onDuty={p.onDuty} />
-                      </span>
-                    </span>
-                    <span className={`badge ${p.lowStock ? 'warn' : 'ok'}`}>{p.lowStock ? t('med.lowStock') : t('med.inStock')}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-            <button
-              type="button"
-              className="btn block"
-              disabled={!pharmacyId || !eligible.some((p) => p.id === pharmacyId)}
-              onClick={() => setStep(2)}
-            >
-              {t('common.continue')}
-            </button>
-          </>
-        )}
-
-        {step === 2 && chosen && (
-          <>
-            <p>{t('flow.summary', { qty, name: `${medicine.name}`, pharmacy: chosen.name })}</p>
-            {initialPharmacyId && (
-              <div className="field" style={{ maxWidth: 200 }}>
-                <label htmlFor="qty2">{t('flow.quantity')}</label>
-                <select id="qty2" className="input" value={qty} onChange={(e) => setQty(Number(e.target.value))}>
-                  {Array.from({ length: Math.min(10, chosen.quantity ?? 1) }, (_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      {i + 1}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-            {medicine.requiresPrescription && (
-              <div className="alert info stack" style={{ gap: 8 }}>
-                <strong>{t('flow.prescriptionTitle')}</strong>
-                <label className="check">
-                  <input type="checkbox" checked={rxOk} onChange={(e) => setRxOk(e.target.checked)} data-testid="rx-check" />
-                  <span>{t('flow.prescriptionCheck')}</span>
-                </label>
-              </div>
-            )}
-            <p className="muted small">{t('flow.notSale')}</p>
-            {error && (
-              <div className="alert error" role="alert">
-                {error}
-                {requestId && (
-                  <>
-                    {' '}
-                    <Link to={`/requests/${requestId}`}>{t('flow.follow')}</Link>
-                  </>
+                        <span className={`badge ${p.lowStock ? 'warn' : 'ok'}`}>{p.lowStock ? t('med.lowStock') : t('med.inStock')}</span>
+                      </label>
+                    ))}
+                  </div>
                 )}
+                <button
+                  type="button"
+                  className="btn block"
+                  disabled={!pharmacyId || !eligible.some((p) => p.id === pharmacyId)}
+                  onClick={() => setStep(2)}
+                >
+                  {t('common.continue')}
+                </button>
+              </>
+            )}
+
+            {step === 2 && chosen && (
+              <>
+                <p>{t('flow.summary', { qty, name: `${medicine.name}`, pharmacy: chosen.name })}</p>
+                {initialPharmacyId && (
+                  <div className="field" style={{ maxWidth: 200 }}>
+                    <label htmlFor="qty2">{t('flow.quantity')}</label>
+                    <select id="qty2" className="input" value={qty} onChange={(e) => setQty(Number(e.target.value))}>
+                      {Array.from({ length: Math.min(10, chosen.quantity ?? 1) }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>
+                          {i + 1}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {medicine.requiresPrescription && (
+                  <div className="alert info stack" style={{ gap: 8 }}>
+                    <strong>{t('flow.prescriptionTitle')}</strong>
+                    <label className="check">
+                      <input type="checkbox" checked={rxOk} onChange={(e) => setRxOk(e.target.checked)} data-testid="rx-check" />
+                      <span>{t('flow.prescriptionCheck')}</span>
+                    </label>
+                  </div>
+                )}
+                <p className="muted small">{t('flow.notSale')}</p>
+                {error && (
+                  <div className="alert error" role="alert">
+                    {error}
+                    {requestId && (
+                      <>
+                        {' '}
+                        <Link to={`/requests/${requestId}`}>{t('flow.follow')}</Link>
+                      </>
+                    )}
+                  </div>
+                )}
+                <div className="row">
+                  {!initialPharmacyId && (
+                    <button type="button" className="btn secondary" onClick={() => setStep(1)}>
+                      {t('common.back')}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="btn"
+                    style={{ flex: 1 }}
+                    disabled={busy || (medicine.requiresPrescription && !rxOk)}
+                    onClick={() => void send()}
+                  >
+                    {busy ? t('flow.sending') : t('flow.send')}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {step === 3 && chosen && requestId && (
+              <div className="stack" style={{ alignItems: 'center', textAlign: 'center' }} data-testid="request-sent">
+                <SuccessCheck />
+                <p>{t('flow.sentText', { pharmacy: chosen.name, minutes: RESPONSE_MINUTES })}</p>
+                <Link to={`/requests/${requestId}`} className="btn">
+                  {t('flow.follow')}
+                </Link>
               </div>
             )}
-            <div className="row">
-              {!initialPharmacyId && (
-                <button type="button" className="btn secondary" onClick={() => setStep(1)}>
-                  {t('common.back')}
-                </button>
-              )}
-              <button
-                type="button"
-                className="btn"
-                style={{ flex: 1 }}
-                disabled={busy || (medicine.requiresPrescription && !rxOk)}
-                onClick={() => void send()}
-              >
-                {busy ? t('flow.sending') : t('flow.send')}
-              </button>
-            </div>
-          </>
-        )}
-
-        {step === 3 && chosen && requestId && (
-          <div className="stack" style={{ alignItems: 'center', textAlign: 'center' }} data-testid="request-sent">
-            <SuccessCheck />
-            <p>{t('flow.sentText', { pharmacy: chosen.name, minutes: RESPONSE_MINUTES })}</p>
-            <Link to={`/requests/${requestId}`} className="btn">
-              {t('flow.follow')}
-            </Link>
-          </div>
-        )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

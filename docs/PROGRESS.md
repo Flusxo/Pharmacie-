@@ -4,6 +4,12 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
+**STOPPED MID-STEP 4 (animations) on 2026-10-22 — usage limit. Step 4 is NOT committed (working tree has the changes).**
+Done in the working tree: framer-motion 11 via `LazyMotion` (features loaded lazily, main bundle 294 kB), `src/motion.ts` tokens + CSS variables, `MotionConfig` driven by "Reduce animations", page transitions (`AnimatedOutlet`), Reveal/AnimatedNumber/TiltCard/WordReveal/RotatingWord/Pop/Confetti2D (`components/motion.tsx`), login floating labels + shake, home word reveal + rotating word + tilting category cards + counters, search suggestion stagger + result layout animation + badge pulse, smooth map radius + selected-pin ring, request-sheet step slides, stepper liquid fill + current-step pulse + celebration ring + 2D confetti on Delivered, pharmacy incoming slide-in/glow/flip-out + tab count pop + KPI counters + order progress bars, doctor paper plane + animated patient search, admin KPI counters + animated orders chart, status badge pop.
+Checks at stop: build OK, lint OK (after removing unused imports), unit tests 95 + 29 pass, e2e 20/21 — **`e2e/patient.spec.ts` "login, search, details, request, then live order tracking" fails** ("element(s) not found" on a toBeVisible). Probable cause: page transitions (`AnimatePresence mode="wait"`) or the floating-label / tab markup change; see `test-results/patient-*/error-context.md`. Fix it first, then commit step 4.
+Also NOT done in step 4: the sliding tab indicator (the edit to `Tabs` in `components/dash.tsx` did not apply), "pharmacy accept flips the card into Current orders" is only a flip-out exit, stock numbers in the inventory table do not count.
+Then: step 5 (pack-label clipping + design pass at 360/768/1440, light/dark, fr/en), step 6 (extras), step 7 (README completion, npm audit, final report).
+
 Working through the user's 7-step list (second session, 2026-10-21). Steps 1 (Phase 8 dashboards + account pages), 2 (map) and 3 (site-wide 3D) are done and committed.
 Next, in order: **Step 4 animations** (Phase 10), **Step 5 pack-label fix + design pass**, **Step 6 extras** (Phase 11), **Step 7 README + final checks** (Phase 12). Commit after each step only when build, lint and that step's tests pass.
 

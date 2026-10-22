@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react';
+import { m as motion } from 'framer-motion';
+import { spring } from '../motion';
 import { useI18n } from '../i18n';
 import type { MessageKey } from '../i18n/fr';
 import { openState } from '../lib/format';
@@ -52,7 +54,17 @@ const STATUS_TONE: Record<string, 'ok' | 'warn' | 'bad' | 'info' | 'neutral'> = 
 export function StatusBadge({ status }: { status: string }) {
   const { t } = useI18n();
   const key = `status.${status}` as MessageKey;
-  return <span className={`badge ${STATUS_TONE[status] ?? 'neutral'}`}>{t(key)}</span>;
+  return (
+    <motion.span
+      key={status}
+      className={`badge ${STATUS_TONE[status] ?? 'neutral'}`}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={spring}
+    >
+      {t(key)}
+    </motion.span>
+  );
 }
 
 export function RxBadge({ rx }: { rx: boolean }) {

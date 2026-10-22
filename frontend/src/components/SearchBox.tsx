@@ -1,5 +1,7 @@
 import { useEffect, useId, useState, type KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { m as motion } from 'framer-motion';
+import { duration, easeOut, stagger } from '../motion';
 import { useI18n } from '../i18n';
 import { api } from '../lib/api';
 import { IconSearch } from './Icons';
@@ -104,11 +106,14 @@ export function SearchBox({
       {open && items.length > 0 && (
         <ul id={listId} role="listbox" className="suggestions">
           {items.map((s, i) => (
-            <li
+            <motion.li
               key={s.id}
               id={`${listId}-${i}`}
               role="option"
               aria-selected={i === active}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: duration.fast, ease: easeOut, delay: i * stagger * 0.6 }}
               onMouseDown={(e) => {
                 e.preventDefault();
                 navigate(`/medicines/${s.id}`);
@@ -118,7 +123,7 @@ export function SearchBox({
                 {s.name} <span className="muted small">{s.dosage}</span>
               </span>
               {s.requiresPrescription && <span className="badge info">{t('common.prescription')}</span>}
-            </li>
+            </motion.li>
           ))}
         </ul>
       )}

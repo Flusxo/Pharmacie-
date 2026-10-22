@@ -13,6 +13,8 @@ import { useI18n } from '../../i18n';
 import { formatKm } from '../../lib/format';
 import { useReducedMotion } from '../../lib/settings';
 import { resolveTileUrl } from '../../lib/tiles';
+import { animate } from 'framer-motion';
+import { duration, easeOut } from '../../motion';
 
 export const MAP_ATTRIBUTION =
   '© <a href="https://www.maptiler.com/copyright/" target="_blank" rel="noreferrer">MapTiler</a> © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap contributors</a>';
@@ -169,6 +171,27 @@ export default function PharmacyMap({
     if (selectedId) markers.current.get(selectedId)?.openPopup();
   }, [selectedId]);
 
+  // The radius circle redraws smoothly when the slider moves.
+  const [shownRadius, setShownRadius] = useState(radiusKm ?? 0);
+  const radiusRef = useRef(radiusKm ?? 0);
+  useEffect(() => {
+    if (radiusKm === undefined) return;
+    if (reduced) {
+      radiusRef.current = radiusKm;
+      setShownRadius(radiusKm);
+      return;
+    }
+    const controls = animate(radiusRef.current, radiusKm, {
+      duration: duration.base,
+      ease: easeOut,
+      onUpdate: (v) => {
+        radiusRef.current = v;
+        setShownRadius(v);
+      },
+    });
+    return () => controls.stop();
+  }, [radiusKm, reduced]);
+
   const selected = pharmacies.find((p) => p.id === selectedId);
   const target = useMemo<[number, number] | null>(() => (selected ? [selected.latitude, selected.longitude] : null), [selected]);
   const c: [number, number] = [center.lat, center.lon];
@@ -202,7 +225,7 @@ export default function PharmacyMap({
         {radiusKm !== undefined && (
           <Circle
             center={c}
-            radius={radiusKm * 1000}
+            radius={shownRadius * 1000}
             pathOptions={{ color: '#3B82F6', weight: 1.5, fillOpacity: 0.06, dashArray: '6 6' }}
           />
         )}

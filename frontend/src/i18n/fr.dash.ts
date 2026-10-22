@@ -129,6 +129,7 @@ export const frDash = {
   'adm.kpiResponse': 'Réponse moyenne (7 j)',
   'adm.kpiUsers': 'Utilisateurs',
   'adm.kpiActiveOrders': 'Commandes en cours',
+  'adm.ordersChart': 'Commandes par statut',
   'adm.approve': 'Valider',
   'adm.reject': 'Refuser',
   'adm.approved': 'Compte validé.',

@@ -7,6 +7,9 @@ import { useToast } from '../../lib/toast';
 import { formatDateTime } from '../../lib/format';
 import type { Medicine } from '../../lib/types';
 import { Kpi, ReasonDialog, Tabs } from '../../components/dash';
+import { m as motion } from 'framer-motion';
+import { AnimatedNumber } from '../../components/motion';
+import { duration, easeOut, stagger } from '../../motion';
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 
 type Tab = 'verify' | 'users' | 'pharmacies' | 'doctors' | 'medicines' | 'orders' | 'reports' | 'audit' | 'performance';
@@ -58,6 +61,40 @@ function Table({ head, children }: { head: ReactNode[]; children: ReactNode }) {
         <tbody>{children}</tbody>
       </table>
     </div>
+  );
+}
+
+const CHART_ORDER = ['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled'];
+
+/** Orders by status: bars grow when the chart scrolls into view. */
+function OrdersChart({ byStatus }: { byStatus: Record<string, number> }) {
+  const { t } = useI18n();
+  const max = Math.max(1, ...Object.values(byStatus));
+  return (
+    <section className="card stack" aria-labelledby="orders-chart">
+      <h3 id="orders-chart" style={{ margin: 0 }}>
+        {t('adm.ordersChart')}
+      </h3>
+      <div className="bar-chart" role="list">
+        {CHART_ORDER.map((st, i) => {
+          const n = byStatus[st] ?? 0;
+          return (
+            <div key={st} className="bar-col" role="listitem" aria-label={`${t(`status.${st}` as MessageKey)} : ${n}`}>
+              <span className="bar-value">{n}</span>
+              <motion.span
+                className={`bar bar-${st}`}
+                style={{ height: `${(n / max) * 100}%`, originY: 1 }}
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: duration.slow, ease: easeOut, delay: i * stagger }}
+              />
+              <span className="bar-label">{t(`status.${st}` as MessageKey)}</span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -170,11 +207,15 @@ export function AdminDashboard() {
       </div>
       {stats ? (
         <div className="grid cols-4">
-          <Kpi label={t('adm.kpiPending')} value={stats.pendingVerifications} tone={stats.pendingVerifications ? 'warn' : 'ok'} />
-          <Kpi label={t('adm.kpiRequests')} value={stats.requestsToday} tone="info" />
-          <Kpi label={t('adm.kpiActiveOrders')} value={activeOrders} tone="info" />
-          <Kpi label={t('adm.kpiReports')} value={stats.openReports} tone={stats.openReports ? 'warn' : 'ok'} />
-          <Kpi label={t('adm.kpiUsers')} value={totalUsers} />
+          <Kpi
+            label={t('adm.kpiPending')}
+            value={<AnimatedNumber value={stats.pendingVerifications} />}
+            tone={stats.pendingVerifications ? 'warn' : 'ok'}
+          />
+          <Kpi label={t('adm.kpiRequests')} value={<AnimatedNumber value={stats.requestsToday} />} tone="info" />
+          <Kpi label={t('adm.kpiActiveOrders')} value={<AnimatedNumber value={activeOrders} />} tone="info" />
+          <Kpi label={t('adm.kpiReports')} value={<AnimatedNumber value={stats.openReports} />} tone={stats.openReports ? 'warn' : 'ok'} />
+          <Kpi label={t('adm.kpiUsers')} value={<AnimatedNumber value={totalUsers} />} />
           <Kpi
             label={t('adm.kpiResponse')}
             value={stats.avgResponseMinutes7d != null ? t('ph.minutes', { n: stats.avgResponseMinutes7d }) : '—'}
@@ -183,6 +224,7 @@ export function AdminDashboard() {
       ) : (
         <CardSkeleton lines={2} />
       )}
+      {stats && <OrdersChart byStatus={stats.ordersByStatus} />}
       {error && <ErrorBox message={error} />}
       <Tabs<Tab>
         label={t('adm.title')}

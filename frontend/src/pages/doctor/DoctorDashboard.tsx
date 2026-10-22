@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { AnimatePresence, m as motion } from 'framer-motion';
+import { duration, easeOut } from '../../motion';
 import { useI18n } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
@@ -56,6 +58,7 @@ export function DoctorDashboard() {
   const [instructions, setInstructions] = useState('');
   const [templateName, setTemplateName] = useState('');
   const [sent, setSent] = useState(false);
+  const [patientQ, setPatientQ] = useState('');
 
   const load = useCallback(() => {
     void api<{ items: LinkedPatient[] }>('/doctor/patients')
@@ -161,26 +164,53 @@ export function DoctorDashboard() {
           ) : patients.length === 0 ? (
             <Empty>{t('doc.noPatients')}</Empty>
           ) : (
-            patients.map((p) => (
-              <div key={p.id} className="card row between" data-testid="doctor-patient">
-                <span className="stack" style={{ gap: 2 }}>
-                  <strong>{p.confirmed ? `${p.firstName} ${p.lastName}` : p.email}</strong>
-                  <span className="muted small">
-                    {p.confirmed && p.birthDate ? t('doc.born', { date: formatDate(p.birthDate, locale) }) : p.email}
-                  </span>
-                </span>
-                <span className="row">
-                  <span className={`badge ${p.confirmed ? 'ok' : 'warn'}`}>{p.confirmed ? t('doc.confirmed') : t('doc.pending')}</span>
-                  <button
-                    type="button"
-                    className="btn ghost small"
-                    onClick={() => void run(() => api(`/doctor/links/${p.id}`, { method: 'DELETE' }))}
-                  >
-                    {t('doc.unlink')}
-                  </button>
-                </span>
-              </div>
-            ))
+            <>
+              <label className="sr-only" htmlFor="doc-search">
+                {t('dash.search')}
+              </label>
+              <input
+                id="doc-search"
+                className="input"
+                placeholder={t('dash.search')}
+                value={patientQ}
+                onChange={(e) => setPatientQ(e.target.value)}
+              />
+              <AnimatePresence initial={false}>
+                {patients
+                  .filter((p) => `${p.firstName ?? ''} ${p.lastName ?? ''} ${p.email}`.toLowerCase().includes(patientQ.toLowerCase()))
+                  .map((p) => (
+                    <motion.div
+                      key={p.id}
+                      layout
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.97 }}
+                      transition={{ duration: duration.base, ease: easeOut }}
+                      className="card row between"
+                      data-testid="doctor-patient"
+                    >
+                      <span className="stack" style={{ gap: 2 }}>
+                        <strong>{p.confirmed ? `${p.firstName} ${p.lastName}` : p.email}</strong>
+                        <span className="muted small">
+                          {p.confirmed && p.birthDate ? t('doc.born', { date: formatDate(p.birthDate, locale) }) : p.email}
+                        </span>
+                      </span>
+                      <span className="row">
+                        <span className={`badge ${p.confirmed ? 'ok' : 'warn'}`}>
+                          {p.confirmed ? t('doc.confirmed') : t('doc.pending')}
+                        </span>
+                        <button
+                          type="button"
+                          className="btn ghost small"
+                          onClick={() => void run(() => api(`/doctor/links/${p.id}`, { method: 'DELETE' }))}
+                        >
+                          {t('doc.unlink')}
+                        </button>
+                      </span>
+                    </motion.div>
+                  ))}
+              </AnimatePresence>
+            </>
           )}
         </div>
       )}
@@ -189,9 +219,15 @@ export function DoctorDashboard() {
         <div className="card stack">
           {sent ? (
             <div className="stack" style={{ alignItems: 'center', textAlign: 'center' }} data-testid="doctor-sent">
-              <div className="paper-plane" aria-hidden="true">
+              <motion.div
+                className="paper-plane"
+                aria-hidden="true"
+                initial={{ x: -60, y: 30, rotate: -20, opacity: 0 }}
+                animate={{ x: [-60, 0, 90], y: [30, 0, -50], rotate: [-20, 0, 15], opacity: [0, 1, 0] }}
+                transition={{ duration: duration.slow * 2, ease: easeOut, times: [0, 0.4, 1] }}
+              >
                 ✈︎
-              </div>
+              </motion.div>
               <p>{t('doc.sent')}</p>
               <button type="button" className="btn secondary" onClick={() => setSent(false)}>
                 {t('doc.tabNew')}

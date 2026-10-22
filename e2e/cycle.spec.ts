@@ -46,6 +46,8 @@ test.describe('full cycle across roles (Phase 8)', () => {
       await order.getByTestId('order-next').click();
       await expect(page.getByTestId('order-status')).toHaveText(label, { timeout: 20_000 });
     }
+    // Confetti on Delivered (2D overlay, since this test runs with Graphics "Off").
+    await expect(page.getByTestId('confetti')).toHaveAttribute('data-fired', '1');
     // Delivered: no more status buttons for this order (only valid next statuses are offered).
     await ph.getByLabel('Afficher aussi les commandes terminées').check();
     await expect(ph.getByTestId('pharmacy-order').filter({ hasText: 'Dafalgan' }).getByTestId('order-next')).toHaveCount(0);

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { AnimatedOutlet } from './motion';
 import { useI18n } from '../i18n';
 import { useAuth } from '../lib/auth';
 import { useSettings } from '../lib/settings';
@@ -229,7 +230,7 @@ export function Layout() {
           )}
         </header>
         <main id="main" className="main">
-          <Outlet />
+          <AnimatedOutlet />
         </main>
         <footer className="footer">
           <Link to="/terms">{t('footer.terms')}</Link>

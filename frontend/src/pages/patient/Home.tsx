@@ -11,6 +11,7 @@ import { SearchBox } from '../../components/SearchBox';
 import { LocationControl } from '../../components/LocationControl';
 import { LazyMap } from '../../components/map/LazyMap';
 import { HeroVisual } from '../../components/three/ThreeVisuals';
+import { AnimatedNumber, Reveal, RotatingWord, TiltCard, WordReveal } from '../../components/motion';
 import { CardSkeleton, Empty, OpenBadge, StatusBadge } from '../../components/ui';
 
 const CATEGORY_EMOJI: Record<string, string> = {
@@ -84,9 +85,12 @@ export function HomePage() {
           <HeroVisual progress={progress} />
           <div className="hero-copy">
             <div className="hero-panel stack">
-              <h1 id="hello">{t('home.greeting', { name })}</h1>
+              <WordReveal id="hello" text={t('home.greeting', { name })} />
               <p className="muted" style={{ fontSize: '1.1rem', margin: 0 }}>
                 {t('home.lead')}
+              </p>
+              <p className="small" style={{ margin: 0 }}>
+                {t('home.forExample')} <RotatingWord words={[t('home.word1'), t('home.word2'), t('home.word3')]} />
               </p>
               <SearchBox />
               <LocationControl compact />
@@ -124,14 +128,20 @@ export function HomePage() {
         <div className="grid cols-4">
           {categories === null
             ? Array.from({ length: 8 }, (_, i) => <CardSkeleton key={i} lines={1} />)
-            : categories.map((c) => (
-                <Link key={c.category} to={`/search?category=${c.category}`} className="card lift category-card">
-                  <span className="emoji" aria-hidden="true">
-                    {CATEGORY_EMOJI[c.category] ?? '💊'}
-                  </span>
-                  <strong>{t(`cat.${c.category}` as MessageKey)}</strong>
-                  <span className="muted small">{c.count === 1 ? t('cat.countOne') : t('cat.count', { n: c.count })}</span>
-                </Link>
+            : categories.map((c, i) => (
+                <Reveal key={c.category} index={i}>
+                  <TiltCard>
+                    <Link to={`/search?category=${c.category}`} className="card lift category-card">
+                      <span className="emoji" aria-hidden="true">
+                        {CATEGORY_EMOJI[c.category] ?? '💊'}
+                      </span>
+                      <strong>{t(`cat.${c.category}` as MessageKey)}</strong>
+                      <span className="muted small">
+                        <AnimatedNumber value={c.count} /> {c.count === 1 ? t('cat.unitOne') : t('cat.unit')}
+                      </span>
+                    </Link>
+                  </TiltCard>
+                </Reveal>
               ))}
         </div>
       </section>

@@ -11,6 +11,8 @@ import { CardSkeleton, ErrorBox, RxBadge, StatusBadge } from '../../components/u
 import { IconCheck } from '../../components/Icons';
 import { LazyMap } from '../../components/map/LazyMap';
 import { DeliveryVisual } from '../../components/three/ThreeVisuals';
+import { Confetti2D } from '../../components/motion';
+import { useGraphics } from '../../lib/graphics';
 import { useReducedMotion } from '../../lib/settings';
 
 const SIMULATED_RIDE_MS = 8 * 60_000;
@@ -113,6 +115,10 @@ export function OrderTrackingPage() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // A short celebration on every status change; confetti on Delivered.
+  const [celebrate, setCelebrate] = useState(0);
+  const [confetti, setConfetti] = useState(0);
+  const graphics = useGraphics();
   const last = useRef<OrderStatus | null>(null);
 
   const load = useCallback(async () => {
@@ -120,6 +126,8 @@ export function OrderTrackingPage() {
       const r = await api<{ order: OrderDetails }>(`/patient/orders/${id}`);
       if (last.current && last.current !== r.order.status) {
         toast(t('order.statusChanged', { status: t(`status.${r.order.status}` as MessageKey) }));
+        setCelebrate((n) => n + 1);
+        if (r.order.status === 'delivered') setConfetti((n) => n + 1);
       }
       last.current = r.order.status;
       setOrder(r.order);
@@ -167,9 +175,12 @@ export function OrderTrackingPage() {
       </Link>
       <div className="row between">
         <h1 style={{ margin: 0 }}>{t('order.title')}</h1>
-        <span data-testid="order-status">
+        <span data-testid="order-status" className="status-celebrate">
           <StatusBadge status={order.status} />
+          {celebrate > 0 && <span key={celebrate} className="celebrate-ring" aria-hidden="true" />}
         </span>
+        {/* The 3D delivery scene has its own confetti; the 2D overlay is used when it is not shown. */}
+        {!graphics.canRender3D && <Confetti2D fire={confetti} />}
       </div>
       <p className="muted small">
         {formatDateTime(order.createdAt, locale)} · {t('order.refresh')}
