@@ -783,5 +783,12 @@
   "adm.msgAll": "Tous",
   "adm.msgMark": "Marquer comme traité",
   "adm.msgDone": "Message marqué comme traité.",
-  "adm.msgHandledBy": "Traité par {who}"
+  "adm.msgHandledBy": "Traité par {who}",
+  "pub.how.diagramLabel": "Schéma : le patient, counter. et la pharmacie, reliés par des flèches ; des objets circulent selon l’étape.",
+  "pub.how.minutesLeft": "{n} min pour répondre",
+  "pub.how.scrollHint": "Faites défiler pour suivre une demande",
+  "pub.how.rxNote": "Sur ordonnance : déclaration du patient ou demande confirmée du médecin, vérifiée par le pharmacien.",
+  "pub.how.fallback": "Refus ou pas de réponse en 30 minutes : le patient choisit une autre pharmacie. Rien n’est débité.",
+  "pub.how.payTest": "Paiement en mode test (aucun vrai paiement). Un médicament sur ordonnance n’est jamais payé avant l’accord de la pharmacie.",
+  "pub.how.trackerNote": "La livraison est simulée dans ce prototype."
 }

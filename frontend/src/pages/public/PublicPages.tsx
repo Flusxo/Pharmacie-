@@ -1,5 +1,7 @@
 /** Public website pages (before login). Copy lives in locales/*.json under "pub.*". */
-import type { ReactElement } from 'react';
+import { useRef, useState, type ReactElement } from 'react';
+import { useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
+import { FlowStage } from '../../components/public/FlowStage';
 import { Link } from 'react-router-dom';
 import { useI18n, type MessageKey } from '../../i18n';
 import { CtaBand, Faq, FeatureGrid, PublicHero, Section, SimNote, Steps } from '../../components/public/Sections';
@@ -126,15 +128,58 @@ export function PublicHome() {
   );
 }
 
+/** Step-specific extra line under each walkthrough step. */
+const HOW_EXTRA: Record<number, MessageKey> = {
+  2: 'pub.how.rxNote',
+  3: 'pub.how.fallback',
+  4: 'pub.how.payTest',
+  5: 'pub.how.trackerNote',
+};
+
 export function HowItWorksPage() {
   const { t } = useI18n();
+  const stepsRef = useRef<HTMLOListElement>(null);
+  // 0 → 5 while the list of steps crosses the middle of the screen.
+  const { scrollYProgress } = useScroll({ target: stepsRef, offset: ['start 0.6', 'end 0.6'] });
+  const progress = useTransform(scrollYProgress, (v) => v * 5);
+  const [active, setActive] = useState(0);
+  useMotionValueEvent(progress, 'change', (v) => setActive(Math.min(4, Math.max(0, Math.floor(v)))));
   return (
     <div className="pub-page">
       <PublicHero eyebrow={t('pub.how.eyebrow')} title={t('pub.how.title')} lead={t('pub.how.lead')} visual={<HeroArt kind="how" />} />
       <SimNote />
-      <Section id="how-steps" title={t('pub.how.eyebrow')}>
-        <Steps items={[1, 2, 3, 4, 5].map((n) => ({ title: `pub.how.s${n}t` as MessageKey, text: `pub.how.s${n}` as MessageKey }))} />
-      </Section>
+      <section className="how-scrolly" aria-labelledby="how-steps-title">
+        <h2 id="how-steps-title" className="sr-only">
+          {t('pub.how.eyebrow')}
+        </h2>
+        <div className="how-stage-wrap">
+          <div className="how-stage">
+            <FlowStage progress={progress} />
+            <p className="how-hint muted small" aria-hidden="true">
+              {t('pub.how.scrollHint')}
+            </p>
+          </div>
+        </div>
+        <ol className="how-steps" ref={stepsRef}>
+          {[1, 2, 3, 4, 5].map((n, i) => (
+            <li
+              key={n}
+              className={`how-step ${active === i ? 'active' : ''}`}
+              data-testid="how-step"
+              aria-current={active === i ? 'step' : undefined}
+            >
+              <div className="how-step-card glass">
+                <span className="pub-step-n" aria-hidden="true">
+                  {n}
+                </span>
+                <h3>{t(`pub.how.s${n}t` as MessageKey)}</h3>
+                <p>{t(`pub.how.s${n}` as MessageKey)}</p>
+                {HOW_EXTRA[n] && <p className="how-extra small">{t(HOW_EXTRA[n])}</p>}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
       <div className="two-col">
         <Section id="how-doctors" title={t('pub.how.doctorsTitle')}>
           <p>{t('pub.how.doctorsText')}</p>

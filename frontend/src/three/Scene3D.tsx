@@ -39,6 +39,8 @@ export interface Scene3DProps {
   paused?: boolean;
   /** Cap the frame rate (background scenes). */
   maxFps?: number;
+  /** Orthographic camera fitted to a world box (like an SVG viewBox, "meet"), so HTML overlays line up. */
+  ortho?: { width: number; height: number };
 }
 
 /** Counts frames; if the average stays under 30 fps for 2 s (after a 1 s warm-up), reports once. */
@@ -82,6 +84,16 @@ function FirstFrame({ reduced, onReady }: { reduced: boolean; onReady?: () => vo
   return null;
 }
 
+/** Keeps an orthographic camera's zoom so the whole box stays visible at any canvas size. */
+function FitOrtho({ width, height }: { width: number; height: number }) {
+  const { camera, size } = useThree();
+  useEffect(() => {
+    camera.zoom = Math.min(size.width / width, size.height / height);
+    camera.updateProjectionMatrix();
+  }, [camera, size.width, size.height, width, height]);
+  return null;
+}
+
 /** Drives a "demand" canvas at a fixed rate. */
 function Ticker({ fps }: { fps: number }) {
   const invalidate = useThree((st) => st.invalidate);
@@ -108,6 +120,7 @@ export function Scene3D({
   alwaysRender = false,
   paused = false,
   maxFps,
+  ortho,
 }: Scene3DProps) {
   const wrap = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
@@ -141,7 +154,12 @@ export function Scene3D({
         dpr={dpr}
         frameloop={frameloop}
         shadows={high ? 'soft' : false}
-        camera={{ position: camera.position, fov: camera.fov ?? 35, near: 0.1, far: 100 }}
+        orthographic={!!ortho}
+        camera={
+          ortho
+            ? { position: camera.position, near: 0.1, far: 100, zoom: 100 }
+            : { position: camera.position, fov: camera.fov ?? 35, near: 0.1, far: 100 }
+        }
         gl={{ antialias: !high, alpha: true, powerPreference: light ? 'low-power' : 'high-performance' }}
         onCreated={({ gl }) => {
           gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -160,6 +178,7 @@ export function Scene3D({
             shadow-radius={6}
           />
           <directionalLight position={[4, 2.5, -4]} intensity={1.1} color="#e6fff5" />
+          {ortho && <FitOrtho width={ortho.width} height={ortho.height} />}
           {children}
           {high && (
             <EffectComposer multisampling={4}>

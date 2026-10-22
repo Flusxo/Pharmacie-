@@ -32,7 +32,7 @@ function useFontsReady(): boolean {
 }
 
 /** Any error inside a 3D scene (lost context, unsupported feature) shows the fallback instead. */
-class ThreeBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
+export class ThreeBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
   override state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };

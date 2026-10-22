@@ -783,5 +783,12 @@
   "adm.msgAll": "All",
   "adm.msgMark": "Mark as handled",
   "adm.msgDone": "Message marked as handled.",
-  "adm.msgHandledBy": "Handled by {who}"
+  "adm.msgHandledBy": "Handled by {who}",
+  "pub.how.diagramLabel": "Diagram: the patient, counter. and the pharmacy, linked by arrows; objects travel along them for each step.",
+  "pub.how.minutesLeft": "{n} min to answer",
+  "pub.how.scrollHint": "Scroll to follow a request",
+  "pub.how.rxNote": "Prescription medicine: the patient’s statement or a confirmed doctor request, checked by the pharmacist.",
+  "pub.how.fallback": "Refused or no answer within 30 minutes: the patient chooses another pharmacy. Nothing is charged.",
+  "pub.how.payTest": "Payment in test mode (no real payment). A prescription medicine is never paid before the pharmacy agrees.",
+  "pub.how.trackerNote": "Delivery is simulated in this prototype."
 }
