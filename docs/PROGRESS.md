@@ -4,7 +4,7 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-User steps 1–4 are done and committed (dashboards, map, site-wide 3D, animations). **Next: step 5** (pack-label clipping + design pass at 360/768/1440, light/dark, fr/en), then step 6 (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
+User steps 1–5 are done and committed (dashboards, map, site-wide 3D, animations, pack labels + design pass). **Next: step 6** (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
 
 ### Add-on plan (requested 2026-10-22, starts after step 7)
 
@@ -86,6 +86,11 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Fix: page transitions used `AnimatePresence mode="wait"` with `useOutlet`; the exiting page re-rendered with the new URL (empty search, clicks lost) and broke the patient flow. Transitions are now entrance-only.
   - Not done: the accepted pharmacy card only flips out (it does not fly into Current orders); inventory stock numbers do not count up.
   - Verified: Vitest `motion.test.tsx` (4); full e2e 21/21 (the 3D viewer test now signs in by token, because the form login timed out once under software WebGL).
+- [x] User step 5 — Pack labels and design pass
+  - Pack drawings (`components/PackImage.tsx`): every form has an explicit label box; `lib/labelFit.ts` wraps the name on ≤ 3 lines and the dosage on ≤ 2 and shrinks until every line fits the box width and the block fits its height (accent ascent included). Nothing is cut any more (the old code cut dosages after 18 characters, e.g. "500 mg / 25 mg / 200 mg"). Real Inter measurement in the browser once the font is loaded, a conservative estimate before that and in tests. Coloured brand band with a cross and an "Rx" mark for prescription medicines; wider tube, spray and bottle shapes; inhaler and pen cards no longer put text under the band.
+  - Verified: `labels.test.tsx` (4 tests) fits all 50 seeded medicines in their form's box (width, height, line counts, size ≥ 7, every word printed) and checks text boxes sit inside labels below the band; a sheet of all 50 packs was rendered and reviewed.
+  - Design pass with `scripts/design-sweep.mjs` (scrolled viewport frames of 12 pages; 360/768/1440, light/dark, fr/en) and `scripts/overflow-probe.mjs`. Fixed: top bar 7 px wider than a 360 px phone (sign-out button cut), 70 px overflow at 768 px (top nav now switches to the tab bar below 960 px), "Mes demandes" wrapping in the tab bar (short label "Demandes"/"Requests"), medicine cards whose badges ran outside the card, bigger pack pictures with hover zoom, product lines whose price dropped under the name, KPI cards one per row on phones (now two), cut tab labels without a scroll hint (edge fade), admin chart overflowing in English, last category cards still invisible after scrolling (reveal delay grew with the index), hero poster objects clipped on phones and covering the step texts on desktop, hard grey shelf lines in dark mode, 1 px login overflow.
+  - No horizontal overflow on any swept page at 360/768/1440 (fr light, fr dark at 360/1440, en at 360).
 - [ ] Phase 11 — Extras
 - [ ] Phase 12 — Quality and documentation
 
@@ -96,10 +101,10 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified: in the browser on the user's running dev server, /map now shows the key-rejected message, no "Invalid key" tiles, 1 pin and the attribution. Vitest (`map.test.tsx`, 6 tests): resolver (full URL, bare key, empty, `{s}`, style.json, malformed), fallback text. Playwright (`map.spec.ts`, 8 tests): no key → message + attribution + no external tile request; stand-in tiles 200 → tiles shown; 403 text → message; 403 + image (MapTiler behaviour) → tiles hidden + key message (repeated 5×, stable); no pharmacy in range → message → widen → Terreaux listed; geolocation denied; details popup; tracking map.
   - README started with the map-key section (where to get the key, full URL or bare key, restart, Allowed HTTP origins, keys are public).
 
-## Last check results (2026-10-22, after step 4)
+## Last check results (2026-10-22, after step 5)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 95 + frontend 29 tests passed (local PG :5433, never Neon).
+- `npm test`: backend 95 + frontend 33 tests passed (local PG :5433, never Neon).
 - `npm run e2e`: 21 Playwright tests passed (5 cycle + 8 map + 4 patient + 4 3D in their own browser); test ports released.
 - 3D screenshots (step 3): 18/18 taken with software GL (`docs/screenshots/`, ~32 min); 7 re-taken after fixes.
 
@@ -107,7 +112,7 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
 
 Map (the user saw tiles or pins not showing):
 
-- **Tiles (still not working for the user)**: the key in `.env` is rejected by MapTiler (403 Invalid key, verified). Paste a valid key or the full URL `https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=…`, restart `npm run dev`. The app now says exactly this on the map.
+- **Tiles**: on 2026-10-22 (step 5) MapTiler tiles loaded on the dev server with the key now in `.env` (seen on details, home and tracking). Earlier that key was rejected (403 Invalid key); if it happens again the map says so and explains the fix.
 - **Pins**: pins come from the API. If none show: (1) the API is not running or the database is unreachable (check `http://localhost:5173/api/health`); (2) the location used is far from the demo pharmacies (all near Tournon / Valence / Romans / Lyon / Vienne) — check "Position utilisée" and the radius (Home uses 25 km, /map starts at 15 km, max 30); (3) the user is not logged in as a patient. Not reproduced in my checks: pins showed on /map, details and home.
 - The Home mini map has no list sync and no radius control (by design: it links to /map).
 
@@ -115,7 +120,7 @@ Other known issues:
 
 - 3D in a real browser on a real GPU was not checked by me: all 3D verification used SwiftShader (software). Expect smoother motion and sharper post-processing on real hardware; very slow GPUs fall back automatically in Auto.
 - The 3D product label text looks slightly light (tone mapping + clearcoat); readable but could be darker.
-- PackImage (generated pack drawings): some labels overlap the green cross (syrup/"Hélicidine") or are slightly clipped (inhaler dosage); the pen drawing is rough. To polish in Phase 9.
+- PackImage drawings are flat SVG illustrations; realistic rendered pictures are add-on Part G.
 - Phases 11 (printable order slip, onboarding tour, optional TOTP) and 12 (README, final docs, full acceptance checklist) are not done.
 - No README yet (Phase 12) — setup instructions live in `CLAUDE.md` for now.
 - The seeded incoming request (Bruno → Tournon) expires 30 minutes after `npm run db:reset` (the expiry job runs every minute while the API runs). Re-run `npm run db:reset` before a demo.
@@ -130,7 +135,7 @@ Reported on 2026-10-21 (second session), to be fixed in this order:
 1. Doctor, pharmacy and staff accounts log in but land on "page not found". There is no account page. → Step 1 (Phase 8 dashboards + Account page for every role).
 2. The map has no tiles (`VITE_MAP_TILE_URL` is empty; the user will paste a MapTiler address into `.env` and restart). → Step 2.
 3. There is no big 3D anywhere (not on the whole site background) and no animations. → Steps 3 and 4.
-4. Some generated pack drawings have clipped labels. → Step 5.
+4. Some generated pack drawings have clipped labels. → Fixed in step 5.
 
 Note: the user referred to "section 11b of claude_code_master_prompt.md"; that file is not in the repository, so the 3D work follows section 11 of the master prompt plus the separate 3D/animation brief (quality tiers, fallbacks, lazy loading, screenshots).
 
@@ -144,5 +149,5 @@ Note: the user referred to "section 11b of claude_code_master_prompt.md"; that f
 
 ## Not done yet
 
-- Steps 5–7 of the user's list and the add-on plan (see Next step).
+- Steps 6–7 of the user's list and the add-on plan (see Next step).
 - Optional TOTP for professionals (Phase 11) is not started.

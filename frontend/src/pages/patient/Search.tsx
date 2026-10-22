@@ -31,7 +31,7 @@ export function MedicineCard({ m }: { m: Medicine }) {
   const { t } = useI18n();
   return (
     <Link to={`/medicines/${m.id}`} className="card lift med-card" data-testid="medicine-card">
-      <PackImage name={m.name} dosage={m.dosage} form={m.form} category={m.category} imageUrl={m.imageUrl} />
+      <PackImage name={m.name} dosage={m.dosage} form={m.form} category={m.category} imageUrl={m.imageUrl} rx={m.requiresPrescription} />
       <div className="stack" style={{ gap: 6 }}>
         <h3>{m.name}</h3>
         <span className="muted small">

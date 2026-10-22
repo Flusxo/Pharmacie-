@@ -224,7 +224,7 @@ img {
 .tabbar {
   display: none;
 }
-@media (max-width: 767px) {
+@media (max-width: 959px) {
   .topnav {
     display: none;
   }
@@ -243,6 +243,8 @@ img {
   }
   .tabbar a {
     flex: 1;
+    min-width: 0;
+    white-space: nowrap;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -259,6 +261,24 @@ img {
   .tabbar svg {
     width: 22px;
     height: 22px;
+  }
+  .tabbar a span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+@media (max-width: 420px) {
+  .topbar {
+    gap: 6px;
+    padding: 0 12px;
+  }
+  .brand {
+    font-size: 1.3rem;
+  }
+  .topbar .icon-btn {
+    width: 38px;
+    height: 38px;
   }
 }
 
@@ -536,6 +556,9 @@ textarea.input {
   margin: 0 auto;
   align-items: start;
 }
+.auth-wrap > * {
+  min-width: 0;
+}
 @media (min-width: 900px) {
   .auth-wrap {
     grid-template-columns: 1.05fr 1fr;
@@ -644,16 +667,53 @@ textarea.input {
 /* ---------- Medicine ---------- */
 .med-card {
   display: grid;
-  grid-template-columns: 96px 1fr;
+  grid-template-columns: 112px minmax(0, 1fr);
   gap: 14px;
   text-decoration: none;
   color: var(--ink);
   align-items: center;
 }
+.med-card > * {
+  min-width: 0;
+}
 .med-card h3 {
   margin: 0 0 4px;
   font-family: var(--font-body);
   font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+.med-card .row {
+  flex-wrap: wrap;
+}
+.med-card .badge {
+  white-space: normal;
+}
+.med-card .pack {
+  transition: transform var(--dur-base) var(--ease-out);
+  filter: drop-shadow(0 6px 10px rgb(15 23 42 / 0.08));
+}
+.med-card:hover .pack,
+.med-card:focus-visible .pack {
+  transform: scale(1.06) rotate(-2deg);
+}
+@media (max-width: 420px) {
+  .med-card {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+}
+/* Product line: picture, name (wraps), price (never wraps). */
+.line-item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+.line-item strong {
+  overflow-wrap: anywhere;
+}
+.line-price {
+  white-space: nowrap;
+  font-weight: 600;
 }
 .pack {
   width: 100%;
@@ -1073,6 +1133,33 @@ table.table {
   font-size: 1.8rem;
   line-height: 1.1;
 }
+/* Phones: KPI cards two per row instead of one tall column. */
+@media (max-width: 520px) {
+  .grid.cols-4:has(> .kpi) {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .kpi {
+    padding: 12px;
+  }
+  .kpi-value {
+    font-size: 1.5rem;
+  }
+}
+/* Scrollable tab strips show a fade on the right edge so the cut label reads as "more". */
+@media (max-width: 640px) {
+  .tabs {
+    mask-image: linear-gradient(90deg, #000 85%, transparent);
+    scroll-snap-type: x proximity;
+  }
+  .tabs button {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+  .tabs button:last-child {
+    margin-right: 24px;
+  }
+}
 .kpi-ok {
   border-left-color: var(--green-500);
 }
@@ -1191,14 +1278,27 @@ table.table {
   filter: blur(3px);
   opacity: 0.6;
 }
+:root[data-theme='dark'] .hero-poster-shelf {
+  background: repeating-linear-gradient(180deg, transparent 0 30%, rgb(255 255 255 / 0.07) 30% 32%);
+}
 .hero-poster-items {
   position: absolute;
-  left: 50%;
-  bottom: 18%;
-  transform: translateX(-10%);
+  /* Bottom-left, under the greeting panel; the step texts sit bottom-right. */
+  left: 6%;
+  bottom: 10%;
+  transform: none;
   display: flex;
   gap: 2%;
   width: min(520px, 70vw);
+}
+@media (max-width: 959px) {
+  /* Phones and tablets: centred under the panel instead of running off the right edge. */
+  .hero-poster-items {
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(320px, 80vw);
+    bottom: 10%;
+  }
 }
 .hero-copy {
   position: relative;
@@ -1607,7 +1707,7 @@ table.table {
 /* Admin chart */
 .bar-chart {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
   height: 180px;
   align-items: end;
@@ -1646,4 +1746,12 @@ table.table {
 .bar-label {
   font-size: 0.7rem;
   color: var(--muted);
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  line-height: 1.2;
+}
+@media (max-width: 420px) {
+  .bar-chart {
+    gap: 6px;
+  }
 }

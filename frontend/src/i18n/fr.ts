@@ -9,6 +9,7 @@ export const fr = {
   'nav.search': 'Rechercher',
   'nav.map': 'Carte',
   'nav.requests': 'Mes demandes',
+  'nav.requestsShort': 'Demandes',
   'nav.profile': 'Profil',
   'nav.dashboard': 'Tableau de bord',
   'nav.logout': 'Se déconnecter',

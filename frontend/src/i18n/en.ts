@@ -9,6 +9,7 @@ export const en: Record<MessageKey, string> = {
   'nav.search': 'Search',
   'nav.map': 'Map',
   'nav.requests': 'My requests',
+  'nav.requestsShort': 'Requests',
   'nav.profile': 'Profile',
   'nav.dashboard': 'Dashboard',
   'nav.logout': 'Log out',

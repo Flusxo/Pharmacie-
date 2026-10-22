@@ -1,9 +1,10 @@
 /**
- * Generated medicine pack (SVG), shaped by form and coloured by category, with the name and dosage
- * printed legibly (font size shrinks to fit, text is never cropped). Used wherever a medicine is shown;
- * a real `imageUrl` is shown instead when present, with this as the fallback.
+ * Generated medicine pack (SVG), shaped by form and coloured by category. The name and dosage are fitted
+ * inside the white label by `fitLabel` (wrap on up to 3 lines, shrink until it fits): never cropped, never
+ * outside the label. A real `imageUrl` is shown instead when present, with this as the fallback.
  */
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
+import { fitLabel, packTitle, type Box } from '../lib/labelFit';
 
 export const CATEGORY_COLORS: Record<string, [string, string]> = {
   pain: ['#065F46', '#A7F3D0'],
@@ -20,19 +21,27 @@ export const CATEGORY_COLORS: Record<string, [string, string]> = {
 };
 export const colorsFor = (category: string): [string, string] => CATEGORY_COLORS[category] ?? ['#334155', '#E2E8F0'];
 
-/** Split a name into at most 2 lines of ~max chars. */
-function lines(text: string, max: number): string[] {
-  const words = text.split(' ');
-  const out: string[] = [''];
-  for (const w of words) {
-    const cur = out[out.length - 1];
-    if ((cur + ' ' + w).trim().length <= max || cur === '') out[out.length - 1] = (cur + ' ' + w).trim();
-    else if (out.length < 2) out.push(w);
-    else out[1] = `${out[1]} ${w}`;
-  }
-  return out;
+interface Layout {
+  /** White label drawn on the pack. */
+  label: Box;
+  /** Area the text must stay inside (label minus padding and the brand band). */
+  text: Box;
+  /** Optional rotation of the whole pack (degrees, around the centre). */
+  rotate?: number;
 }
-const fit = (text: string, width: number, base: number) => Math.max(7, Math.min(base, (width / Math.max(text.length, 1)) * 1.75));
+
+/** Label geometry per form (viewBox 200 × 200). Exported for the fit test. */
+export const LAYOUTS: Record<string, Layout> = {
+  syrup: { label: { x: 52, y: 84, w: 96, h: 88 }, text: { x: 57, y: 100, w: 86, h: 68 } },
+  drops: { label: { x: 52, y: 84, w: 96, h: 88 }, text: { x: 57, y: 100, w: 86, h: 68 } },
+  cream: { label: { x: 54, y: 60, w: 92, h: 92 }, text: { x: 58, y: 76, w: 84, h: 72 }, rotate: -10 },
+  sachet: { label: { x: 52, y: 64, w: 96, h: 94 }, text: { x: 57, y: 80, w: 86, h: 74 } },
+  inhaler: { label: { x: 40, y: 118, w: 120, h: 70 }, text: { x: 46, y: 133, w: 108, h: 52 } },
+  pen: { label: { x: 40, y: 114, w: 120, h: 74 }, text: { x: 46, y: 129, w: 108, h: 56 } },
+  spray: { label: { x: 56, y: 80, w: 88, h: 94 }, text: { x: 61, y: 96, w: 78, h: 74 } },
+  box: { label: { x: 46, y: 74, w: 100, h: 76 }, text: { x: 51, y: 90, w: 90, h: 56 } },
+};
+export const layoutFor = (form: string): Layout => LAYOUTS[form] ?? LAYOUTS.box;
 
 interface Props {
   name: string;
@@ -40,18 +49,20 @@ interface Props {
   form: string;
   category: string;
   imageUrl?: string | null;
+  /** Prints an "Rx" mark on the label for prescription medicines. */
+  rx?: boolean;
   size?: number;
   className?: string;
 }
 
-export function PackImage({ name, dosage, form, category, imageUrl, size, className }: Props) {
+export function PackImage({ name, dosage, form, category, imageUrl, rx, size, className }: Props) {
   const [broken, setBroken] = useState(false);
-  const label = `${name} — ${dosage}`;
+  const alt = `${name} — ${dosage}`;
   if (imageUrl && !broken) {
     return (
       <img
         src={imageUrl}
-        alt={label}
+        alt={alt}
         width={size}
         height={size}
         className={className ?? 'pack'}
@@ -62,160 +73,136 @@ export function PackImage({ name, dosage, form, category, imageUrl, size, classN
     );
   }
   const [dark, light] = colorsFor(category);
-  const title = lines(name.replace(/\s+\d.*$/, '') || name, 14);
-  const titleSize = Math.min(...title.map((l) => fit(l, 120, 17)));
-  const dose = dosage.length > 18 ? dosage.slice(0, 18) : dosage;
-  const doseSize = fit(dose, 110, 13);
+  const layout = layoutFor(form);
+  const lines = fitLabel(packTitle(name), dosage, layout.text);
   const id = `g-${category}-${form}`;
+  const { label: lb } = layout;
+  const band = 12;
 
-  const text = (y: number) => (
-    <>
-      {title.map((l, i) => (
+  const label = (
+    <g data-testid="pack-label">
+      <rect x={lb.x} y={lb.y} width={lb.w} height={lb.h} rx="7" fill="#fff" />
+      <path d={`M${lb.x} ${lb.y + 7}a7 7 0 0 1 7 -7h${lb.w - 14}a7 7 0 0 1 7 7v${band - 7}h-${lb.w}z`} fill={dark} />
+      <Cross x={lb.x + 9} y={lb.y + band / 2 + 0.5} s={8} fill="#fff" />
+      {rx && (
+        <text x={lb.x + lb.w - 5} y={lb.y + band - 3} textAnchor="end" fontSize="8" fontWeight="800" fill="#fff" fontFamily="Inter Variable, system-ui, sans-serif">
+          Rx
+        </text>
+      )}
+      {lines.map((l, i) => (
         <text
           key={i}
-          x="100"
-          y={y + i * (titleSize + 3)}
+          x={layout.text.x + layout.text.w / 2}
+          y={l.y}
           textAnchor="middle"
-          fontSize={titleSize}
-          fontWeight="700"
-          fill={dark}
+          fontSize={l.size}
+          fontWeight={l.weight}
+          fill={l.weight === 700 ? dark : '#334155'}
           fontFamily="Inter Variable, system-ui, sans-serif"
         >
-          {l}
+          {l.text}
         </text>
       ))}
-      <text
-        x="100"
-        y={y + title.length * (titleSize + 3) + doseSize}
-        textAnchor="middle"
-        fontSize={doseSize}
-        fontWeight="600"
-        fill="#334155"
-        fontFamily="Inter Variable, system-ui, sans-serif"
-      >
-        {dose}
-      </text>
-    </>
-  );
-  const cross = (x: number, y: number, s: number) => (
-    <path
-      d={`M${x - s / 6} ${y - s / 2}h${s / 3}v${s / 3}h${s / 3}v${s / 3}h-${s / 3}v${s / 3}h-${s / 3}v-${s / 3}h-${s / 3}v-${s / 3}h${s / 3}z`}
-      fill={dark}
-    />
+    </g>
   );
 
-  let body;
+  let body: ReactNode;
   switch (form) {
     case 'syrup':
     case 'drops':
       body = (
-        <g>
-          <rect x="82" y="18" width="36" height="26" rx="6" fill="#F8FAFC" stroke="#CBD5E1" />
-          <rect x="88" y="40" width="24" height="12" fill="#92400E" opacity="0.85" />
-          <path d="M58 70q0-18 22-18h40q22 0 22 18v100q0 14-14 14H72q-14 0-14-14z" fill={`url(#${id})`} />
-          <path d="M66 74q0-10 14-10" stroke="#fff" strokeOpacity="0.5" strokeWidth="4" fill="none" />
-          <rect x="62" y="92" width="76" height="70" rx="8" fill="#fff" />
-          {cross(78, 104, 12)}
-          {text(118)}
-        </g>
+        <>
+          <rect x="80" y="14" width="40" height="28" rx="6" fill="#F8FAFC" stroke="#CBD5E1" />
+          <rect x="86" y="40" width="28" height="12" fill="#78350F" opacity="0.85" />
+          <path d="M46 72q0-20 24-20h60q24 0 24 20v104q0 14-14 14H60q-14 0-14-14z" fill={`url(#${id})`} />
+          <path d="M54 80q0-14 16-16" stroke="#fff" strokeOpacity="0.55" strokeWidth="4" fill="none" strokeLinecap="round" />
+        </>
       );
       break;
     case 'cream':
       body = (
-        <g transform="rotate(-18 100 100)">
-          <rect x="88" y="16" width="24" height="18" rx="4" fill="#F8FAFC" stroke="#CBD5E1" />
-          <path d="M70 34h60l10 130H60z" fill={`url(#${id})`} />
-          <path d="M58 164h84v14H58z" fill={dark} />
-          <rect x="72" y="70" width="56" height="74" rx="6" fill="#fff" />
-          <g transform="translate(0 -26)">{text(118)}</g>
-        </g>
+        <>
+          <rect x="88" y="14" width="24" height="18" rx="4" fill="#F8FAFC" stroke="#CBD5E1" />
+          <path d="M50 32h100l12 136H38z" fill={`url(#${id})`} />
+          <path d="M34 166h132v14H34z" fill={dark} />
+        </>
       );
       break;
     case 'sachet':
       body = (
-        <g>
-          <path d="M44 34h112l-4 8 4 8v116l-4 8 4 8H44l4-8-4-8V50l4-8z" fill={`url(#${id})`} />
-          <rect x="54" y="66" width="92" height="88" rx="8" fill="#fff" />
-          {cross(100, 52, 14)}
-          {text(92)}
-        </g>
+        <>
+          <path d="M40 30h120l-4 8 4 8v122l-4 8 4 8H40l4-8-4-8V46l4-8z" fill={`url(#${id})`} />
+          <path d="M40 46h120" stroke="#fff" strokeOpacity="0.5" strokeDasharray="3 3" />
+        </>
       );
       break;
     case 'inhaler':
       body = (
-        <g>
-          <rect x="74" y="20" width="52" height="118" rx="20" fill={`url(#${id})`} />
-          <path d="M82 132h52l14 24q4 10-6 12H86z" fill="#E2E8F0" stroke="#CBD5E1" />
-          <rect x="50" y="150" width="100" height="40" rx="10" fill="#fff" stroke="#CBD5E1" />
-          <g transform="translate(0 46)">{text(116)}</g>
-        </g>
+        <>
+          <rect x="78" y="8" width="44" height="90" rx="18" fill={`url(#${id})`} />
+          <path d="M70 94h60v14q0 8-8 8H78q-8 0-8-8z" fill="#E2E8F0" stroke="#CBD5E1" />
+        </>
       );
       break;
     case 'pen':
       body = (
-        <g>
-          <g transform="rotate(-60 100 80) translate(0 -20)">
-            <rect x="88" y="10" width="24" height="26" rx="5" fill={dark} />
-            <rect x="84" y="34" width="32" height="120" rx="12" fill={`url(#${id})`} />
-            <rect x="94" y="154" width="12" height="16" rx="3" fill="#94A3B8" />
-            <rect x="90" y="60" width="20" height="50" rx="4" fill="#fff" />
-          </g>
-          <rect x="44" y="118" width="112" height="62" rx="10" fill="#fff" stroke="#CBD5E1" />
-          <g transform="translate(0 16)">{text(118)}</g>
+        <g transform="rotate(-62 100 62)">
+          <rect x="90" y="-6" width="20" height="24" rx="5" fill={dark} />
+          <rect x="86" y="16" width="28" height="118" rx="12" fill={`url(#${id})`} />
+          <rect x="95" y="134" width="10" height="14" rx="3" fill="#94A3B8" />
+          <rect x="92" y="46" width="16" height="44" rx="4" fill="#fff" opacity="0.9" />
         </g>
       );
       break;
     case 'spray':
       body = (
-        <g>
-          <rect x="90" y="12" width="20" height="30" rx="8" fill="#F8FAFC" stroke="#CBD5E1" />
-          <rect x="80" y="38" width="40" height="14" rx="4" fill="#E2E8F0" />
-          <rect x="62" y="50" width="76" height="136" rx="18" fill={`url(#${id})`} />
-          <rect x="68" y="84" width="64" height="80" rx="8" fill="#fff" />
-          {cross(100, 72, 12)}
-          {text(106)}
-        </g>
+        <>
+          <rect x="90" y="8" width="20" height="30" rx="8" fill="#F8FAFC" stroke="#CBD5E1" />
+          <rect x="80" y="34" width="40" height="14" rx="4" fill="#E2E8F0" />
+          <rect x="50" y="46" width="100" height="140" rx="22" fill={`url(#${id})`} />
+        </>
       );
       break;
-    case 'lozenge':
-    case 'tablet':
-    case 'capsule':
     default:
       body = (
-        <g>
-          <path d="M40 46l18-16h112l-18 16z" fill={light} />
-          <path d="M152 46l18-16v124l-18 16z" fill={dark} opacity="0.85" />
-          <rect x="40" y="46" width="112" height="124" rx="6" fill={`url(#${id})`} />
-          <rect x="48" y="78" width="96" height="80" rx="6" fill="#fff" />
-          <circle cx="62" cy="62" r="7" fill="#fff" opacity="0.9" />
-          {cross(62, 62, 10)}
-          <g transform="translate(-4 0)">{text(102)}</g>
+        <>
+          <path d="M38 44l18-16h112l-18 16z" fill={light} />
+          <path d="M150 44l18-16v126l-18 16z" fill={dark} opacity="0.85" />
+          <rect x="38" y="44" width="112" height="126" rx="6" fill={`url(#${id})`} />
           {(form === 'capsule' || form === 'tablet') && (
-            <g transform="translate(124 160)">
+            <g transform="translate(130 160)">
               {form === 'capsule' ? (
                 <g transform="rotate(-30)">
-                  <rect x="-16" y="-7" width="32" height="14" rx="7" fill={dark} />
-                  <rect x="0" y="-7" width="16" height="14" rx="7" fill="#F8FAFC" />
+                  <rect x="-12" y="-5" width="24" height="10" rx="5" fill={dark} />
+                  <rect x="0" y="-5" width="12" height="10" rx="5" fill="#F8FAFC" />
                 </g>
               ) : (
-                <circle r="10" fill="#F8FAFC" stroke="#CBD5E1" />
+                <circle r="7" fill="#F8FAFC" stroke="#CBD5E1" />
               )}
             </g>
           )}
-        </g>
+        </>
       );
   }
 
   return (
-    <svg viewBox="0 0 200 200" role="img" aria-label={label} width={size} height={size} className={className ?? 'pack'}>
+    <svg viewBox="0 0 200 200" role="img" aria-label={alt} width={size} height={size} className={className ?? 'pack'}>
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor={light} />
-          <stop offset="1" stopColor={dark} stopOpacity="0.55" />
+          <stop offset="1" stopColor={dark} stopOpacity="0.6" />
         </linearGradient>
       </defs>
-      <ellipse cx="100" cy="190" rx="62" ry="6" fill="#0F172A" opacity="0.08" />
-      {body}
+      <ellipse cx="100" cy="192" rx="64" ry="6" fill="#0F172A" opacity="0.08" />
+      <g transform={layout.rotate ? `rotate(${layout.rotate} 100 100)` : undefined}>
+        {body}
+        {label}
+      </g>
     </svg>
   );
+}
+
+function Cross({ x, y, s, fill }: { x: number; y: number; s: number; fill: string }) {
+  const t = s / 3;
+  return <path d={`M${x - t / 2} ${y - s / 2}h${t}v${t}h${t}v${t}h-${t}v${t}h-${t}v-${t}h-${t}v-${t}h${t}z`} fill={fill} />;
 }

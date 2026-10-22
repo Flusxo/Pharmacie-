@@ -154,10 +154,8 @@ export function RequestDetailsPage() {
 
       <section className="card stack">
         {req.items.map((i) => (
-          <div key={i.id} className="row" style={{ gap: 12, opacity: i.excluded ? 0.5 : 1 }}>
-            <div style={{ width: 56 }}>
-              <PackImage name={i.name} dosage={i.dosage} form={i.form} category={i.category} />
-            </div>
+          <div key={i.id} className="line-item" style={{ opacity: i.excluded ? 0.5 : 1 }}>
+            <PackImage name={i.name} dosage={i.dosage} form={i.form} category={i.category} rx={i.requiresPrescription} />
             <span className="stack" style={{ gap: 2 }}>
               <strong>
                 {i.quantity} × {i.name}

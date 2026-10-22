@@ -209,19 +209,15 @@ export function OrderTrackingPage() {
       <section className="card stack">
         <h2>{t('order.items')}</h2>
         {order.items.map((i) => (
-          <div key={i.id} className="row between" style={{ opacity: i.excluded ? 0.5 : 1 }}>
-            <span className="row" style={{ gap: 12 }}>
-              <span style={{ width: 52 }}>
-                <PackImage name={i.name} dosage={i.dosage} form={i.form} category={i.category} />
-              </span>
-              <span className="stack" style={{ gap: 2 }}>
-                <strong>
-                  {i.quantity} × {i.name}
-                </strong>
-                <RxBadge rx={i.requiresPrescription} />
-              </span>
+          <div key={i.id} className="line-item" style={{ opacity: i.excluded ? 0.5 : 1 }}>
+            <PackImage name={i.name} dosage={i.dosage} form={i.form} category={i.category} rx={i.requiresPrescription} />
+            <span className="stack" style={{ gap: 2 }}>
+              <strong>
+                {i.quantity} × {i.name}
+              </strong>
+              <RxBadge rx={i.requiresPrescription} />
             </span>
-            <span>{i.excluded ? t('requests.excluded') : formatPrice((i.priceEur ?? 0) * i.quantity, locale)}</span>
+            <span className="line-price">{i.excluded ? t('requests.excluded') : formatPrice((i.priceEur ?? 0) * i.quantity, locale)}</span>
           </div>
         ))}
         <div className="row between">

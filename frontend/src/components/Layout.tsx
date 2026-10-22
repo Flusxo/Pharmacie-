@@ -163,6 +163,8 @@ function NotificationsBell() {
 interface NavItem {
   to: string;
   label: string;
+  /** Shorter label for the phone tab bar. */
+  short?: string;
   icon: ReactNode;
 }
 
@@ -178,7 +180,7 @@ export function Layout() {
           { to: '/home', label: t('nav.home'), icon: <IconHome /> },
           { to: '/search', label: t('nav.search'), icon: <IconSearch /> },
           { to: '/map', label: t('nav.map'), icon: <IconMap /> },
-          { to: '/requests', label: t('nav.requests'), icon: <IconList /> },
+          { to: '/requests', label: t('nav.requests'), short: t('nav.requestsShort'), icon: <IconList /> },
           { to: '/profile', label: t('nav.profile'), icon: <IconUser /> },
         ]
       : user
@@ -244,7 +246,7 @@ export function Layout() {
             {nav.map((n) => (
               <NavLink key={n.to} to={n.to}>
                 {n.icon}
-                <span>{n.label}</span>
+                <span>{n.short ?? n.label}</span>
               </NavLink>
             ))}
           </nav>

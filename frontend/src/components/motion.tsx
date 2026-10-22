@@ -51,7 +51,7 @@ export function Reveal({
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '0px 0px -40px 0px' }}
-      transition={{ duration: duration.base, ease: easeOut, delay: Math.min(index, 10) * stagger }}
+      transition={{ duration: duration.base, ease: easeOut, delay: (index % 4) * stagger }}
     >
       {children}
     </M>
