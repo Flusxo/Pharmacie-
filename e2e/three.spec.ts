@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { loginByToken, loginWithDemo } from './helpers';
+import { loginByToken } from './helpers';
 
 /** The 3D layer itself, with Graphics quality "Medium" (software WebGL in headless Chromium). */
 test.describe('3D layer', () => {
@@ -24,8 +24,7 @@ test.describe('3D layer', () => {
   });
 
   test('medicine details: 3D viewer with canvas, 3D / Photo toggle and a text alternative', async ({ page }) => {
-    await loginWithDemo(page, 'Alice — Tournon');
-    await expect(page).toHaveURL(/\/home$/);
+    await loginByToken(page, 'alice@pharmacie.test');
     await page.goto('/search?q=Hélicidine');
     await page.getByTestId('medicine-card').first().click();
     const viewer = page.getByTestId('product-visual');

@@ -9,28 +9,23 @@ import { useLocation, useOutlet } from 'react-router-dom';
 import { duration, easeOut, spring, stagger } from '../motion';
 import { useReducedMotion } from '../lib/settings';
 
-/** Route content with page transitions (fade + 12 px slide + slight blur); the top bar stays fixed. */
+/**
+ * Route content with a page transition (fade + 12 px slide + slight blur) on every route change; the top bar stays fixed.
+ * Entrance only: an exit phase would keep the old page mounted while it already reads the new URL
+ * (it re-rendered with the wrong query and held back the next page).
+ */
 export function AnimatedOutlet() {
   const location = useLocation();
   const outlet = useOutlet();
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
-        // transitionEnd clears transform/filter: they would otherwise trap position:fixed dialogs inside the page.
-        animate={{
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          transition: { duration: duration.base, ease: easeOut },
-          transitionEnd: { filter: 'none', transform: 'none' },
-        }}
-        exit={{ opacity: 0, y: -8, transition: { duration: duration.fast, ease: easeOut } }}
-      >
-        {outlet}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={location.pathname}
+      initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
+      // transitionEnd clears transform/filter: they would otherwise trap position:fixed dialogs inside the page.
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: duration.base, ease: easeOut }, transitionEnd: { filter: 'none', transform: 'none' } }}
+    >
+      {outlet}
+    </motion.div>
   );
 }
 

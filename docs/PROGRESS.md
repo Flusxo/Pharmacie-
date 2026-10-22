@@ -4,14 +4,17 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-**STOPPED MID-STEP 4 (animations) on 2026-10-22 — usage limit. Step 4 is NOT committed (working tree has the changes).**
-Done in the working tree: framer-motion 11 via `LazyMotion` (features loaded lazily, main bundle 294 kB), `src/motion.ts` tokens + CSS variables, `MotionConfig` driven by "Reduce animations", page transitions (`AnimatedOutlet`), Reveal/AnimatedNumber/TiltCard/WordReveal/RotatingWord/Pop/Confetti2D (`components/motion.tsx`), login floating labels + shake, home word reveal + rotating word + tilting category cards + counters, search suggestion stagger + result layout animation + badge pulse, smooth map radius + selected-pin ring, request-sheet step slides, stepper liquid fill + current-step pulse + celebration ring + 2D confetti on Delivered, pharmacy incoming slide-in/glow/flip-out + tab count pop + KPI counters + order progress bars, doctor paper plane + animated patient search, admin KPI counters + animated orders chart, status badge pop.
-Checks at stop: build OK, lint OK (after removing unused imports), unit tests 95 + 29 pass, e2e 20/21 — **`e2e/patient.spec.ts` "login, search, details, request, then live order tracking" fails** ("element(s) not found" on a toBeVisible). Probable cause: page transitions (`AnimatePresence mode="wait"`) or the floating-label / tab markup change; see `test-results/patient-*/error-context.md`. Fix it first, then commit step 4.
-Also NOT done in step 4: the sliding tab indicator (the edit to `Tabs` in `components/dash.tsx` did not apply), "pharmacy accept flips the card into Current orders" is only a flip-out exit, stock numbers in the inventory table do not count.
-Then: step 5 (pack-label clipping + design pass at 360/768/1440, light/dark, fr/en), step 6 (extras), step 7 (README completion, npm audit, final report).
+User steps 1–4 are done and committed (dashboards, map, site-wide 3D, animations). **Next: step 5** (pack-label clipping + design pass at 360/768/1440, light/dark, fr/en), then step 6 (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
 
-Working through the user's 7-step list (second session, 2026-10-21). Steps 1 (Phase 8 dashboards + account pages), 2 (map) and 3 (site-wide 3D) are done and committed.
-Next, in order: **Step 4 animations** (Phase 10), **Step 5 pack-label fix + design pass**, **Step 6 extras** (Phase 11), **Step 7 README + final checks** (Phase 12). Commit after each step only when build, lint and that step's tests pass.
+### Add-on plan (requested 2026-10-22, starts after step 7)
+
+- [ ] Part A — Multi-page public site: Home, How it works, For patients, For pharmacies, For doctors, About us, Contact, FAQ, Privacy, Terms; shared top bar with a big "Log in" + secondary "Create account"; shared footer; Contact form saved to the DB, validated, success state, listed for staff in the admin dashboard; fake demo contact details; fr/en; responsive.
+- [ ] Part B — "How it works": scroll-driven walkthrough of the real flow (search → choose + send, Rx rule → pharmacy accepts/refuses, 30 min, fallback → prepare + pay after acceptance → tracker), connected diagram with animated arrows and small 3D objects travelling patient ↔ platform ↔ pharmacy; doctor and pharmacy sections; FAQ; "Prototype: payments and delivery are simulated".
+- [ ] Part C / C2 — 3D on every page: big 3D background on login + sign-up, calmer one after login, a different scene per public page, scroll-driven scenes (camera travel, drift/spin, assemble/explode), mouse + tilt reaction, glass panels for readability; shared scene manager and assets; tiers, fallbacks, reduced motion, one heavy canvas on mobile.
+- [ ] Part D — Lighter aqua/teal/mint palette with green accent, good dark theme, strong contrast; 4K renders of our own scenes (WebP/AVIF, srcset, lazy, blur-up), varied render library per page, parallax / slow zoom / hover tilt / pinned scrollytelling; licences in `docs/ASSETS.md`.
+- [ ] Part E — Stripe TEST MODE only: Payment Element / Checkout (card data never reaches our server), pay only after the pharmacy accepts, authorise then capture, refund on cancel, webhooks with signature check + idempotency, `payments` migration, status in tracker / pharmacy / admin, printable receipt, "Payments not configured" without keys, README setup (account, test mode, keys, Stripe CLI, 4242… and a declined card), tests (success, decline, pay-before-accept blocked, refund on cancel, duplicate webhook ignored, bad signature rejected), test-mode disclaimer.
+- [ ] Part G — Medicine pictures rendered from the 3D models (≥ 2048 px, WebP/AVIF, several angles, fictional packs, Rx/OTC mark, labels always fit) used everywhere with hover zoom + float + fallback; language switch fixed with a real i18n setup (react-i18next, fr.json/en.json, every string, errors, formats, remembered, `lang` attribute, API errors translatable, fr/en medicine data in the DB), key-parity test, Playwright language-switch tests per main page.
+- [ ] Part F — Screenshots 1440/390, light/dark, fr/en of every public page, login, a dashboard with 3D, payment screens; critical review and fixes; docs + README; honest final report.
 
 How to run things: `npm run dev` (API :4000 + web :5173 on Neon), `npm test` (local PG :5433, never Neon), `npm run e2e` (own DB `pharmalink_e2e`, servers :4100/:5174/:5175, cleans up after itself).
 The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECISIONS.md`.
@@ -78,7 +81,11 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified (Playwright `three.spec.ts`, 4 tests, own browser process): the login page downloads no scene chunk; details page shows a canvas, Photo removes it, 3D brings it back; every page has the 3D background (reduced motion on); Graphics "Off" in the account page switches background and hero to static.
   - Verified by screenshots (`npm run e2e -- --config playwright.visual.config.ts`, SwiftShader software GL, 1440 px and 390 px; files in `docs/screenshots/`): home hero at 3 scroll positions, background on search / requests / account, viewer for syrup, cream, inhaler, blister and pill bottle. Reviewed critically; fixed after review: cropped box labels, stretched bottle labels, labels drawn before the font loaded, camera lagging at low fps, depth-of-field focus, viewer camera reset on mount (bottle cropped), tube label wrapped all around, blister seen edge-on, mobile hero framing, background invisible on phones and too faint on desktop.
   - Bundle: main bundle has no three.js (354 kB, grew from 286 kB because of the Phase 8 dashboards); the 3D engine is one lazy ~1.1 MB chunk (three + drei + postprocessing) loaded only when a scene draws; scene chunks 2–18 kB.
-- [ ] Phase 10 — Design and animation polish
+- [x] Phase 10 / user step 4 — Animations (framer-motion 11 via LazyMotion, tokens in `src/motion.ts` + CSS variables)
+  - Built: entrance page transitions, reveal on scroll, animated counters, tilt cards, word reveal + rotating word on Home, login floating labels + shake on error, sliding tab indicator (shared `layoutId`), search suggestion stagger + result layout animation + badge pulse, smooth map radius + selected-pin ring, request-sheet step slides, stepper liquid fill + current-step pulse + celebration ring + 2D confetti on Delivered, pharmacy incoming slide-in/glow/flip-out + tab count pop + KPI counters + order progress bars, doctor paper plane + animated patient search, admin counters + animated orders chart, status badge pop. "Reduce animations" and prefers-reduced-motion switch everything to instant (`MotionConfig`).
+  - Fix: page transitions used `AnimatePresence mode="wait"` with `useOutlet`; the exiting page re-rendered with the new URL (empty search, clicks lost) and broke the patient flow. Transitions are now entrance-only.
+  - Not done: the accepted pharmacy card only flips out (it does not fly into Current orders); inventory stock numbers do not count up.
+  - Verified: Vitest `motion.test.tsx` (4); full e2e 21/21 (the 3D viewer test now signs in by token, because the form login timed out once under software WebGL).
 - [ ] Phase 11 — Extras
 - [ ] Phase 12 — Quality and documentation
 
@@ -89,12 +96,12 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified: in the browser on the user's running dev server, /map now shows the key-rejected message, no "Invalid key" tiles, 1 pin and the attribution. Vitest (`map.test.tsx`, 6 tests): resolver (full URL, bare key, empty, `{s}`, style.json, malformed), fallback text. Playwright (`map.spec.ts`, 8 tests): no key → message + attribution + no external tile request; stand-in tiles 200 → tiles shown; 403 text → message; 403 + image (MapTiler behaviour) → tiles hidden + key message (repeated 5×, stable); no pharmacy in range → message → widen → Terreaux listed; geolocation denied; details popup; tracking map.
   - README started with the map-key section (where to get the key, full URL or bare key, restart, Allowed HTTP origins, keys are public).
 
-## Last check results (2026-10-22, after step 3)
+## Last check results (2026-10-22, after step 4)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
-- `npm test`: backend 95 + frontend 25 tests passed (local PG :5433, never Neon).
+- `npm test`: backend 95 + frontend 29 tests passed (local PG :5433, never Neon).
 - `npm run e2e`: 21 Playwright tests passed (5 cycle + 8 map + 4 patient + 4 3D in their own browser); test ports released.
-- 3D screenshots: 18/18 taken with software GL (`docs/screenshots/`, ~32 min); 7 re-taken after fixes.
+- 3D screenshots (step 3): 18/18 taken with software GL (`docs/screenshots/`, ~32 min); 7 re-taken after fixes.
 
 ## Known issues / To fix
 
@@ -109,7 +116,7 @@ Other known issues:
 - 3D in a real browser on a real GPU was not checked by me: all 3D verification used SwiftShader (software). Expect smoother motion and sharper post-processing on real hardware; very slow GPUs fall back automatically in Auto.
 - The 3D product label text looks slightly light (tone mapping + clearcoat); readable but could be darker.
 - PackImage (generated pack drawings): some labels overlap the green cross (syrup/"Hélicidine") or are slightly clipped (inhaler dosage); the pen drawing is rough. To polish in Phase 9.
-- Phases 9 (3D), 10 (animations: confetti on delivery, page transitions, etc.), 11 (printable order slip, onboarding tour, optional TOTP) and 12 (README, final docs, full acceptance checklist) are not done.
+- Phases 11 (printable order slip, onboarding tour, optional TOTP) and 12 (README, final docs, full acceptance checklist) are not done.
 - No README yet (Phase 12) — setup instructions live in `CLAUDE.md` for now.
 - The seeded incoming request (Bruno → Tournon) expires 30 minutes after `npm run db:reset` (the expiry job runs every minute while the API runs). Re-run `npm run db:reset` before a demo.
 - Search: "para" also matches "paraffine" (Dexeryl) as a lower-ranked substring result. Paracetamol results come first; acceptable but could be tightened.
@@ -137,5 +144,5 @@ Note: the user referred to "section 11b of claude_code_master_prompt.md"; that f
 
 ## Not done yet
 
-- Steps 2–7 of the user's list (see Next step).
+- Steps 5–7 of the user's list and the add-on plan (see Next step).
 - Optional TOTP for professionals (Phase 11) is not started.
