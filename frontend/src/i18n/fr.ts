@@ -56,7 +56,8 @@ export const fr = {
   'login.email': 'Adresse e-mail',
   'login.password': 'Mot de passe',
   'twoStep.title': 'Validation en deux étapes',
-  'twoStep.intro': 'Protégez votre compte professionnel : à chaque connexion, un code à 6 chiffres de votre application d’authentification (Google Authenticator, Microsoft Authenticator, Aegis…) est demandé en plus du mot de passe.',
+  'twoStep.intro':
+    'Protégez votre compte professionnel : à chaque connexion, un code à 6 chiffres de votre application d’authentification (Google Authenticator, Microsoft Authenticator, Aegis…) est demandé en plus du mot de passe.',
   'twoStep.on': 'Activée',
   'twoStep.off': 'Désactivée',
   'twoStep.start': 'Configurer',

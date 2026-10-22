@@ -148,7 +148,9 @@ export function ProductVisual(m: ProductVisualProps) {
   const onReady = useCallback(() => setReady(true), []);
   const [dark, light] = colorsFor(m.category);
   const show3D = can3D && mode === '3d';
-  const photo = <PackImage name={m.name} dosage={m.dosage} form={m.form} category={m.category} imageUrl={m.imageUrl} rx={m.requiresPrescription} />;
+  const photo = (
+    <PackImage name={m.name} dosage={m.dosage} form={m.form} category={m.category} imageUrl={m.imageUrl} rx={m.requiresPrescription} />
+  );
   const explodable = ['lozenge', 'tablet'].includes(m.form);
 
   return (

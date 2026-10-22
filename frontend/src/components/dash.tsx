@@ -223,15 +223,8 @@ export function Tabs<K extends string>({
   return (
     <div className="tabs" role="tablist" aria-label={label}>
       {tabs.map((tb) => (
-        <button
-          key={tb.key}
-          type="button"
-          role="tab"
-          className="tab-btn"
-          aria-selected={value === tb.key}
-          onClick={() => onChange(tb.key)}
-        >
-          {value === tb.key && <motion.span layoutId={`tab-${id}`}className="tab-indicator" transition={spring} />}
+        <button key={tb.key} type="button" role="tab" className="tab-btn" aria-selected={value === tb.key} onClick={() => onChange(tb.key)}>
+          {value === tb.key && <motion.span layoutId={`tab-${id}`} className="tab-indicator" transition={spring} />}
           <span className="tab-label">{tb.label}</span>
         </button>
       ))}

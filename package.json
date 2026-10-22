@@ -32,6 +32,7 @@
     "build": "npm run typecheck -w db && npm run build -w backend && npm run build -w frontend",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "npm run test -w backend && npm run test -w frontend",
     "dev": "node scripts/dev.mjs",
     "e2e": "tsx scripts/e2e.ts"

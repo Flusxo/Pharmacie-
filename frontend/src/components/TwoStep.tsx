@@ -28,7 +28,9 @@ function QrCode({ text, label }: { text: string; label: string }) {
   return (
     <svg className="qr" viewBox={`-4 -4 ${n + 8} ${n + 8}`} role="img" aria-label={label} shapeRendering="crispEdges">
       <rect x="-4" y="-4" width={n + 8} height={n + 8} fill="#fff" />
-      {cells.flatMap((row, r) => row.map((dark, c) => (dark ? <rect key={`${r}-${c}`} x={c} y={r} width="1" height="1" fill="#0b1f17" /> : null)))}
+      {cells.flatMap((row, r) =>
+        row.map((dark, c) => (dark ? <rect key={`${r}-${c}`} x={c} y={r} width="1" height="1" fill="#0b1f17" /> : null)),
+      )}
     </svg>
   );
 }
@@ -120,7 +122,13 @@ export function TwoStepSection({ user }: { user: User }) {
             </a>
             <div className="field">
               <label htmlFor="totp-code">{t('twoStep.code')}</label>
-              <input id="totp-code" className="input" {...codeProps} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} />
+              <input
+                id="totp-code"
+                className="input"
+                {...codeProps}
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+              />
             </div>
             <div className="row">
               <button type="button" className="btn secondary" onClick={() => setSetup(null)}>
@@ -140,11 +148,24 @@ export function TwoStepSection({ user }: { user: User }) {
           <div className="grid cols-2">
             <div className="field">
               <label htmlFor="totp-pw">{t('login.password')}</label>
-              <input id="totp-pw" className="input" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+              <input
+                id="totp-pw"
+                className="input"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <div className="field">
               <label htmlFor="totp-off-code">{t('twoStep.code')}</label>
-              <input id="totp-off-code" className="input" {...codeProps} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))} />
+              <input
+                id="totp-off-code"
+                className="input"
+                {...codeProps}
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+              />
             </div>
           </div>
           <button type="submit" className="btn secondary" disabled={busy || !password || code.length !== 6}>

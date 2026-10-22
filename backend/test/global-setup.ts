@@ -5,9 +5,13 @@ import { testDatabaseUrl } from '../../db/src/env.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const run = (...args: string[]) =>
-  execFileSync(process.execPath, [path.join(ROOT, 'node_modules', 'tsx', 'dist', 'cli.mjs'), path.join(ROOT, 'db', 'scripts', 'test-pg.ts'), ...args], {
-    encoding: 'utf8',
-  }).trim();
+  execFileSync(
+    process.execPath,
+    [path.join(ROOT, 'node_modules', 'tsx', 'dist', 'cli.mjs'), path.join(ROOT, 'db', 'scripts', 'test-pg.ts'), ...args],
+    {
+      encoding: 'utf8',
+    },
+  ).trim();
 
 let started = false;
 

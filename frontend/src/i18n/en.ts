@@ -56,7 +56,8 @@ export const en: Record<MessageKey, string> = {
   'login.email': 'Email address',
   'login.password': 'Password',
   'twoStep.title': 'Two-step verification',
-  'twoStep.intro': 'Protect your professional account: each time you log in, a 6-digit code from your authenticator app (Google Authenticator, Microsoft Authenticator, Aegis…) is asked for in addition to your password.',
+  'twoStep.intro':
+    'Protect your professional account: each time you log in, a 6-digit code from your authenticator app (Google Authenticator, Microsoft Authenticator, Aegis…) is asked for in addition to your password.',
   'twoStep.on': 'On',
   'twoStep.off': 'Off',
   'twoStep.start': 'Set up',

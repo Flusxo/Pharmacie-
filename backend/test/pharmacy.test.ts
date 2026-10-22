@@ -70,7 +70,7 @@ describe('pharmacy inventory', () => {
     for (const o of res.body.items) expect(o.patientName).toMatch(/^\S+ \S\.$/);
   });
 
-  it('opens one of its own orders for the printable slip, never another pharmacy\'s', async () => {
+  it("opens one of its own orders for the printable slip, never another pharmacy's", async () => {
     const t = await login('pharmacie.valence');
     const own = (await api().get('/api/pharmacy/orders?scope=all').set(auth(t))).body.items[0];
     const res = await api().get(`/api/pharmacy/orders/${own.id}`).set(auth(t));

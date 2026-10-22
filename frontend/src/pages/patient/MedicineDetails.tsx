@@ -48,7 +48,15 @@ export function MedicineDetailsPage() {
         ← {t('common.back')}
       </Link>
       <div className="details">
-        <ProductVisual name={m.name} dosage={m.dosage} form={m.form} category={m.category} cip13={m.cip13} imageUrl={m.imageUrl} requiresPrescription={m.requiresPrescription} />
+        <ProductVisual
+          name={m.name}
+          dosage={m.dosage}
+          form={m.form}
+          category={m.category}
+          cip13={m.cip13}
+          imageUrl={m.imageUrl}
+          requiresPrescription={m.requiresPrescription}
+        />
         <div className="stack">
           <div className="row" style={{ gap: 8 }}>
             <span className="badge neutral">{t(`cat.${m.category}` as MessageKey)}</span>

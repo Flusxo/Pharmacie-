@@ -45,7 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (email: string, password: string, code?: string) => {
-      const r = await api<{ token: string; user: User }>('/auth/login', { method: 'POST', body: { email, password, code: code || undefined } });
+      const r = await api<{ token: string; user: User }>('/auth/login', {
+        method: 'POST',
+        body: { email, password, code: code || undefined },
+      });
       acceptSession(r.token, r.user);
       return r.user;
     },

@@ -70,9 +70,7 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
         setNeedCode(true);
         return;
       }
-      setError(
-        err instanceof ApiError ? (err.code === 'totp_invalid' ? t('login.codeWrong') : err.message) : t('common.error'),
-      );
+      setError(err instanceof ApiError ? (err.code === 'totp_invalid' ? t('login.codeWrong') : err.message) : t('common.error'));
       setCode('');
       setShake((n) => n + 1);
     } finally {

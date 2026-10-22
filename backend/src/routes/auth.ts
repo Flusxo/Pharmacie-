@@ -160,7 +160,10 @@ authRouter.post('/register/pharmacy', registerLimiter, async (req, res) => {
   res.status(201).json({ token: signToken({ id, role: 'pharmacy' }), user: await getProfile(id) });
 });
 
-const totpCode = z.string().trim().regex(/^\d{6}$/, 'must be the 6-digit code from your authenticator app');
+const totpCode = z
+  .string()
+  .trim()
+  .regex(/^\d{6}$/, 'must be the 6-digit code from your authenticator app');
 
 authRouter.post('/login', loginLimiter, async (req, res) => {
   const body = z
@@ -217,7 +220,8 @@ authRouter.post('/login', loginLimiter, async (req, res) => {
       [u.id, lock ? 0 : failures, lock, RULES.LOCKOUT_MINUTES],
     );
     log('warn', 'login_failed', { user: maskEmail(body.email), locked: lock, totp: totpFailed });
-    if (totpFailed && !lock) throw new HttpError(401, 'The code is not correct or was already used. Wait for the next code.', 'totp_invalid');
+    if (totpFailed && !lock)
+      throw new HttpError(401, 'The code is not correct or was already used. Wait for the next code.', 'totp_invalid');
     throw new HttpError(401, GENERIC, 'invalid_credentials');
   }
   if (u.status === 'suspended') throw new HttpError(403, 'This account is suspended. Contact support.', 'account_suspended');
@@ -293,7 +297,8 @@ authRouter.post('/change-password', requireAuth, async (req, res) => {
 /* ---------- Two-step verification (TOTP) for professional accounts ---------- */
 
 function requirePro(role: Role) {
-  if (role === 'patient') throw new HttpError(403, 'Two-step verification is available for doctor, pharmacy and staff accounts.', 'forbidden');
+  if (role === 'patient')
+    throw new HttpError(403, 'Two-step verification is available for doctor, pharmacy and staff accounts.', 'forbidden');
 }
 
 /** Creates a new secret (not active until confirmed with a code). */

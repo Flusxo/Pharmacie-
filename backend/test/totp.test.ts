@@ -58,10 +58,16 @@ describe('two-step verification for professionals', () => {
   });
 
   it('enable refuses a wrong code with a clear 400, then accepts the app code', async () => {
-    const bad = await api().post('/api/auth/totp/enable').set(auth(token)).send({ code: '000000' === hotp(secret, stepAt(Date.now())) ? '111111' : '000000' });
+    const bad = await api()
+      .post('/api/auth/totp/enable')
+      .set(auth(token))
+      .send({ code: '000000' === hotp(secret, stepAt(Date.now())) ? '111111' : '000000' });
     expect(bad.status).toBe(400);
     expect(bad.body.error).toMatch(/code is not correct/);
-    const ok = await api().post('/api/auth/totp/enable').set(auth(token)).send({ code: hotp(secret, stepAt(Date.now())) });
+    const ok = await api()
+      .post('/api/auth/totp/enable')
+      .set(auth(token))
+      .send({ code: hotp(secret, stepAt(Date.now())) });
     expect(ok.status).toBe(200);
     expect(ok.body.user.totpEnabled).toBe(true);
   });
@@ -88,15 +94,23 @@ describe('two-step verification for professionals', () => {
   });
 
   it('a wrong password with a valid code still gets the generic message', async () => {
-    const res = await api().post('/api/auth/login').send({ email, password: 'Wrong-password-1', code: hotp(secret, stepAt(Date.now())) });
+    const res = await api()
+      .post('/api/auth/login')
+      .send({ email, password: 'Wrong-password-1', code: hotp(secret, stepAt(Date.now())) });
     expect(res.status).toBe(401);
     expect(res.body.error).toBe('Invalid email or password.');
   });
 
   it('disable needs the password and a code', async () => {
-    const noPass = await api().post('/api/auth/totp/disable').set(auth(token)).send({ password: 'nope', code: hotp(secret, stepAt(Date.now())) });
+    const noPass = await api()
+      .post('/api/auth/totp/disable')
+      .set(auth(token))
+      .send({ password: 'nope', code: hotp(secret, stepAt(Date.now())) });
     expect(noPass.status).toBe(400);
-    const res = await api().post('/api/auth/totp/disable').set(auth(token)).send({ password: PASSWORD, code: hotp(secret, stepAt(Date.now())) });
+    const res = await api()
+      .post('/api/auth/totp/disable')
+      .set(auth(token))
+      .send({ password: PASSWORD, code: hotp(secret, stepAt(Date.now())) });
     expect(res.status).toBe(200);
     expect(res.body.user.totpEnabled).toBe(false);
     expect((await loginRaw(email)).status).toBe(200);
@@ -106,7 +120,10 @@ describe('two-step verification for professionals', () => {
     const e2 = 'pharmacie.romans@pharmacie.test';
     const t = (await loginRaw(e2)).body.token;
     const s = base32Decode((await api().post('/api/auth/totp/setup').set(auth(t))).body.secret);
-    await api().post('/api/auth/totp/enable').set(auth(t)).send({ code: hotp(s, stepAt(Date.now())) });
+    await api()
+      .post('/api/auth/totp/enable')
+      .set(auth(t))
+      .send({ code: hotp(s, stepAt(Date.now())) });
     const good = new Set([-1, 0, 1].map((d) => hotp(s, stepAt(Date.now()) + d)));
     const wrong = ['000001', '000002', '000003', '000004', '000005', '000006'].filter((c) => !good.has(c)).slice(0, 5);
     for (const c of wrong) expect((await loginRaw(e2, c)).status).toBe(401);

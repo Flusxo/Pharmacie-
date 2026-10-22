@@ -85,7 +85,15 @@ export function PackImage({ name, dosage, form, category, imageUrl, rx, size, cl
       <path d={`M${lb.x} ${lb.y + 7}a7 7 0 0 1 7 -7h${lb.w - 14}a7 7 0 0 1 7 7v${band - 7}h-${lb.w}z`} fill={dark} />
       <Cross x={lb.x + 9} y={lb.y + band / 2 + 0.5} s={8} fill="#fff" />
       {rx && (
-        <text x={lb.x + lb.w - 5} y={lb.y + band - 3} textAnchor="end" fontSize="8" fontWeight="800" fill="#fff" fontFamily="Inter Variable, system-ui, sans-serif">
+        <text
+          x={lb.x + lb.w - 5}
+          y={lb.y + band - 3}
+          textAnchor="end"
+          fontSize="8"
+          fontWeight="800"
+          fill="#fff"
+          fontFamily="Inter Variable, system-ui, sans-serif"
+        >
           Rx
         </text>
       )}

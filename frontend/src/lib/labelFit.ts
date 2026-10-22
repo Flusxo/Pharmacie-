@@ -25,7 +25,7 @@ export const estimateWidth: Measure = (text, size, weight) => {
   let em = 0;
   for (const ch of text) {
     if (ch === ' ') em += 0.28;
-    else if ('iljI.,;:!|\'’'.includes(ch)) em += 0.3;
+    else if ("iljI.,;:!|'’".includes(ch)) em += 0.3;
     else if ('frt()/-'.includes(ch)) em += 0.4;
     else if ('mwMW%'.includes(ch)) em += 0.9;
     else if (/[0-9]/.test(ch)) em += 0.62;
@@ -37,7 +37,9 @@ export const estimateWidth: Measure = (text, size, weight) => {
 
 const interLoaded = (weight: number) => {
   try {
-    return typeof document !== 'undefined' && !!document.fonts?.check(`${weight} 12px "Inter Variable"`) && document.fonts.status === 'loaded';
+    return (
+      typeof document !== 'undefined' && !!document.fonts?.check(`${weight} 12px "Inter Variable"`) && document.fonts.status === 'loaded'
+    );
   } catch {
     return false;
   }

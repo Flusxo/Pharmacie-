@@ -24,7 +24,11 @@ const tokens = {};
 for (const width of widthsArg.split(',').map(Number)) {
   for (const pg of pages) {
     if (filter && !pg.name.includes(filter)) continue;
-    const ctx = await b.newContext({ viewport: { width, height: width < 500 ? 780 : 900 }, colorScheme: scheme, locale: lang === 'fr' ? 'fr-FR' : 'en-GB' });
+    const ctx = await b.newContext({
+      viewport: { width, height: width < 500 ? 780 : 900 },
+      colorScheme: scheme,
+      locale: lang === 'fr' ? 'fr-FR' : 'en-GB',
+    });
     let token = null;
     if (pg.who) {
       if (!tokens[pg.who]) {
@@ -51,7 +55,10 @@ for (const width of widthsArg.split(',').map(Number)) {
         await p.waitForLoadState('networkidle');
       }
       if (pg.link) {
-        const href = await p.evaluate((src) => [...document.querySelectorAll('a')].map((a) => a.getAttribute('href')).find((h) => h && new RegExp(src).test(h)), pg.link.source);
+        const href = await p.evaluate(
+          (src) => [...document.querySelectorAll('a')].map((a) => a.getAttribute('href')).find((h) => h && new RegExp(src).test(h)),
+          pg.link.source,
+        );
         if (href) {
           await p.goto(base + href);
           await p.waitForLoadState('networkidle');
@@ -72,7 +79,9 @@ for (const width of widthsArg.split(',').map(Number)) {
       }
       const strip = await ctx.newPage();
       await strip.setViewportSize({ width: Math.min(frames.length * (width + 8), 6000), height: vh });
-      await strip.setContent(`<body style="margin:0;display:flex;gap:8px;background:#f0f">${frames.map((f) => `<img src="data:image/png;base64,${f}" style="width:${width}px;height:${vh}px">`).join('')}</body>`);
+      await strip.setContent(
+        `<body style="margin:0;display:flex;gap:8px;background:#f0f">${frames.map((f) => `<img src="data:image/png;base64,${f}" style="width:${width}px;height:${vh}px">`).join('')}</body>`,
+      );
       await strip.screenshot({ path: `${out}/${pg.name}-${width}-${scheme}-${lang}.png` });
       console.log(pg.name, width, scheme, lang, overflow > 0 ? `HORIZONTAL OVERFLOW ${overflow}px` : 'ok');
     } catch (e) {

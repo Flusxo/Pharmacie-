@@ -4,7 +4,14 @@ import { one, pool, query, tx } from '../db.js';
 import { badRequest, notFound } from '../errors.js';
 import { requireRole } from '../middleware/auth.js';
 import { addRoutes } from '../openapi.js';
-import { decideCancellation, getPharmacyOrder, listIncoming, listPharmacyOrders, updateOrderStatus, type OrderStatus } from '../services/orders.js';
+import {
+  decideCancellation,
+  getPharmacyOrder,
+  listIncoming,
+  listPharmacyOrders,
+  updateOrderStatus,
+  type OrderStatus,
+} from '../services/orders.js';
 import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
 import { idParam, uuid } from '../validate.js';

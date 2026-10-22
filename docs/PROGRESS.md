@@ -4,7 +4,7 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Next step (where the last session stopped)
 
-User steps 1–6 are done and committed (dashboards, map, site-wide 3D, animations, pack labels + design pass, extras). **Next: step 7** (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
+User steps 1–7 are done and committed (dashboards, map, site-wide 3D, animations, pack labels + design pass, extras, README + checks). **Next: the add-on plan below, Part A first** (extras, Phase 11), step 7 (README, npm audit, final report, Phase 12), then the **add-on plan** below. Commit after each step/part only when build, lint and tests pass.
 
 ### Add-on plan (requested 2026-10-22, starts after step 7)
 
@@ -96,7 +96,22 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Added: optional two-step verification (TOTP) for doctor, pharmacy and staff accounts (account page: QR code + key + otpauth link, confirm with a code; login asks for the code; turn off with password + code); migration `003_totp.sql` (applied to Neon with `npm run db:migrate`, additive). Printable order slip for patient and pharmacy (`/orders/:id/print`, print CSS). First-visit onboarding tour for patients (3 steps, replay from the account page).
   - Verified: backend `totp.test.ts` (10: RFC 6238 vectors, base32, encrypted storage, patients refused, setup stays off until confirmed, wrong code 400, login needs code, wrong / reused code refused, fresh code accepted, wrong password generic, disable needs password + code, 5 wrong codes lock); `pharmacy.test.ts` slip endpoint (own order, "First L.", no coordinates, other pharmacy 404). Playwright `extras.spec.ts` (3): pharmacy turns on TOTP in the UI, logs out, must enter a code computed like an authenticator app; tour shows 3 steps on the real controls and only once; patient and pharmacy slips (pharmacy sees "First L."). Slip checked visually on the dev server.
   - Not done: TOTP recovery codes and staff reset of a lost authenticator.
-- [ ] Phase 12 — Quality and documentation
+- [x] Phase 12 / user step 7 — Quality and documentation
+  - Ran: `npm run lint` (clean), `npm run format` (20 files reformatted, `npm run format:check` added), `npm run build` (typecheck + production build), `npm test`, `npm run e2e`, `npm audit` (0 vulnerabilities, dev and prod).
+  - README rewritten: what it is, the 8 rules, both database routes (Neon / local bundled PostgreSQL), map key setup, demo accounts, two-step verification, API groups (80 routes, OpenAPI at `/api/docs`), a 10-step demo script, troubleshooting (port in use, `vite` not found, map key errors, "Internal server error" = database unreachable, Node version), what is simulated.
+  - Acceptance checklist (master prompt), status and how it was checked:
+    1. Fresh clone → install → db:reset → dev: **not re-run from a fresh clone yet** (planned in Part F). A fresh clone needs one edit in `.env`: the Neon URL or the local URL line (README says so).
+    2. Alice: "para" / "dolliprane", details with 3D/Photo, map, choose Pharmacie du Rhône, send: Playwright `patient.spec.ts`, `three.spec.ts`, `map.spec.ts`; real tiles seen on the dev server.
+    3. Tournon accepts and moves to Delivered, Alice's page follows, simulated courier, confetti: `cycle.spec.ts`.
+    4. Rx needs statement or doctor link; no Buy wording: backend lifecycle tests, `patient.spec.ts`, wording checks in Vitest and Playwright.
+    5. Second pharmacy cannot accept; refusal returns to Alice: backend concurrency and refusal tests.
+    6. dr.martin: Alice/Bruno OK, Camille/David refused: backend tests + `cycle.spec.ts`.
+    7. Pending doctor/pharmacy blocked until admin/moderator verifies; support cannot: backend admin tests + `cycle.spec.ts`.
+    8. Staff login from the login page; generic wrong-password message; lockout after 5: backend auth tests + `patient.spec.ts`.
+    9. Map with and without a key; no key in git history: `map.spec.ts`; `git log -p --all` shows only the fake test key `AbCdEf…`, no Neon host, no `.env`.
+    10. Dark mode, fr/en, 360 px, reduced motion, no-WebGL fallback: design sweep (step 5), `three.spec.ts` (reduced motion, Graphics Off), `three.test.tsx` (no WebGL).
+    11. Tests, build, lint: pass (see "Last check results").
+    12. Clean repository; README demo script run exactly as written: repository clean after each commit; **the demo script has not been replayed by hand end to end** (each step is covered by the tests above). Planned in Part F.
 
 - [x] User step 2 — Map tiles and pins
   - **Finding**: the user's `VITE_MAP_TILE_URL` contains a bare 20-character key (not a URL), and **MapTiler rejects that key**: HTTP 403 "Invalid key" for every tile, with or without a browser origin (checked with a direct request, status only). MapTiler sends that error as a PNG picture saying "Invalid key", which Leaflet counts as a loaded tile, so before this fix the map showed "Invalid key" pictures and no warning. **The user must paste a valid key** (MapTiler Account → API keys). Real tiles are therefore still NOT verified.
@@ -105,7 +120,7 @@ The full API is listed at `/api/docs` (72 paths). Design notes are in `docs/DECI
   - Verified: in the browser on the user's running dev server, /map now shows the key-rejected message, no "Invalid key" tiles, 1 pin and the attribution. Vitest (`map.test.tsx`, 6 tests): resolver (full URL, bare key, empty, `{s}`, style.json, malformed), fallback text. Playwright (`map.spec.ts`, 8 tests): no key → message + attribution + no external tile request; stand-in tiles 200 → tiles shown; 403 text → message; 403 + image (MapTiler behaviour) → tiles hidden + key message (repeated 5×, stable); no pharmacy in range → message → widen → Terreaux listed; geolocation denied; details popup; tracking map.
   - README started with the map-key section (where to get the key, full URL or bare key, restart, Allowed HTTP origins, keys are public).
 
-## Last check results (2026-10-22, after step 6)
+## Last check results (2026-10-22, after step 7)
 
 - `npm run build`: exit 0. `npm run lint`: exit 0.
 - `npm test`: backend 106 + frontend 33 tests passed (local PG :5433, never Neon).
@@ -125,9 +140,7 @@ Other known issues:
 - 3D in a real browser on a real GPU was not checked by me: all 3D verification used SwiftShader (software). Expect smoother motion and sharper post-processing on real hardware; very slow GPUs fall back automatically in Auto.
 - The 3D product label text looks slightly light (tone mapping + clearcoat); readable but could be darker.
 - PackImage drawings are flat SVG illustrations; realistic rendered pictures are add-on Part G.
-- Phase 12 (README, final docs, full acceptance checklist) is not done.
 - Once (2026-10-22) the dev API (:4000) stopped without a log line after several quick back-to-back `tsx watch` restarts while backend files were being edited; the frontend kept running and showed proxy errors. Restarting `npm run dev` fixed it; not reproduced.
-- No README yet (Phase 12) — setup instructions live in `CLAUDE.md` for now.
 - The seeded incoming request (Bruno → Tournon) expires 30 minutes after `npm run db:reset` (the expiry job runs every minute while the API runs). Re-run `npm run db:reset` before a demo.
 - Search: "para" also matches "paraffine" (Dexeryl) as a lower-ranked substring result. Paracetamol results come first; acceptable but could be tightened.
 - The JWT is stored in `localStorage` (simple for a prototype; an httpOnly cookie would be safer against XSS).
@@ -154,5 +167,5 @@ Note: the user referred to "section 11b of claude_code_master_prompt.md"; that f
 
 ## Not done yet
 
-- Step 7 of the user's list and the add-on plan (see Next step).
+- The add-on plan (see Next step). Fresh-clone check and a hand replay of the README demo script (Part F).
 - TOTP recovery codes / staff reset of a lost authenticator.

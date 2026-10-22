@@ -43,7 +43,9 @@ describe('pack labels', () => {
   });
 
   it('prints the Rx mark only for prescription medicines', () => {
-    const { container, rerender } = render(<PackImage name="Augmentin 1 g/125 mg" dosage="1 g / 125 mg" form="sachet" category="antibiotics" rx />);
+    const { container, rerender } = render(
+      <PackImage name="Augmentin 1 g/125 mg" dosage="1 g / 125 mg" form="sachet" category="antibiotics" rx />,
+    );
     expect(container.textContent).toContain('Rx');
     rerender(<PackImage name="Smecta 3 g" dosage="3 g" form="sachet" category="digestion" />);
     expect(container.textContent).not.toContain('Rx');

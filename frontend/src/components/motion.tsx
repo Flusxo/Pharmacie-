@@ -22,7 +22,13 @@ export function AnimatedOutlet() {
       key={location.pathname}
       initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
       // transitionEnd clears transform/filter: they would otherwise trap position:fixed dialogs inside the page.
-      animate={{ opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: duration.base, ease: easeOut }, transitionEnd: { filter: 'none', transform: 'none' } }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        transition: { duration: duration.base, ease: easeOut },
+        transitionEnd: { filter: 'none', transform: 'none' },
+      }}
     >
       {outlet}
     </motion.div>

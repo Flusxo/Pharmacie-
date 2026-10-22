@@ -1938,7 +1938,9 @@ table.table {
   height: 7px;
   border-radius: 50%;
   background: var(--line);
-  transition: background var(--dur-base), transform var(--dur-base);
+  transition:
+    background var(--dur-base),
+    transform var(--dur-base);
 }
 .tour-dots span.on {
   background: var(--accent);
