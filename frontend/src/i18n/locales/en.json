@@ -837,5 +837,7 @@
   "pub.band.faq.t": "Simple answers",
   "pub.band.faq": "And if a question is missing, write to us.",
   "pub.formsTitle": "All the forms",
-  "app.emptyArt": "Illustration"
+  "app.emptyArt": "Illustration",
+  "waking.title": "Waking up the server…",
+  "waking.body": "The free server was asleep and is starting again; this can take up to a minute. Nothing is lost."
 }

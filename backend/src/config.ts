@@ -12,6 +12,7 @@ const schema = z.object({
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
   JWT_EXPIRES_IN: z.string().default('8h'),
   PORT: z.coerce.number().int().positive().default(4000),
+  /** The hosted site's address; several allowed, separated by commas (the first one is used in e-mail links). */
   FRONTEND_URL: z.string().default('http://localhost:5173'),
 });
 
@@ -22,6 +23,11 @@ if (!parsed.success) {
 }
 
 export const config = parsed.data;
+/** Addresses allowed by CORS, without trailing slash. */
+export const FRONTEND_ORIGINS = config.FRONTEND_URL.split(',')
+  .map((s) => s.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+export const PRIMARY_FRONTEND = FRONTEND_ORIGINS[0] ?? 'http://localhost:5173';
 export const isTest = config.NODE_ENV === 'test';
 export const isProd = config.NODE_ENV === 'production';
 

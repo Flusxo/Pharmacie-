@@ -1,4 +1,5 @@
-/** Thin fetch wrapper. Always relative /api (proxied by Vite), never a hard-coded host. */
+/** Thin fetch wrapper. Relative /api in development (proxied by Vite); VITE_API_URL when the backend is hosted elsewhere. */
+import { REMOTE_API, apiUrl, setWaking } from './apiBase';
 
 export class ApiError extends Error {
   constructor(
@@ -48,7 +49,7 @@ export async function api<T>(
   path: string,
   opts: { method?: string; body?: unknown; query?: Query; signal?: AbortSignal } = {},
 ): Promise<T> {
-  let url = `/api${path}`;
+  let url = apiUrl(path);
   if (opts.query) {
     const qs = new URLSearchParams();
     for (const [k, v] of Object.entries(opts.query)) if (v !== undefined && v !== null && v !== '') qs.set(k, String(v));
@@ -59,14 +60,16 @@ export async function api<T>(
   if (opts.body !== undefined) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token}`;
 
+  const method = opts.method ?? 'GET';
+  const init: RequestInit = {
+    method,
+    headers,
+    body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+    signal: opts.signal,
+  };
   let res: Response;
   try {
-    res = await fetch(url, {
-      method: opts.method ?? 'GET',
-      headers,
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
-      signal: opts.signal,
-    });
+    res = await fetchAwake(url, init, method === 'GET');
   } catch (err) {
     if ((err as Error).name === 'AbortError') throw err;
     throw new ApiError(0, translate(apiLang, 'api.network'), 'network');
@@ -92,4 +95,29 @@ export async function api<T>(
     throw new ApiError(res.status, body.error ?? translate(apiLang, 'api.failed', { status: res.status }), body.code, body.details);
   }
   return data as T;
+}
+
+/**
+ * Fetch that copes with a sleeping free backend: when the answer takes more than 4 s the "waking up the
+ * server" banner shows, and a GET that fails with a network error or a gateway error (502/503/504, what the
+ * host answers while the service starts) is retried every 4 s for about a minute and a half.
+ */
+export async function fetchAwake(url: string, init: RequestInit, retry: boolean): Promise<Response> {
+  if (!REMOTE_API) return fetch(url, init);
+  const timer = setTimeout(() => setWaking(true), 4000);
+  try {
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        const res = await fetch(url, init);
+        if (![502, 503, 504].includes(res.status) || !retry || attempt >= 22) return res;
+      } catch (err) {
+        if ((err as Error).name === 'AbortError' || !retry || attempt >= 22) throw err;
+      }
+      setWaking(true);
+      await new Promise((r) => setTimeout(r, 4000));
+    }
+  } finally {
+    clearTimeout(timer);
+    setWaking(false);
+  }
 }

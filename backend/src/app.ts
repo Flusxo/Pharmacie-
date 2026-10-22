@@ -3,7 +3,7 @@ import express, { type Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
-import { config, isProd } from './config.js';
+import { FRONTEND_ORIGINS, isProd } from './config.js';
 import { pool } from './db.js';
 import { errorHandler, notFoundHandler } from './errors.js';
 import { log } from './logger.js';
@@ -64,6 +64,8 @@ export function createApp(): Express {
 
   app.use(
     helmet({
+      // The site is hosted on another address and calls this API from the browser.
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
       contentSecurityPolicy: {
         directives: {
           // Swagger UI at /api/docs needs inline styles.
@@ -73,7 +75,7 @@ export function createApp(): Express {
       },
     }),
   );
-  app.use(cors({ origin: [config.FRONTEND_URL], credentials: false }));
+  app.use(cors({ origin: FRONTEND_ORIGINS, credentials: false }));
   app.use(express.json({ limit: '1mb' }));
 
   app.get('/api/health', async (_req, res) => {

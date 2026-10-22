@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { specialityLabel, useI18n } from '../i18n';
 import { ApiError, api, getToken } from '../lib/api';
+import { apiUrl } from '../lib/apiBase';
 import { useAuth, useChangeLanguage } from '../lib/auth';
 import { useSettings, type GraphicsPref, type ThemePref } from '../lib/settings';
 import { useToast } from '../lib/toast';
@@ -49,7 +50,7 @@ export function ProfilePage() {
   };
 
   const exportData = async () => {
-    const res = await fetch('/api/patient/export', { headers: { Authorization: `Bearer ${getToken()}` } });
+    const res = await fetch(apiUrl('/patient/export'), { headers: { Authorization: `Bearer ${getToken()}` } });
     const blob = await res.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);

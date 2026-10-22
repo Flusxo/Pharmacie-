@@ -837,5 +837,7 @@
   "pub.band.faq.t": "Des réponses simples",
   "pub.band.faq": "Et si une question manque, écrivez-nous.",
   "pub.formsTitle": "Tous les formats",
-  "app.emptyArt": "Illustration"
+  "app.emptyArt": "Illustration",
+  "waking.title": "Réveil du serveur…",
+  "waking.body": "Le serveur gratuit était en veille ; il redémarre, cela peut prendre jusqu’à une minute. Rien n’est perdu."
 }

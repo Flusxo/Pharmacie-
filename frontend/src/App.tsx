@@ -11,6 +11,7 @@ import { LocationProvider } from './lib/location';
 import { ToastProvider } from './lib/toast';
 import type { Role } from './lib/types';
 import { Layout } from './components/Layout';
+import { WakingBanner } from './components/WakingBanner';
 import { RootStage } from './components/three/ThreeVisuals';
 import { LoginPage } from './pages/Login';
 import { RegisterPage, ForgotPasswordPage, ResetPasswordPage } from './pages/Register';
@@ -245,6 +246,7 @@ export function App() {
                 <ToastProvider>
                   <BrowserRouter>
                     <RootStage />
+                    <WakingBanner />
                     <AppRoutes />
                   </BrowserRouter>
                 </ToastProvider>

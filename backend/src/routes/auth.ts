@@ -3,7 +3,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
-import { RULES, config, isTest } from '../config.js';
+import { PRIMARY_FRONTEND, RULES, isTest } from '../config.js';
 import { one, pool, tx, type Db } from '../db.js';
 import { HttpError, badRequest, conflict } from '../errors.js';
 import { requireAuth, signToken, type Role } from '../middleware/auth.js';
@@ -268,7 +268,7 @@ authRouter.post('/forgot-password', resetLimiter, async (req, res) => {
     sendMail(
       email,
       tr('Reset your password', u.language),
-      tr(`Use this link within ${RULES.RESET_TOKEN_MINUTES} minutes: ${config.FRONTEND_URL}/reset-password?token=${token}`, u.language),
+      tr(`Use this link within ${RULES.RESET_TOKEN_MINUTES} minutes: ${PRIMARY_FRONTEND}/reset-password?token=${token}`, u.language),
     );
   }
   // Same answer whether or not the email exists.
