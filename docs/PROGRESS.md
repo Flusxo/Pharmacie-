@@ -182,6 +182,6 @@ Note: the user referred to "section 11b of claude_code_master_prompt.md"; that f
 
 ## Hosting preparation (2026-10-22)
 
-- Done: CORS from `FRONTEND_URL` (comma list, tested), helmet CORP cross-origin, `VITE_API_URL` (empty = Vite proxy as before), "Waking up the server" banner + GET retry on 502/503/504 (unit-tested), `frontend/public/_redirects`, `DEPLOY.md` (exact Render + Cloudflare form values, variable names only).
+- Done: CORS from `FRONTEND_URL` (comma list, tested), helmet CORP cross-origin, `VITE_API_URL` (empty = Vite proxy as before), "Waking up the server" banner + GET retry on 502/503/504 (unit-tested), `wrangler.jsonc` (Cloudflare Workers static assets, SPA fallback), `DEPLOY.md` (exact Render + Cloudflare form values, variable names only).
 - Not verified: anything on real Render / Cloudflare; the push to GitHub (`Flusxo/Pharmacie-`, branch `main`, remote has only an "Initial commit" README) was not done yet.
 - Still pending from before: 7680 px hero stills (changes reverted so tests stay green), 8-page screenshot verification, Parts G, E, F.

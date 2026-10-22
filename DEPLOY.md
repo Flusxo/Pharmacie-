@@ -6,7 +6,7 @@ Three free services work together:
 | --- | --- | --- |
 | Database | Neon (already in use) | yes |
 | Backend (API) | Render, "Web Service" | yes, **falls asleep after ~15 min without visits** and takes up to a minute to wake |
-| Frontend (website) | Cloudflare Pages | yes |
+| Frontend (website) | Cloudflare Workers (static assets) | yes |
 
 > Prototype only. Not for real medical use. Demo data. Never put real patient data on this deployment.
 
@@ -54,40 +54,44 @@ The server listens on the `PORT` that Render provides (do **not** create a `PORT
 | `DATABASE_URL` | `<your Neon connection string>` | Neon console → Connect → connection string, must end with `?sslmode=require` (same value as in your local `.env`) | **yes** |
 | `JWT_SECRET` | `<long random text>` | click Render's **Generate** button (or run `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` and paste the result) | **yes** |
 | `JWT_EXPIRES_IN` | `8h` | type it (optional) | no |
-| `FRONTEND_URL` | `https://<your-site>.pages.dev` | the address Cloudflare gives you in step 4, **no trailing slash**. Several addresses are allowed, separated by commas. Only these addresses may call the API (CORS). | no |
+| `FRONTEND_URL` | `https://pharmacie.<your-account>.workers.dev` | the address Cloudflare gives you in step 4, **no trailing slash**. Several addresses are allowed, separated by commas. Only these addresses may call the API (CORS). | no |
 
 Because the free backend does not know the final site address until step 4, deploy once, then come back and set `FRONTEND_URL`, then **Save** (Render restarts the service).
 
 Check it: open `https://<your-service>.onrender.com/api/health`. It must show `"status":"ok"`. (The first visit after a pause takes up to a minute.) `/api/docs` is intentionally not available in production.
 
-## 4. Frontend on Cloudflare Pages
+## 4. Frontend on Cloudflare (Workers static assets)
 
-Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → `Flusxo/Pharmacie-`.
+The repository has a `wrangler.jsonc` at its root (Worker name **`pharmacie`**, files from `frontend/dist`, every unknown address answers with the app so page refresh works). It holds no secret.
+
+Cloudflare dashboard → **Workers & Pages** → the Worker **pharmacie** → **Settings** → **Builds** (connect `Flusxo/Pharmacie-`, branch `main`). If the Worker does not exist yet: **Create** → **Import a repository** and give it the name `pharmacie`.
 
 | Field | Value |
 | --- | --- |
-| Production branch | `main` |
-| Framework preset | `None` (React (Vite) also works if you set the two fields below yourself) |
-| Root directory (advanced) | *(leave empty)* |
+| Git branch | `main` |
+| Root directory | `/` (the repository root, where `wrangler.jsonc` is) |
 | Build command | `npm ci && npm run build -w frontend` |
-| Build output directory | `frontend/dist` |
+| Deploy command | `npx wrangler deploy` |
 
-### Environment variables on Cloudflare (Settings → Variables and Secrets, "Production")
+### Variables: Settings → Builds → **Build variables and secrets**
+
+All three are **Build** variables (they are read while the website is built, not at run time). Do not put them under the Worker's run-time "Variables and Secrets".
 
 | Name | Value | Where the value comes from | Secret? |
 | --- | --- | --- | --- |
 | `NODE_VERSION` | `22` | type it | no |
-| `VITE_API_URL` | `https://<your-service>.onrender.com` | the address of your Render service (step 3), **no trailing slash, no `/api`** | no (public, it is in the website code) |
-| `VITE_MAP_TILE_URL` | `https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=<your-maptiler-key>` | your local `.env` (same line) — optional; without it the map shows "Map tiles are not configured" but pins still work | the key is **visible in the browser** whatever you do: restrict it to your site address in the MapTiler account page |
+| `VITE_API_URL` | `https://<your-service>.onrender.com` | the address of your Render service (step 3), **no trailing slash, no `/api`** | no (public: it is in the website code) |
+| `VITE_MAP_TILE_URL` | `https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=<your-maptiler-key>` | your local `.env` (same line), optional; without it the map shows "Map tiles are not configured" but pins still work | the key is **visible in the browser** whatever you do: restrict it to your site address in your MapTiler account |
 
-Everything starting with `VITE_` is baked into the website at build time: change it, then **Retry deployment**.
-Page refresh on any address (e.g. `/search`) works thanks to `frontend/public/_redirects`.
+Everything starting with `VITE_` is baked into the website at build time: change it, then trigger a new build (Deployments → Retry, or push a commit).
 
-After the first deployment, copy your site address (`https://<project>.pages.dev`) into `FRONTEND_URL` on Render (step 3).
+Your site address is `https://pharmacie.<your-account>.workers.dev`. Copy it into `FRONTEND_URL` on Render (step 3, no trailing slash).
+
+From your own PC (optional, needs `wrangler login` once): `npm run build -w frontend` then `npx wrangler deploy`.
 
 ## 5. Check that it works
 
-1. Open your `.pages.dev` address. If the backend was asleep, a banner says **"Waking up the server…"** (up to a minute), then the site works.
+1. Open your `.workers.dev` address. If the backend was asleep, a banner says **"Waking up the server…"** (up to a minute), then the site works.
 2. Log in with a demo account (see the README demo script).
 3. If login shows "The server cannot be reached": `VITE_API_URL` is wrong, or `FRONTEND_URL` on Render is not exactly your site address (CORS).
 
