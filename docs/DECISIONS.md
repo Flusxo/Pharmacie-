@@ -110,3 +110,19 @@ Each entry: what was chosen and why.
 - **Copy**: honest prototype copy in both languages under `pub.*` (generated together so fr/en never diverge). Contact details are explicitly fictional (`.example` domain, "adresse fictive"). No invented team members. The hard-rule test forbids "panier" / "acheter" / "buy now" anywhere, so the copy says "nothing to order online" instead.
 - **Contact form**: validated in the browser and by the API (zod), honeypot field, must confirm "no health data", rate limited (10 / hour / network), stored in `contact_messages` (migration 006, applied to Neon) with the page language; logs keep only a masked email. Staff see the messages in a new "Messages" tab (filter open / handled / all, "Mark as handled", audited) and an "open messages" KPI. No email is sent (prototype).
 - **Still illustrations** (`components/public/HeroArt.tsx`, our own SVG): one per page; they are the hero visual until Part C adds the 3D scenes, and stay as the fallback afterwards.
+
+## How it works walkthrough (add-on Part B)
+
+- **One source of truth** (`frontend/src/lib/flow.ts`): for a scroll progress 0–5 it says which object travels on which link (patient → counter. → only the chosen pharmacy, answer back, payment after acceptance, delivery), the 30-minute countdown, the box being prepared and how far the status tracker is. The SVG diagram and the 3D scene both draw from it, so they cannot disagree.
+- **3D with an exact overlay**: the 3D version uses an orthographic camera fitted to the SVG's 600 × 280 box (new `ortho` option of `Scene3D`), so the HTML/SVG labels and the tracker stay crisp and line up with the 3D nodes. The SVG drawing is the fallback and is what Graphics Off / Low / no WebGL users see.
+- **Scroll mechanics**: framer-motion `useScroll` on the list of steps (trigger line at 60 % of the viewport); the steps stay a real `<ol>` for screen readers and keyboard users, the stage is `position: sticky` (pinned on phones under the top bar). Reduced motion: each step shows its end state, nothing travels.
+
+## 3D on every public page (add-on Part C / C2)
+
+- **Shared scene manager**: one canvas (`three/PageScene.tsx`) fixed behind the public site and kept mounted across client-side navigation; each route maps to a composition (`three/compositions.ts`: home, how, patients, pharmacies, doctors, about, contact, faq, legal, auth). On a page change the old composition shrinks away and the new one grows in — no WebGL re-initialisation. Shared procedural models and textures (`three/models.tsx`), so pages cost no downloads.
+- **Interaction**: page scroll moves the camera down (items at the sides further down appear), spins / drifts items and pulls capsule halves apart over the first screen; pointer and phone tilt (deviceorientation where the browser allows it without a prompt; iOS keeps scroll + pointer) give eased parallax.
+- **Login / sign-up**: richer composition (labelled amber and pill bottles, blister, split capsules, tablets, green cross) placed under the heading so text stays clear; forms are glass panels and usable before the 3D loads (tested).
+- **After login**: the existing calmer background (`BackgroundScene`) stays.
+- **Performance choices**: the full-screen layer never runs post-processing (ambient occlusion on a full viewport would cost the 60 fps target); High still gets glass transmission on the models; DPR ≤ 1.5; pauses off-screen; Auto keeps the existing frame-rate guard and software-GPU → Low rule. On phones only one canvas draws (the How it works diagram wins over the background there).
+- **Fallbacks**: the page's still illustration (`HeroArt`) stays in place and fades out only once the 3D layer has drawn its first frame; Graphics Off / Low, no WebGL or a WebGL error keep the illustration (tested).
+- **Not done here**: a pinned image scrollytelling section on the public Home comes with the rendered pictures (Part D).

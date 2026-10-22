@@ -24,6 +24,34 @@ test.describe('3D layer', () => {
     expect(scripts.filter((u) => /ProductScene|HeroScene|ExtraScenes/.test(u))).toEqual([]);
   });
 
+  test('public site: one shared 3D layer, a composition per page; forms work while it loads; Off shows the still art', async ({ page }) => {
+    await page.goto('/login');
+    // The form is usable at once, whatever the 3D layer is doing.
+    await page.getByLabel('Adresse e-mail').fill('alice@pharmacie.test');
+    await expect(page.getByLabel('Adresse e-mail')).toHaveValue('alice@pharmacie.test');
+    const layer = page.getByTestId('page-backdrop');
+    await expect(layer).toHaveAttribute('data-scene', 'auth');
+
+    await page.goto('/');
+    await expect(layer).toHaveAttribute('data-scene', 'home');
+    await expect(layer).toHaveAttribute('data-mode', '3d');
+    await expect(layer.locator('canvas')).toHaveCount(1, { timeout: 60_000 });
+    await page.evaluate(() => ((window as unknown as { __c: Element | null }).__c = document.querySelector('.page-bg canvas')));
+    // Client-side navigation keeps the same canvas (shared scene manager) and switches the composition.
+    await page.getByRole('navigation', { name: 'Navigation du site' }).getByRole('link', { name: 'Pharmacies' }).click();
+    await expect(layer).toHaveAttribute('data-scene', 'pharmacies');
+    expect(
+      await page.evaluate(() => (window as unknown as { __c: Element | null }).__c === document.querySelector('.page-bg canvas')),
+    ).toBe(true);
+
+    await page.evaluate(() => localStorage.setItem('counter.graphics', 'off'));
+    await page.goto('/');
+    await expect(layer).toHaveAttribute('data-mode', 'static');
+    await expect(layer.locator('canvas')).toHaveCount(0);
+    await expect(page.locator('.pub-hero-visual .hero-art')).toBeVisible();
+    await expect(page.locator('.pub-app')).not.toHaveClass(/pub-3d/);
+  });
+
   test('medicine details: 3D viewer with canvas, 3D / Photo toggle and a text alternative', async ({ page }) => {
     await loginByToken(page, 'alice@pharmacie.test');
     await page.goto('/search?q=Hélicidine');

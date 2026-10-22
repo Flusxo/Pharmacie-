@@ -8,7 +8,7 @@ import { useMemo, useRef, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { RoundedBox } from '@react-three/drei';
-import { boxTexture, foilNormal, labelTexture, paperNormal, type LabelSpec } from './textures';
+import { boxTexture, foilNormal, labelTexture, marbleTexture, paperNormal, type LabelSpec } from './textures';
 
 const v2 = (pts: [number, number][]) => pts.map(([x, y]) => new THREE.Vector2(x, y));
 
@@ -438,17 +438,23 @@ export function Capsule({
   colorA = '#065F46',
   colorB = '#F8FAFC',
   cheap = false,
+  split = 0,
   ...props
-}: { colorA?: string; colorB?: string; cheap?: boolean } & JSX.IntrinsicElements['group']) {
+}: {
+  colorA?: string;
+  colorB?: string;
+  cheap?: boolean;
+  /** 0 closed .. 1 halves apart */ split?: number;
+} & JSX.IntrinsicElements['group']) {
   // "cheap": no transmission pass (background); otherwise a soft translucent gel shell.
   const a = useMemo(() => plastic(colorA, { clearcoat: 1, roughness: 0.18, sheen: 0.5, transmission: cheap ? 0 : 0.15 }), [colorA, cheap]);
   const b = useMemo(() => plastic(colorB, { clearcoat: 1, roughness: 0.2, sheen: 0.5, transmission: cheap ? 0 : 0.25 }), [colorB, cheap]);
   return (
     <group {...props}>
-      <mesh material={a} position={[0, 0.17, 0]} castShadow>
+      <mesh material={a} position={[0, 0.17 + split * 0.16, 0]} castShadow>
         <capsuleGeometry args={[0.1, 0.24, 12, 32]} />
       </mesh>
-      <mesh material={b} position={[0, -0.13, 0]} castShadow>
+      <mesh material={b} position={[0, -0.13 - split * 0.16, 0]} castShadow>
         <capsuleGeometry args={[0.104, 0.2, 12, 32]} />
       </mesh>
       <mesh position={[0, 0.02, 0]}>
@@ -585,3 +591,323 @@ export function ProductModel(props: ProductProps & { form: string }): ReactNode 
 /** Which forms have a cap that can be unscrewed / an exploded view. */
 export const hasCap = (form: string) => ['syrup', 'drops', 'tablet', 'capsule', 'cream'].includes(form);
 export const hasExploded = (form: string) => ['lozenge', 'tablet'].includes(form);
+
+// ---------- scene props for the public pages (add-on Part C) ----------
+
+type GroupProps = JSX.IntrinsicElements['group'];
+
+/** Smartphone showing a small map with pins. */
+export function Phone(props: GroupProps) {
+  const body = useMemo(() => plastic('#0b2530', { roughness: 0.22 }), []);
+  const glass = useMemo(() => plastic('#e7f6f3', { roughness: 0.15, clearcoat: 1 }), []);
+  return (
+    <group {...props}>
+      <RoundedBox args={[0.78, 1.5, 0.09]} radius={0.1} smoothness={5} material={body} castShadow />
+      <mesh position={[0, 0, 0.047]} material={glass}>
+        <planeGeometry args={[0.68, 1.36]} />
+      </mesh>
+      {[0.32, 0.05, -0.28].map((y, i) => (
+        <mesh key={y} position={[0, y, 0.05]}>
+          <planeGeometry args={[0.68, 0.04]} />
+          <meshStandardMaterial color={i === 1 ? '#a7f3d0' : '#cde5e1'} roughness={0.6} />
+        </mesh>
+      ))}
+      <MapPin scale={0.32} position={[-0.12, 0.22, 0.12]} />
+      <MapPin scale={0.32} position={[0.16, -0.12, 0.12]} />
+      <MapPin scale={0.26} position={[-0.06, -0.42, 0.12]} color="#94a3b8" />
+    </group>
+  );
+}
+
+/** Map pin (green = in stock). */
+export function MapPin({ color = '#10b981', ...props }: { color?: string } & GroupProps) {
+  const m = useMemo(() => plastic(color, { roughness: 0.2 }), [color]);
+  return (
+    <group {...props}>
+      <mesh material={m} position={[0, 0.28, 0]} castShadow>
+        <sphereGeometry args={[0.24, 32, 32]} />
+      </mesh>
+      <mesh material={m} position={[0, -0.02, 0]} rotation={[Math.PI, 0, 0]} castShadow>
+        <coneGeometry args={[0.2, 0.42, 32]} />
+      </mesh>
+      <mesh position={[0, 0.3, 0.2]}>
+        <sphereGeometry args={[0.08, 16, 16]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.3} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Clipboard with a prescription-like sheet and ticked lines. */
+export function Clipboard(props: GroupProps) {
+  const board = useMemo(() => plastic('#0b6b5d', { roughness: 0.35 }), []);
+  const clip = useMemo(() => new THREE.MeshStandardMaterial({ color: '#cbd5e1', metalness: 0.9, roughness: 0.25 }), []);
+  return (
+    <group {...props}>
+      <RoundedBox args={[1.0, 1.36, 0.05]} radius={0.05} smoothness={4} material={board} castShadow />
+      <mesh position={[0, -0.05, 0.03]}>
+        <planeGeometry args={[0.84, 1.12]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.85} />
+      </mesh>
+      <RoundedBox args={[0.42, 0.14, 0.08]} radius={0.03} smoothness={3} material={clip} position={[0, 0.66, 0.04]} />
+      {[0.32, 0.1, -0.12, -0.34].map((y, i) => (
+        <group key={y} position={[0, y, 0.035]}>
+          <mesh position={[-0.3, 0, 0]}>
+            <planeGeometry args={[0.1, 0.1]} />
+            <meshStandardMaterial color={i < 2 ? '#10b981' : '#e2f2ef'} />
+          </mesh>
+          <mesh position={[0.06, 0, 0]}>
+            <planeGeometry args={[0.5, 0.04]} />
+            <meshStandardMaterial color="#cde5e1" />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+/** Stethoscope: tubing as a smooth curve, chest piece and ear tips. */
+export function Stethoscope(props: GroupProps) {
+  const tube = useMemo(() => {
+    const pts: [number, number, number][] = [
+      [-0.35, 0.7, 0],
+      [-0.42, 0.25, 0.05],
+      [-0.2, -0.25, 0.1],
+      [0.15, -0.45, 0.05],
+      [0.45, -0.2, 0],
+      [0.5, 0.25, -0.05],
+      [0.3, 0.7, -0.05],
+    ];
+    const curve = new THREE.CatmullRomCurve3(pts.map(([x, y, z]) => new THREE.Vector3(x, y, z)));
+    return new THREE.TubeGeometry(curve, 96, 0.035, 16, false);
+  }, []);
+  const rubber = useMemo(() => plastic('#0b2530', { roughness: 0.45, clearcoat: 0.4 }), []);
+  const metal = useMemo(() => new THREE.MeshStandardMaterial({ color: '#d7dee3', metalness: 1, roughness: 0.18 }), []);
+  return (
+    <group {...props}>
+      <mesh geometry={tube} material={rubber} castShadow />
+      <mesh material={metal} position={[0.15, -0.6, 0.05]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.17, 0.17, 0.08, 48]} />
+      </mesh>
+      <mesh material={metal} position={[0.15, -0.5, 0.05]}>
+        <cylinderGeometry args={[0.03, 0.03, 0.14, 16]} />
+      </mesh>
+      <mesh material={metal} position={[-0.35, 0.74, 0]}>
+        <sphereGeometry args={[0.06, 24, 24]} />
+      </mesh>
+      <mesh material={metal} position={[0.3, 0.74, -0.05]}>
+        <sphereGeometry args={[0.06, 24, 24]} />
+      </mesh>
+    </group>
+  );
+}
+
+/** Envelope with a folded flap. */
+export function Envelope(props: GroupProps) {
+  const paper = useMemo(() => new THREE.MeshPhysicalMaterial({ color: '#ffffff', roughness: 0.6, sheen: 0.6, clearcoat: 0.2 }), []);
+  const flapGeo = useMemo(() => {
+    const sh = new THREE.Shape();
+    sh.moveTo(-0.75, 0);
+    sh.lineTo(0.75, 0);
+    sh.lineTo(0, -0.55);
+    sh.closePath();
+    return new THREE.ExtrudeGeometry(sh, { depth: 0.01, bevelEnabled: true, bevelThickness: 0.01, bevelSize: 0.01, bevelSegments: 2 });
+  }, []);
+  return (
+    <group {...props}>
+      <RoundedBox args={[1.5, 1.0, 0.05]} radius={0.04} smoothness={4} material={paper} castShadow />
+      <mesh geometry={flapGeo} material={paper} position={[0, 0.5, 0.03]} />
+      <mesh position={[0, 0.5, 0.045]} rotation={[0, 0, Math.PI / 4]}>
+        <planeGeometry args={[0.04, 0.04]} />
+        <meshStandardMaterial color="#0d9488" />
+      </mesh>
+    </group>
+  );
+}
+
+const SHELF_ROWS: [string, string][][] = [
+  [
+    ['Calmora', '#065F46'],
+    ['Rhinova', '#7C3AED'],
+    ['Gastrel', '#B45309'],
+    ['Vitalis', '#C2410C'],
+  ],
+  [
+    ['Dermalis', '#BE185D'],
+    ['Pulmo', '#4338CA'],
+    ['Glucora', '#0F766E'],
+    ['Cardia', '#B91C1C'],
+  ],
+];
+
+/** Pharmacy shelf with boxes of fictional brands. */
+export function Shelf(props: GroupProps) {
+  const wood = useMemo(() => new THREE.MeshStandardMaterial({ color: '#f4efe6', roughness: 0.7 }), []);
+  return (
+    <group {...props}>
+      {[-0.05, 0.95, -1.05].map((y) => (
+        <RoundedBox key={y} args={[3.0, 0.08, 0.6]} radius={0.02} smoothness={2} material={wood} position={[0, y, 0]} receiveShadow />
+      ))}
+      <RoundedBox args={[3.1, 2.3, 0.06]} radius={0.02} smoothness={2} material={wood} position={[0, -0.05, -0.32]} />
+      {SHELF_ROWS.map((row, r) =>
+        row.map(([brand, color], i) => (
+          <PharmaBox
+            key={brand}
+            brand={brand}
+            color={color}
+            size={[0.5, 0.78, 0.3]}
+            position={[-1.08 + i * 0.72, r === 0 ? 0.39 : -0.61, 0.05]}
+            rotation={[0, (i - 1.5) * 0.06, 0]}
+          />
+        )),
+      )}
+    </group>
+  );
+}
+
+/** Soft abstract shape (About page, calm pages). */
+export function Blob({
+  kind = 'sphere',
+  color = '#5eead4',
+  ...props
+}: { kind?: 'sphere' | 'torus' | 'pill'; color?: string } & GroupProps) {
+  const m = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color,
+        roughness: 0.18,
+        clearcoat: 1,
+        clearcoatRoughness: 0.08,
+        sheen: 0.8,
+        sheenColor: new THREE.Color('#ffffff'),
+      }),
+    [color],
+  );
+  return (
+    <group {...props}>
+      <mesh material={m} castShadow>
+        {kind === 'torus' ? (
+          <torusGeometry args={[0.5, 0.2, 48, 96]} />
+        ) : kind === 'pill' ? (
+          <capsuleGeometry args={[0.28, 0.6, 24, 48]} />
+        ) : (
+          <sphereGeometry args={[0.5, 64, 64]} />
+        )}
+      </mesh>
+    </group>
+  );
+}
+
+/** Paper delivery bag with a green cross. */
+export function DeliveryBag(props: GroupProps) {
+  const paper = useMemo(() => new THREE.MeshStandardMaterial({ color: '#e8d2a6', roughness: 0.85 }), []);
+  return (
+    <group {...props}>
+      <RoundedBox args={[0.8, 0.9, 0.45]} radius={0.04} smoothness={3} material={paper} castShadow />
+      <mesh material={paper} position={[0, 0.5, 0]}>
+        <torusGeometry args={[0.18, 0.025, 12, 32, Math.PI]} />
+      </mesh>
+      <GreenCross glow={0.5} scale={0.12} position={[0, 0.05, 0.25]} />
+    </group>
+  );
+}
+
+/**
+ * Friendly stylised person (no face details): white coat, round head, arms; a pharmacist (green cross
+ * badge) or a doctor (stethoscope around the neck). Used for the "people" renders.
+ */
+export function Figure({
+  role = 'pharmacist',
+  skin = '#e8b796',
+  hair = '#3b2a20',
+  ...props
+}: { role?: 'pharmacist' | 'doctor'; skin?: string; hair?: string } & GroupProps) {
+  const coat = useMemo(() => plastic('#ffffff', { roughness: 0.55, clearcoat: 0.2, sheen: 0.6 }), []);
+  const shirt = useMemo(() => plastic(role === 'doctor' ? '#0ea5e9' : '#0d9488', { roughness: 0.6, clearcoat: 0 }), [role]);
+  const skinM = useMemo(() => plastic(skin, { roughness: 0.55, clearcoat: 0.1, sheen: 0.4 }), [skin]);
+  const hairM = useMemo(() => plastic(hair, { roughness: 0.7, clearcoat: 0 }), [hair]);
+  const metal = useMemo(() => new THREE.MeshStandardMaterial({ color: '#d7dee3', metalness: 1, roughness: 0.2 }), []);
+  const rubber = useMemo(() => plastic('#0b2530', { roughness: 0.45 }), []);
+  return (
+    <group {...props}>
+      {/* body and coat */}
+      <mesh material={coat} position={[0, 0.55, 0]} castShadow>
+        <capsuleGeometry args={[0.42, 0.75, 16, 48]} />
+      </mesh>
+      <mesh material={shirt} position={[0, 1.02, 0.31]} rotation={[0.25, 0, 0]}>
+        <coneGeometry args={[0.16, 0.34, 3]} />
+      </mesh>
+      {/* arms */}
+      <mesh material={coat} position={[-0.5, 0.62, 0.05]} rotation={[0, 0, 0.18]} castShadow>
+        <capsuleGeometry args={[0.13, 0.62, 12, 32]} />
+      </mesh>
+      <mesh material={coat} position={[0.5, 0.62, 0.05]} rotation={[0, 0, -0.18]} castShadow>
+        <capsuleGeometry args={[0.13, 0.62, 12, 32]} />
+      </mesh>
+      <mesh material={skinM} position={[-0.56, 0.18, 0.06]}>
+        <sphereGeometry args={[0.12, 24, 24]} />
+      </mesh>
+      <mesh material={skinM} position={[0.56, 0.18, 0.06]}>
+        <sphereGeometry args={[0.12, 24, 24]} />
+      </mesh>
+      {/* neck, head, hair */}
+      <mesh material={skinM} position={[0, 1.2, 0]}>
+        <cylinderGeometry args={[0.11, 0.12, 0.16, 24]} />
+      </mesh>
+      <mesh material={skinM} position={[0, 1.5, 0]} castShadow>
+        <sphereGeometry args={[0.32, 48, 48]} />
+      </mesh>
+      <mesh material={hairM} position={[0, 1.62, -0.04]} scale={[1.02, 0.75, 1.02]}>
+        <sphereGeometry args={[0.32, 48, 48, 0, Math.PI * 2, 0, Math.PI / 2]} />
+      </mesh>
+      {role === 'pharmacist' ? (
+        <GreenCross glow={0.6} scale={0.06} position={[0.2, 0.86, 0.42]} />
+      ) : (
+        <group position={[0, 1.02, 0.18]}>
+          <mesh material={rubber}>
+            <torusGeometry args={[0.24, 0.022, 12, 48, Math.PI]} />
+          </mesh>
+          <mesh material={metal} position={[0.2, -0.36, 0.22]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.07, 0.07, 0.04, 32]} />
+          </mesh>
+        </group>
+      )}
+    </group>
+  );
+}
+
+/** Delivery scooter with an insulated bag (simulated delivery). */
+export function Scooter() {
+  const body = useMemo(() => plastic('#10B981', { clearcoat: 1, roughness: 0.25 }), []);
+  const bag = useMemo(() => plastic('#F8FAFC', { clearcoat: 0.5, roughness: 0.5 }), []);
+  return (
+    <group scale={0.55}>
+      <RoundedBox args={[1.1, 0.25, 0.4]} radius={0.1} position={[0, 0.45, 0]} material={body} castShadow />
+      <RoundedBox args={[0.3, 0.7, 0.3]} radius={0.1} position={[0.45, 0.75, 0]} rotation={[0, 0, -0.3]} material={body} castShadow />
+      <RoundedBox args={[0.6, 0.55, 0.55]} radius={0.08} position={[-0.35, 0.9, 0]} material={bag} castShadow />
+      <GreenCross position={[-0.35, 0.92, 0.29]} scale={0.12} glow={1.2} />
+      {[-0.45, 0.5].map((x) => (
+        <mesh key={x} position={[x, 0.2, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+          <torusGeometry args={[0.18, 0.07, 12, 24]} />
+          <meshStandardMaterial color="#1f2937" roughness={0.7} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+/** Marble pharmacy counter. */
+export function Counter() {
+  const marble = marbleTexture();
+  const top = useMemo(
+    () => new THREE.MeshPhysicalMaterial({ map: marble, roughness: 0.18, clearcoat: 0.6, clearcoatRoughness: 0.15 }),
+    [marble],
+  );
+  const front = useMemo(() => new THREE.MeshStandardMaterial({ color: '#e9efe9', roughness: 0.55 }), []);
+  return (
+    <group>
+      <RoundedBox args={[4.6, 0.08, 1.4]} radius={0.03} smoothness={4} position={[0, 0.4, 0]} material={top} receiveShadow castShadow />
+      <RoundedBox args={[4.5, 1.2, 1.3]} radius={0.04} position={[0, -0.24, 0.02]} material={front} receiveShadow />
+    </group>
+  );
+}

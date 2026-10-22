@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, Float, Html, RoundedBox } from '@react-three/drei';
 import { Scene3D } from './Scene3D';
-import { Capsule, GreenCross, Tablet, plastic } from './models';
+import { Capsule, GreenCross, Scooter, Tablet } from './models';
 import { useI18n } from '../i18n';
 
 type Tier = 'high' | 'medium';
@@ -20,25 +20,6 @@ const rngFrom = (seed: number) => {
 };
 
 // ---------------- Simulated delivery ----------------
-
-function Scooter() {
-  const body = useMemo(() => plastic('#10B981', { clearcoat: 1, roughness: 0.25 }), []);
-  const bag = useMemo(() => plastic('#F8FAFC', { clearcoat: 0.5, roughness: 0.5 }), []);
-  return (
-    <group scale={0.55}>
-      <RoundedBox args={[1.1, 0.25, 0.4]} radius={0.1} position={[0, 0.45, 0]} material={body} castShadow />
-      <RoundedBox args={[0.3, 0.7, 0.3]} radius={0.1} position={[0.45, 0.75, 0]} rotation={[0, 0, -0.3]} material={body} castShadow />
-      <RoundedBox args={[0.6, 0.55, 0.55]} radius={0.08} position={[-0.35, 0.9, 0]} material={bag} castShadow />
-      <GreenCross position={[-0.35, 0.92, 0.29]} scale={0.12} glow={1.2} />
-      {[-0.45, 0.5].map((x) => (
-        <mesh key={x} position={[x, 0.2, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-          <torusGeometry args={[0.18, 0.07, 12, 24]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.7} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
 
 function Confetti({ count }: { count: number }) {
   const ref = useRef<THREE.InstancedMesh>(null);

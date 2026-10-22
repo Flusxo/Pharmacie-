@@ -9,10 +9,12 @@ import { useI18n } from '../../i18n';
 import { useCanvasSlot, useGraphics } from '../../lib/graphics';
 import { useSettings } from '../../lib/settings';
 import { PackImage, colorsFor } from '../PackImage';
+import type { CompositionName } from '../../three/compositions';
 
 const BackgroundScene = lazy(() => import('../../three/BackgroundScene'));
 const HeroScene = lazy(() => import('../../three/HeroScene'));
 const ProductScene = lazy(() => import('../../three/ProductScene'));
+const PageScene = lazy(() => import('../../three/PageScene'));
 
 /** Canvas labels use the app font: mount scenes only once it is loaded (never blocks the page). */
 function useFontsReady(): boolean {
@@ -61,6 +63,43 @@ export function SiteBackground() {
               reduced={g.reduced}
               dark={resolvedTheme === 'dark'}
               paused={g.backdropPaused}
+              onSlow={g.reportSlow}
+              onReady={onReady}
+            />
+          </Suspense>
+        </ThreeBoundary>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Public site 3D layer: one fixed canvas behind the pages; the composition follows the route.
+ * Reports when it is drawing so the page can hide its still illustration (kept as the fallback).
+ */
+export function PageBackdrop({ name, onActive }: { name: CompositionName; onActive?: (on: boolean) => void }) {
+  const g = useGraphics();
+  const { resolvedTheme } = useSettings();
+  const draw = useCan3D('page', 1);
+  const [ready, setReady] = useState(false);
+  const onReady = useCallback(() => setReady(true), []);
+  useEffect(() => onActive?.(draw && ready), [draw, ready, onActive]);
+  return (
+    <div
+      className={`page-bg ${ready && draw ? 'ready' : ''}`}
+      aria-hidden="true"
+      data-testid="page-backdrop"
+      data-scene={name}
+      data-mode={draw ? '3d' : 'static'}
+    >
+      {draw && (
+        <ThreeBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <PageScene
+              name={name}
+              tier={g.tier === 'high' ? 'high' : 'medium'}
+              reduced={g.reduced}
+              dark={resolvedTheme === 'dark'}
               onSlow={g.reportSlow}
               onReady={onReady}
             />

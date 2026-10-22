@@ -792,3 +792,79 @@
     font-size: 19px;
   }
 }
+
+/* ================= 3D layer behind the public site (Part C) ================= */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.page-bg-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.page-bg.ready .page-bg-canvas {
+  opacity: 1;
+}
+/* Light readability veil, stronger on the text side. */
+.page-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--bg) 30%, transparent), transparent 55%);
+}
+.pub-app > .notice,
+.pub-main,
+.pub-footer {
+  position: relative;
+  z-index: 1;
+}
+/* While the 3D layer draws, the still illustration steps aside (its space stays for the 3D objects). */
+.pub-hero-visual .hero-art {
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.pub-3d .pub-hero-visual .hero-art {
+  opacity: 0;
+}
+/* Login / sign-up over the big scene: glass panels, the scene shows around them. */
+.pub-app .auth-wrap > .card,
+.pub-app .pub-main > .card,
+.pub-app .pub-main > form.card {
+  background: var(--glass);
+  border-color: var(--glass-line);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: var(--shadow-2);
+}
+.pub-app .auth-hero {
+  background: transparent;
+  color: var(--ink);
+  padding: 8px 4px;
+  min-height: 0;
+}
+.pub-app .auth-hero h1 {
+  color: var(--ink);
+  font-size: clamp(2rem, 4vw, 3.1rem);
+}
+.pub-app .auth-hero ul {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+@media (min-width: 900px) {
+  /* Leaves room under the heading for the 3D bottles and capsules. */
+  .pub-app .auth-hero {
+    min-height: 560px;
+  }
+}
+@media (max-width: 899px) {
+  .pub-app .auth-hero {
+    background: var(--glass);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    backdrop-filter: blur(14px);
+    margin-top: 150px;
+  }
+}

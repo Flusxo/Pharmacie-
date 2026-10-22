@@ -7,6 +7,8 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { homeFor, useAuth } from '../../lib/auth';
 import { AnimatedOutlet } from '../motion';
+import { PageBackdrop } from '../three/ThreeVisuals';
+import { compositionFor } from '../../three/compositions';
 import { LanguageSwitch, PrototypeNotice, ThemeToggle } from '../Layout';
 import { IconClose, IconLogin, IconMail, IconMenu, IconPhone, IconPin } from '../Icons';
 import type { MessageKey } from '../../i18n';
@@ -176,8 +178,12 @@ export function PublicFooter() {
 
 export function PublicLayout() {
   const { t } = useI18n();
+  const location = useLocation();
+  // While the 3D layer draws, the pages' still illustrations step aside (they stay as the fallback).
+  const [live3D, setLive3D] = useState(false);
   return (
-    <div className="app pub-app">
+    <div className={`app pub-app ${live3D ? 'pub-3d' : ''}`}>
+      <PageBackdrop name={compositionFor(location.pathname)} onActive={setLive3D} />
       <a href="#main" className="sr-only">
         {t('app.skip')}
       </a>

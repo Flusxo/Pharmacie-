@@ -9,8 +9,7 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, Float, RoundedBox } from '@react-three/drei';
 import { Scene3D } from './Scene3D';
-import { AmberBottle, Capsule, GreenCross, PharmaBox, Tablet } from './models';
-import { marbleTexture } from './textures';
+import { AmberBottle, Capsule, Counter, GreenCross, PharmaBox, Tablet } from './models';
 import { useI18n } from '../i18n';
 
 // Fictional brands only (no real trademarks on props).
@@ -102,21 +101,6 @@ function Shelf() {
       {boxes.map((b, i) => (
         <PharmaBox key={i} brand={b.brand} color={b.color} size={b.size} position={b.pos} rotation={[0, b.rot, 0]} />
       ))}
-    </group>
-  );
-}
-
-function Counter() {
-  const marble = marbleTexture();
-  const top = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ map: marble, roughness: 0.18, clearcoat: 0.6, clearcoatRoughness: 0.15 }),
-    [marble],
-  );
-  const front = useMemo(() => new THREE.MeshStandardMaterial({ color: '#e9efe9', roughness: 0.55 }), []);
-  return (
-    <group>
-      <RoundedBox args={[4.6, 0.08, 1.4]} radius={0.03} smoothness={4} position={[0, 0.4, 0]} material={top} receiveShadow castShadow />
-      <RoundedBox args={[4.5, 1.2, 1.3]} radius={0.04} position={[0, -0.24, 0.02]} material={front} receiveShadow />
     </group>
   );
 }
