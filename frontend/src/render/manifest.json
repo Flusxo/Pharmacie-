@@ -1672,5 +1672,53 @@
     "webp": 512,
     "blur": "data:image/webp;base64,UklGRtwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg8AAAAJAFAJ0BKhgAGAA+7WapTamlpCIwCAEwHYlsALbZ+3ZIBEfi9PaLPDuUzRDSMIYEag6SeatAAP7qfGNVtsllRTSezyLQpU0a1xNDD+fcFh7freiR6isek8+NJxAbZcSXD3Z4Fd0OL3kClkS+gyP/3sjfIOe8FG9IGDjqmyzOsADKPwx3D17iA7UUw8suaSybd2IpHs17K3zQjnyXcYLLuwmq9muOHVLc2ChM+64Q5A+WSygrNAdAPvLAubacpfXsQ9C+60cwNyeL8nFPhwL4ypfrQiBuRkKPQGmvUMF0tM9UWsvI85rHY/388199y0jgAA==",
     "alpha": true
+  },
+  "med-amlodipine-zentiva-5-mg-5-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRswBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC6AAAAUAUAnQEqGAAYAD7taq5QqaWkIqgKqTAdiWwAuwwUBGgbQEf+SC5b129W6Yl+4Aadv3gAAP7D3iHp3o9jkCX+mQTvtC05g/BmRUq6n4+GO68JF0AREwxeqVUxz4pCOeBjAttuBQfX4NSgDuJdMPelXuWO818AnJ3qJzGMYiWxyHZhrwQCdo3MgjrTHsUhIhReStYhTlX0Q8sJDNoKp51YiYc6Wo3HUJ4So+ofZ6N8T7cfVhY2E5NJqwAA",
+    "alpha": true
+  },
+  "med-amlodipine-zentiva-5-mg-5-mg-open": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRrABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOMAAAANgFvbtmpln4O7u2Qa/1/Aj3HKIPM2HPrwyCWlAHd3d+7Z6H1/UEFETAD+FBUApCGg0BE/hQGYH6nJfbnZWDoS+sS42h4QiRkVobZxNQ9hBG9KiGWGloQeQAxUQTXEOPgaJourE1XsZWUb9JvtvstITLy7BmA+QHz+0f7jU3ZJ9oXBV5g9Ua4xMR/cbTkXeqi1ggrEWmVdn5qHIQynAKjhZfgKTQW/OkRbGC0iIOX/UX6xIKaCaAhdzAcERKzzA+Yj8QAQgyk/h+GRhtIUPO2PA84HkKmJ/UcAEMKfMUJCxBx+BwBWUDggpgAAAPAEAJ0BKhgAGAA+7WKsUCmlJCKwGAgBMB2JbADHFNigtgvI6t388hvtIKMlKuAzAAD+w6O9e5x8UCgR6jtxBRE49p6hZU910tjb3Ztkr1OuMysEwQATH2Na9FAXf0gPSjJMIjvOXhcW6/WCibvALGGnF64DYTu9THtqiqgW5Mpr2pdbl0q/LtBDJbGga2udhcoHFWDB0KkGO5hNc71DIVagJicugAA=",
+    "alpha": true
+  },
+  "med-coversyl-5-mg-5-mg-front": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRt4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAABgFzb1vLkPkkKSQM4FKEjq+KvAIcWvAnCLCP3YnDn+/gf8n8PqSAiJgCFxKJaKqkKE/5leXw929jf38jWxkoexY5FK4x2APEc2msMIYT4Zsc/ebPCYEcexsyl5d9yu5kDe5YfU2HFQeC+RSuMNgAopQN7T41cMrD4O/x7fc/QRT3PAOTpevogpNDx9HxtT9fX9HR8dU/LAca5vYYQYwivdgFJCRbuLTczy+1uHpwCoZKdVmu16llWAcHLhCQx/CwqzKLCKAZWUDgg8gAAAPAFAJ0BKhgAGAA+7WirT6mmI6IwGAgBMB2JbAC7IQhwAbyERHoXp7bo+pf/6FHXlA+DI61Zau/AAP7qfGNVPgxNQzO44hyoniBEmR/tj6XcS9sZB+eg8+T/wi9U7aebDV/AreXQAT0hF8noNO4jPgVhVsWqaJ6m+5Ty2KEnclnViMHxRaOZha3g/x1D+eEITUTHdWmT8dZDcMRoMax4a2QTDoGh8P/x54eDQRG5jXuzj6VUkhA7oK9jeuuuHaLMYQzhKyhVRWVM8xHtaz1h6SYaHx4MsazpfKMhm6HQr9rwTLRf0LxnpK/Y/3POZfctNLgA",
+    "alpha": true
+  },
+  "med-coversyl-5-mg-5-mg-angle": {
+    "w": 1024,
+    "h": 1024,
+    "widths": [
+      256,
+      512,
+      1024
+    ],
+    "webp": 512,
+    "blur": "data:image/webp;base64,UklGRswBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOsAAAAFgJxtkyLlrxrc3fXm7pYBQXAnA5698WwK5MCdFNzd3d0dpuoyXQsZRMQE4L/JoBH8PcewT4Dqr1hIU0aS3st+SH3e738gNWTt/NxUCUPpoumSxZA6XfRY4BMkar33ntQBzw8N+R4A4YFhFjhZSmazhQEoXXYcsRia5hCs1DLn+YbWaQfQsMRi6BpTctQvm9qmgpT8hlVT0xwClb4b1011S67Pxk1T1ZrrvWHHVL7jKQW8NO6ZijYTHQ/NBwbSjJWCXxAUUSdNt6QOkA6GoQQlhMIsMDf2VaTq89boPCnMLAhmQYTMUJCq4L8BAFZQOCC6AAAAEAUAnQEqGAAYAD7taq1QqaWkIqgKqTAdiWwAuwwUAiJgt9mosyFoWVqzFosBej5NAAD+w94h51YfWCyMkAdMQe9v3wAg8GPGxur6d3aszXbbnhlbHYBmRhGabm6WhHobQL52hoputlWhufR1c+TwXXjnvbzVofljGGghXK85k9lBVZrgJObpj2KQt3/grPpQ8ZMG0WcNuJ7XMTVtt6iJhxFGVxaBTwlR9Q4R/TQ+OdjS/7MYTXbTAAAA",
+    "alpha": true
   }
 }
