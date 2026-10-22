@@ -126,3 +126,12 @@ Each entry: what was chosen and why.
 - **Performance choices**: the full-screen layer never runs post-processing (ambient occlusion on a full viewport would cost the 60 fps target); High still gets glass transmission on the models; DPR ≤ 1.5; pauses off-screen; Auto keeps the existing frame-rate guard and software-GPU → Low rule. On phones only one canvas draws (the How it works diagram wins over the background there).
 - **Fallbacks**: the page's still illustration (`HeroArt`) stays in place and fades out only once the 3D layer has drawn its first frame; Graphics Off / Low, no WebGL or a WebGL error keep the illustration (tested).
 - **Not done here**: a pinned image scrollytelling section on the public Home comes with the rendered pictures (Part D).
+
+## Pictures (add-on Part D renders)
+
+- **Our own renders only**: a dev-only `/render` page (absent from production builds) draws one shot of `render/library.ts`; `npm run render` reads the canvas pixels (`preserveDrawingBuffer` + `toDataURL` — a page screenshot of a huge software canvas stalls the compositor), then sharp writes AVIF at 3–4 widths, one WebP fallback and a 24 px blur placeholder. Camera auto-framing (bounding box + `fit`) so every shot is framed consistently. Gradient backgrounds are drawn inside the scene so ambient occlusion and bloom keep them; cut-outs have no post-processing so their alpha stays clean.
+- **GPU when available**: headless Chromium uses the GPU through ANGLE (Direct3D 11 here: 24 shots in ~9 min, ~11 s each); `RENDER_GL=swiftshader` renders the same in software (~10 min per 3840 px shot).
+- **Weight**: the whole library is 1.5 MB (a 3840 px hero is 35 kB in AVIF): smooth gradients and clean 3D compress very well. Committed to git so a fresh clone shows them without rendering.
+- **`<Picture>`**: AVIF srcset + WebP fallback, `loading="lazy"`, explicit width/height (no layout shift), blur-up placeholder, fade-in; effects with transform/opacity only (slow zoom, hover tilt, scroll parallax, float), all off with reduced motion; unknown/missing picture renders nothing.
+- **Use**: a pinned picture story on the public Home (picture stays, captions scroll), captioned parallax bands and galleries on every public page, floating cut-outs (contact, FAQ, legal), cut-outs in two app empty states.
+- **Known limit**: ACES tone mapping greys the gradient backgrounds a little (they look softer than their CSS colours).

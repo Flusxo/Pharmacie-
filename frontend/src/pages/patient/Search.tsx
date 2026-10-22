@@ -121,7 +121,7 @@ export function SearchPage() {
             {t('search.results', { n: data.total })}
           </p>
           {data.items.length === 0 ? (
-            <Empty>
+            <Empty art="cut-tablets">
               <p>{t('search.noResults')}</p>
               {data.didYouMean && (
                 <p>

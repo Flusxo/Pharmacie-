@@ -5,6 +5,7 @@ import { useI18n } from '../i18n';
 import type { MessageKey } from '../i18n';
 import { openState } from '../lib/format';
 import type { OpeningHours } from '../lib/types';
+import { Picture } from './Picture';
 
 export function Skeleton({ h = 16, w = '100%', r }: { h?: number; w?: number | string; r?: number }) {
   return <div className="skeleton" style={{ height: h, width: w, borderRadius: r }} aria-hidden="true" />;
@@ -89,10 +90,12 @@ export function OpenBadge({ hours, onDuty }: { hours: OpeningHours; onDuty: stri
   );
 }
 
-export function Empty({ children }: { children: ReactNode }) {
+/** Empty state; `art` adds a small rendered cut-out above the text (decorative). */
+export function Empty({ children, art }: { children: ReactNode; art?: string }) {
   return (
-    <div className="card muted" style={{ textAlign: 'center', padding: 28 }}>
-      {children}
+    <div className="card muted" style={{ textAlign: 'center', padding: 28, display: 'grid', justifyItems: 'center', gap: 10 }}>
+      {art && <Picture id={art} alt="" sizes="160px" className="empty-art" effects={['float']} />}
+      <div>{children}</div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import '@fontsource-variable/inter';
 import '@fontsource-variable/fraunces';
 import './styles/app.css';
 import './styles/public.css';
+import './styles/pictures.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(

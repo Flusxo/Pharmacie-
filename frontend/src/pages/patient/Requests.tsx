@@ -24,7 +24,7 @@ export function RequestsPage() {
       <h1>{t('requests.title')}</h1>
       {error && <ErrorBox message={error} />}
       {!items && !error && <CardSkeleton />}
-      {items?.length === 0 && <Empty>{t('requests.empty')}</Empty>}
+      {items?.length === 0 && <Empty art="cut-bag">{t('requests.empty')}</Empty>}
       {items?.map((r) => (
         <Link
           key={r.id}

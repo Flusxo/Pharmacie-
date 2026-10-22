@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { lazy, Suspense, type ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { AuthProvider, homeFor, useAuth } from './lib/auth';
@@ -39,6 +39,9 @@ import {
 } from './pages/public/PublicPages';
 import { ContactPage } from './pages/public/ContactPage';
 
+// Development only: draws one picture for scripts/render-assets.ts (absent from production builds).
+const RenderStudio = import.meta.env.DEV ? lazy(() => import('./render/RenderStudio')) : null;
+
 /** Requires a logged-in user with one of the roles; unverified professionals go to /waiting. */
 function RequireRole({ roles, children }: { roles: Role[]; children: ReactNode }) {
   const { user, ready } = useAuth();
@@ -62,6 +65,16 @@ export function AppRoutes() {
   if (!ready) return null;
   return (
     <Routes>
+      {RenderStudio && (
+        <Route
+          path="/render"
+          element={
+            <Suspense fallback={null}>
+              <RenderStudio />
+            </Suspense>
+          }
+        />
+      )}
       {/* Public website and sign-in pages (before login). */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<PublicHome />} />

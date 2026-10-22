@@ -5,6 +5,7 @@ import { useI18n, type MessageKey } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
 import { PublicHero } from '../../components/public/Sections';
 import { HeroArt } from '../../components/public/HeroArt';
+import { CutOut } from '../../components/public/Media';
 import { IconCheck, IconClock, IconMail, IconPhone, IconPin } from '../../components/Icons';
 import { duration, easeOut } from '../../motion';
 
@@ -181,6 +182,7 @@ export function ContactPage() {
           </form>
         )}
         <aside className="card glass stack contact-details" aria-labelledby="contact-details-title">
+          <CutOut id="cut-envelope" className="contact-cutout" />
           <h2 id="contact-details-title">{t('pub.contact.detailsTitle')}</h2>
           <p className="row" style={{ gap: 10, flexWrap: 'nowrap', alignItems: 'flex-start' }}>
             <IconPin width={20} height={20} style={{ flex: 'none' }} /> {t('pub.footer.address')}
