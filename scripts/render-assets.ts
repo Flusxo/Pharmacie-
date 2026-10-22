@@ -68,6 +68,11 @@ async function main() {
       }
       const t0 = Date.now();
       const png = await shoot(browser, shot);
+      // A canvas that is too big for the GPU comes back empty (seen at 7680 px on an integrated GPU): never keep it.
+      const { channels } = await sharp(png).stats();
+      if (shot.bg !== 'transparent' && channels.slice(0, 3).every((c) => c.stdev < 1)) {
+        throw new Error('The render of ' + shot.id + ' is blank (the GPU could not draw a canvas this big). Nothing was written.');
+      }
       manifest[shot.id] = await encode(shot, png);
       fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
       console.log(`done ${shot.id} in ${((Date.now() - t0) / 1000).toFixed(0)} s`);

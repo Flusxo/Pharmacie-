@@ -1,0 +1,182 @@
+[
+  {
+    "page": "home",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "app-home",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "app-home",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "colourSpread": 28
+  },
+  {
+    "page": "search",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "app-search",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "app-search",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "colourSpread": 25
+  },
+  {
+    "page": "details",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "app-details",
+      "mode": "3d",
+      "canvases": 2
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "app-details",
+      "mode": "3d",
+      "canvases": 2
+    },
+    "colourSpread": 36
+  },
+  {
+    "page": "map",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "app-map",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "app-map",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "colourSpread": 25
+  },
+  {
+    "page": "requests",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "app-requests",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "app-requests",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "colourSpread": 22
+  },
+  {
+    "page": "pharmacy",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "app-pharmacy",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "app-pharmacy",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "colourSpread": 20
+  },
+  {
+    "page": "admin",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "app-admin",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "app-admin",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "colourSpread": 37
+  },
+  {
+    "page": "public-home",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "home",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "home",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "colourSpread": 42
+  },
+  {
+    "page": "public-how",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "how",
+      "mode": "3d",
+      "canvases": 2
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "how",
+      "mode": "3d",
+      "canvases": 2
+    },
+    "colourSpread": 32
+  },
+  {
+    "page": "login",
+    "width": 1440,
+    "tier": "medium",
+    "navigated": {
+      "same": true,
+      "scene": "auth",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "refreshed": {
+      "same": false,
+      "scene": "auth",
+      "mode": "3d",
+      "canvases": 1
+    },
+    "colourSpread": 38
+  }
+]
