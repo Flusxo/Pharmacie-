@@ -124,9 +124,11 @@ export function GraphicsProvider({ children, device }: { children: ReactNode; de
   }, []);
 
   const tier: Tier = graphics === 'auto' && autoTier ? autoTier : base;
-  // Low and Off have no live 3D behind the panels: they get the plain tint (and save the blur).
+  // Off has no live 3D behind the panels: plain tint. Low too on a desktop; a phone often STARTS on Low, so it keeps the
+  // lighter blur (12 px, glass.css) and loses it only when the measured frame rate stays low (the 'fps' reason).
   useEffect(() => {
-    setGlassFlat('tier', tier === 'low' || tier === 'off');
+    const phone = typeof matchMedia === 'function' && matchMedia('(pointer: coarse), (max-width: 767px)').matches;
+    setGlassFlat('tier', tier === 'off' || (tier === 'low' && !phone));
   }, [tier]);
 
   const reportFps = useCallback((fps: number) => {

@@ -258,6 +258,7 @@ img {
     padding-bottom: env(safe-area-inset-bottom);
     background: color-mix(in srgb, var(--surface) 92%, transparent);
     backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-top: 1px solid var(--line);
   }
   .tabbar a {
@@ -1356,6 +1357,7 @@ table.table {
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--surface) 86%, transparent);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: var(--shadow-1);
   opacity: 0.25;
   transform: translateY(12px);
@@ -1933,6 +1935,7 @@ table.table {
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-2, 0 18px 40px rgb(15 23 42 / 0.18));
 }

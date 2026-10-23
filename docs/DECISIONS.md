@@ -174,3 +174,9 @@ Each entry: what was chosen and why.
 **Counters** show the real number from the start and replay a short count-up when scrolled into view (never a stuck 0; a timer snaps to the final value if frames are late).
 
 **Materials.** The pill bottle label and body lost the sheen and the strong grain (they read as felt): printed paper is a plain standard material, the micro-normal is 3 times weaker, label textures use 16x anisotropy. The pharmacy bag is a proper kraft bag (folded rim, gusset creases, twisted handles, a sharp printed cross and wordmark). The scooter is rebuilt: floorboard, leg shield, rear cowl, seat, fork and fender, handlebar with mirrors and lamp, real wheels (tyre, rim, hub, spokes), a rear rack and a delivery box with the green cross.
+
+## 2026-10-23 — Frosted glass on phones (iOS Safari)
+- Every `backdrop-filter` now has its `-webkit-` twin. The mobile menu (`.pub-menu`), tour card and mobile auth hero join the shared glass list in `glass.css`; menus use the denser tint so links stay readable over page text.
+- The Low tier no longer flattens glass on phones (coarse pointer or width < 768 px): they keep the 12 px blur and lose it only when the measured frame rate stays low (`fps` reason). Off still flattens everywhere.
+- `_headers`: `/` and `/index.html` are `no-cache` (revalidated); hashed assets stay immutable. No service worker exists.
+- Checked with Playwright WebKit (`scripts/webkit-glass.mjs`, screenshots in `docs/screenshots/glass-mobile`). Not checked: real iPhone hardware.

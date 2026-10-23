@@ -11,6 +11,12 @@
 /favicon.svg
   Cache-Control: public, max-age=86400
 
+# The page itself is always revalidated, so a new build reaches phones at once (no service worker is registered).
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

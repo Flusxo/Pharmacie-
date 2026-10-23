@@ -43,6 +43,9 @@
 .tabbar,
 .topbar,
 .pub-footer,
+.pub-menu,
+.tour-card,
+.pub-app .auth-hero,
 .pub-app .auth-wrap > .card,
 .pub-app .pub-main > .card,
 .pub-app .pub-main > form.card {
@@ -51,6 +54,11 @@
   box-shadow: var(--glass-top), var(--glass-bottom), var(--glass-shadow);
   backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+}
+/* Menus and the tour card float over page text: a denser tint (still blurred) keeps the links readable. */
+.pub-menu,
+.tour-card {
+  background: var(--glass-bg-flat);
 }
 /* The top bar and tab bar are thin strips: no side borders or heavy shadow. */
 .topbar {
@@ -91,6 +99,9 @@
 :root[data-glass='flat'] .toast,
 :root[data-glass='flat'] .tabbar,
 :root[data-glass='flat'] .topbar,
+:root[data-glass='flat'] .pub-menu,
+:root[data-glass='flat'] .tour-card,
+:root[data-glass='flat'] .pub-app .auth-hero,
 :root[data-glass='flat'] .pub-footer {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -106,6 +117,8 @@
   .toast,
   .tabbar,
   .topbar,
+  .pub-menu,
+  .tour-card,
   .pub-footer {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
