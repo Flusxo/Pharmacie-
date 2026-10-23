@@ -1,0 +1,55 @@
+[
+  {
+    "page": "home",
+    "profile": "laptop",
+    "loadMs": 1507,
+    "ttfb": 14,
+    "dcl": 1482,
+    "fcp": 1920,
+    "lcp": 2380,
+    "cls": 0.001,
+    "longTasks": 6,
+    "longList": [
+      [
+        1548,
+        70
+      ],
+      [
+        1621,
+        150
+      ],
+      [
+        1833,
+        72
+      ],
+      [
+        4642,
+        557
+      ],
+      [
+        6141,
+        160
+      ],
+      [
+        7747,
+        1871
+      ]
+    ],
+    "tbt": 2438,
+    "stage3dAt": 9637,
+    "canvasAt": 4555,
+    "fps": 59.1,
+    "worstFrameMs": 33,
+    "kb": {
+      "js": 504,
+      "css": 11,
+      "img": 21,
+      "font": 83,
+      "other": 74,
+      "total": 693
+    },
+    "requests": 17,
+    "canvases": 1,
+    "tier": "auto"
+  }
+]

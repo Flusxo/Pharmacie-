@@ -36,6 +36,7 @@ import {
   Stethoscope,
   Tablet,
 } from './models';
+import { setMaterialDetail } from './models';
 import { DeliveryRoute, LightBeams, PharmacyInterior, StageLabels } from './environment';
 import { useI18n } from '../i18n';
 import { COMPOSITIONS, type CompositionName, type Item } from './compositions';
@@ -54,6 +55,8 @@ const smooth = (a: number, b: number, v: number) => {
 };
 
 export function Model({ it, split, quality, reduced = false }: { it: Item; split: number; quality: 'high' | 'medium'; reduced?: boolean }) {
+  // Medium: plain standard materials (a handful of shader programs instead of dozens: see models.tsx).
+  setMaterialDetail(quality === 'high' ? 'full' : 'lite');
   switch (it.kind) {
     case 'product':
       return <ProductModel form={it.form ?? 'tablet'} label={it.label!} quality={quality} open={it.open ?? 0} exploded={it.open ?? 0} />;
@@ -306,8 +309,11 @@ export default function PageScene({
       // no ambient occlusion over a whole viewport). The governor steps down to Medium if it gets slow.
       tier={tier}
       ao={false}
+      adaptive
       // Behind glass panels and fog: 0.8× resolution on Medium is invisible and saves a third of the pixels.
-      dprRange={tier === 'high' ? [1, 1.5] : [0.8, 0.8]}
+      dprRange={
+        tier === 'high' ? [1, 1.5] : [0.6, typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches ? 0.8 : 1]
+      }
       bloom={{ threshold: 0.97, intensity: 0.25 }}
       reduced={reduced}
       label=""

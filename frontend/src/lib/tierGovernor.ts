@@ -14,8 +14,8 @@ export const LOW_FPS = 24;
 export const LOW_SECONDS = 6;
 export const HIGH_FPS = 52;
 export const HIGH_SECONDS = 90;
-export const FLOOR_FPS = 12;
-export const FLOOR_SECONDS = 12;
+export const FLOOR_FPS = 18;
+export const FLOOR_SECONDS = 10;
 export const MIN_GAP_MS = 60_000;
 
 const ORDER: AutoTier[] = ['high', 'medium', 'low'];
@@ -29,9 +29,10 @@ export class TierGovernor {
   private highRun = 0;
   private lastChange = -Infinity;
 
-  constructor(start: AutoTier) {
+  /** `ceiling`: the best tier this device may climb to (default: where it started). */
+  constructor(start: AutoTier, ceiling: AutoTier = start) {
     this.tier = start;
-    this.ceiling = start;
+    this.ceiling = ceiling;
   }
 
   /** One sample per second of visible rendering; returns the (possibly new) tier. */

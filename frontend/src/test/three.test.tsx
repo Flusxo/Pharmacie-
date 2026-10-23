@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { I18nProvider } from '../i18n';
 import { SettingsProvider } from '../lib/settings';
-import { GraphicsProvider, chooseTier, frameloopFor, type DeviceInfo } from '../lib/graphics';
+import { GraphicsProvider, ceilingTier, chooseTier, frameloopFor, type DeviceInfo } from '../lib/graphics';
 import { ProductVisual, RootStage } from '../components/three/ThreeVisuals';
 
 // The real scenes need WebGL; in tests they are replaced by markers that expose the props they receive.
@@ -42,7 +42,10 @@ describe('graphics tiers', () => {
     expect(chooseTier('auto', noGl)).toBe('off');
     expect(chooseTier('auto', { ...strong, memoryGb: 2 })).toBe('low');
     expect(chooseTier('auto', { ...strong, mobile: true })).toBe('medium');
-    expect(chooseTier('auto', strong)).toBe('high');
+    expect(chooseTier('auto', strong)).toBe('medium'); // every device starts safe
+    expect(ceilingTier(strong)).toBe('high');
+    expect(ceilingTier({ ...strong, integratedGpu: true })).toBe('medium');
+    expect(ceilingTier({ ...strong, mobile: true })).toBe('medium');
     expect(chooseTier('high', { ...strong, mobile: true })).toBe('high'); // explicit choice respected
     expect(chooseTier('off', strong)).toBe('off');
     expect(chooseTier('high', noGl)).toBe('off'); // never without WebGL

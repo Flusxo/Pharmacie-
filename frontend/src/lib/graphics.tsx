@@ -26,12 +26,15 @@ export interface DeviceInfo {
   mobile: boolean;
   /** Software rasteriser (SwiftShader, llvmpipe...): no real GPU. */
   softwareGl?: boolean;
+  /** Integrated or mobile GPU (Intel UHD/Iris, Mali, Adreno, PowerVR): shares memory with the CPU. */
+  integratedGpu?: boolean;
 }
 
 export function probeDevice(): DeviceInfo {
   let webgl = false;
   let webgl2 = false;
   let softwareGl = false;
+  let integratedGpu = false;
   try {
     const c = document.createElement('canvas');
     const gl = (c.getContext('webgl2') as WebGLRenderingContext | null) ?? c.getContext('webgl');
@@ -40,13 +43,14 @@ export function probeDevice(): DeviceInfo {
     const info = gl?.getExtension('WEBGL_debug_renderer_info');
     const renderer = info && gl ? String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
     softwareGl = /swiftshader|llvmpipe|software|softpipe/i.test(renderer);
+    integratedGpu = /intel|uhd|iris|mali|adreno|powervr|videocore|microsoft basic/i.test(renderer);
     gl?.getExtension('WEBGL_lose_context')?.loseContext();
   } catch {
     webgl = false;
   }
   const nav = navigator as Navigator & { deviceMemory?: number };
   const mobile = typeof window !== 'undefined' && !!window.matchMedia?.('(max-width: 767px), (pointer: coarse)').matches;
-  return { webgl, webgl2, memoryGb: nav.deviceMemory, cores: nav.hardwareConcurrency, mobile, softwareGl };
+  return { webgl, webgl2, memoryGb: nav.deviceMemory, cores: nav.hardwareConcurrency, mobile, softwareGl, integratedGpu };
 }
 
 /** Pure decision, unit-tested. */
@@ -58,8 +62,14 @@ export function chooseTier(pref: GraphicsPref, d: DeviceInfo): Tier {
   if (d.memoryGb !== undefined && d.memoryGb <= 2) return 'low';
   if (d.softwareGl) return 'low';
   if (!d.webgl2) return 'low';
-  if (d.mobile || (d.memoryGb !== undefined && d.memoryGb < 8) || (d.cores !== undefined && d.cores < 6)) return 'medium';
-  return 'high';
+  // Every device starts on the safe tier. Only a strong desktop GPU may climb to High, after a long stable run.
+  return 'medium';
+}
+
+/** The best tier the automatic mode may reach on this device. */
+export function ceilingTier(d: DeviceInfo): 'high' | 'medium' {
+  const weak = d.mobile || d.integratedGpu || (d.memoryGb !== undefined && d.memoryGb < 8) || (d.cores !== undefined && d.cores < 6);
+  return weak ? 'medium' : 'high';
 }
 
 interface GraphicsCtx {
@@ -96,9 +106,12 @@ export function GraphicsProvider({ children, device }: { children: ReactNode; de
   const [backdropPaused, setBackdropPaused] = useState(false);
 
   useEffect(() => {
-    governor.current = graphics === 'auto' && (base === 'high' || base === 'medium') ? new TierGovernor(base) : null;
+    governor.current =
+      graphics === 'auto' && (base === 'high' || base === 'medium')
+        ? new TierGovernor(base, base === 'medium' ? ceilingTier(info) : base)
+        : null;
     setAutoTier(null);
-  }, [graphics, base]);
+  }, [graphics, base, info]);
   // Time spent hidden never counts as slow (or fast).
   useEffect(() => {
     const onVis = () => governor.current?.pause();

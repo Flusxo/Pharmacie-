@@ -11,14 +11,15 @@
  * - hidden tab: rendering stops and resumes without a reload
  * - textures released when the last canvas unmounts; R3F disposes geometries/materials of unmounted meshes
  */
-import { Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
-import { Bloom, DepthOfField, EffectComposer, N8AO, Noise, ToneMapping, Vignette } from '@react-three/postprocessing';
-import { ToneMappingMode } from 'postprocessing';
+import { Environment, PerformanceMonitor } from '@react-three/drei';
 import { releaseTextures, setLabelResolution } from './textures';
 import { frameloopFor } from '../lib/graphics';
+
+// Post-processing (High tier only) is its own chunk: Medium and Low never download it.
+const HighEffects = lazy(() => import('./HighEffects'));
 
 let liveCanvases = 0;
 
@@ -50,6 +51,8 @@ export interface Scene3DProps {
   ao?: boolean;
   /** Bloom threshold/strength (full-screen light backgrounds need a high threshold or everything glows). */
   bloom?: { threshold: number; intensity: number };
+  /** Dynamic resolution: the pixel ratio drops when frames are late and rises again when there is headroom. */
+  adaptive?: boolean;
   /** Orthographic camera fitted to a world box (like an SVG viewBox, "meet"), so HTML overlays line up. */
   ortho?: { width: number; height: number };
 }
@@ -120,6 +123,35 @@ function FitOrtho({ width, height }: { width: number; height: number }) {
   return null;
 }
 
+/**
+ * Compiles every shader of the scene BEFORE the first frame, in parallel (KHR_parallel_shader_compile) and without
+ * blocking the main thread. Without it three.js links each program synchronously on its first use: on an integrated
+ * GPU this froze the whole page for about 5 seconds while the 3D started.
+ */
+function Precompile({ onCompiled }: { onCompiled: () => void }) {
+  const { gl, scene, camera } = useThree();
+  useEffect(() => {
+    let live = true;
+    const r = gl as unknown as { compileAsync?: (s: THREE.Object3D, c: THREE.Camera) => Promise<unknown> };
+    // Wait until the environment map is applied and the first layers are mounted: compiling before that would build
+    // programs without the env-map defines, and every material would be compiled AGAIN, synchronously, on the first frame.
+    const settled = new Promise<void>((resolve) => {
+      let tries = 0;
+      const poll = () => {
+        if (!live || scene.environment || ++tries > 60) requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        else setTimeout(poll, 50);
+      };
+      poll();
+    });
+    const run = settled.then(() => (r.compileAsync ? r.compileAsync(scene, camera) : undefined));
+    run.catch(() => undefined).finally(() => live && onCompiled());
+    return () => {
+      live = false;
+    };
+  }, [gl, scene, camera, onCompiled]);
+  return null;
+}
+
 /** Drives a "demand" canvas at a fixed rate. */
 function Ticker({ fps }: { fps: number }) {
   const invalidate = useThree((st) => st.invalidate);
@@ -148,6 +180,7 @@ export function Scene3D({
   maxFps,
   ortho,
   ao = true,
+  adaptive = false,
   dprRange,
   bloom = { threshold: 0.85, intensity: 0.35 },
 }: Scene3DProps) {
@@ -155,6 +188,9 @@ export function Scene3D({
   const [visible, setVisible] = useState(true);
   const pageVisible = usePageVisible();
   const [lost, setLost] = useState(false);
+  // Nothing is drawn before the shaders are compiled (see Precompile): the page stays responsive meanwhile.
+  const [compiled, setCompiled] = useState(false);
+  const onCompiled = useCallback(() => setCompiled(true), []);
   const high = tier === 'high' && !light;
   // 4096 px labels on High (hero objects), 2048 otherwise.
   setLabelResolution(high ? 4096 : 2048);
@@ -176,10 +212,15 @@ export function Scene3D({
   }, []);
 
   void alwaysRender;
-  const loop = frameloopFor({ visible: visible && pageVisible && !lost, paused, reduced });
+  const loop = compiled ? frameloopFor({ visible: visible && pageVisible && !lost, paused, reduced }) : 'never';
   // A capped scene renders on demand, ticked by a timer.
   const frameloop = loop === 'always' && maxFps ? 'demand' : loop;
-  const dpr: [number, number] = dprRange ?? (light ? [1, 1] : tier === 'high' ? [1, 2] : [1, 1.5]);
+  const range: [number, number] = dprRange ?? (light ? [1, 1] : tier === 'high' ? [1, 2] : [1, 1.5]);
+  // Dynamic resolution (root canvas): starts at the top of the range, never above the screen's own pixel ratio.
+  const [scale, setScale] = useState(1);
+  const screenRatio = typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1;
+  const top = Math.min(range[1], screenRatio);
+  const dpr: number | [number, number] = adaptive ? Math.max(0.5, Math.min(top, range[1]) * scale) : range;
 
   return (
     <div
@@ -199,7 +240,9 @@ export function Scene3D({
             : { position: camera.position, fov: camera.fov ?? 35, near: 0.1, far: 100 }
         }
         gl={{ antialias: !high, alpha: true, powerPreference: light ? 'low-power' : 'high-performance' }}
-        onCreated={({ gl, invalidate }) => {
+        onCreated={({ gl, invalidate, scene }) => {
+          // Handle for the performance scripts (scripts/programs.mjs): the root canvas only.
+          if (className === 'page-bg-canvas') (window as unknown as { __stage?: unknown }).__stage = { gl, scene };
           // Context loss (GPU reset, too many contexts, driver update): keep the canvas and wait for the
           // browser to restore it; three.js re-uploads textures and geometry by itself.
           const el = gl.domElement;
@@ -211,6 +254,8 @@ export function Scene3D({
             setLost(false);
             invalidate();
           });
+          // Skip the synchronous shader-status check in production (errors are caught in development and tests).
+          gl.debug.checkShaderErrors = !import.meta.env.PROD;
           gl.toneMapping = THREE.ACESFilmicToneMapping;
           gl.toneMappingExposure = exposure;
           gl.outputColorSpace = THREE.SRGBColorSpace;
@@ -230,19 +275,22 @@ export function Scene3D({
           {ortho && <FitOrtho width={ortho.width} height={ortho.height} />}
           {children}
           {high && (
-            <EffectComposer multisampling={4}>
-              {ao ? <N8AO halfRes aoRadius={0.4} intensity={1.6} distanceFalloff={0.6} /> : <></>}
-              <Bloom intensity={bloom.intensity} luminanceThreshold={bloom.threshold} luminanceSmoothing={0.15} mipmapBlur />
-              {dof ? <DepthOfField focusDistance={dof.focusDistance} focalLength={dof.focalLength} bokehScale={dof.bokehScale} /> : <></>}
-              <Vignette offset={0.3} darkness={0.35} />
-              {/* Subtle film grain: breaks gradient banding and adds a photographic texture. */}
-              <Noise premultiply opacity={0.035} />
-              <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-            </EffectComposer>
+            <Suspense fallback={null}>
+              <HighEffects ao={ao} bloom={bloom} dof={dof} />
+            </Suspense>
           )}
-          <FirstFrame reduced={reduced} onReady={onReady} />
+          <Precompile onCompiled={onCompiled} />
+          {compiled && <FirstFrame reduced={reduced} onReady={onReady} />}
         </Suspense>
         {!reduced && onFps && <FpsSampler onFps={onFps} />}
+        {adaptive && !reduced && (
+          <PerformanceMonitor
+            bounds={(refresh) => [42, refresh > 90 ? 85 : 56]}
+            onDecline={() => setScale((s) => Math.max(0.6, s - 0.15))}
+            onIncline={() => setScale((s) => Math.min(1, s + 0.1))}
+            flipflops={4}
+          />
+        )}
         {loop === 'always' && maxFps ? <Ticker fps={maxFps} /> : null}
       </Canvas>
     </div>

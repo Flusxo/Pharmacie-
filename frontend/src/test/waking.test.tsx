@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 describe('hosted backend that is asleep', () => {
-  it('shows "waking up" after 4 s, retries a GET on 503 and hides the banner when the server answers', async () => {
+  it('shows "waking up" after 1.5 s, retries a GET on 503 and hides the banner when the server answers', async () => {
     vi.stubEnv('VITE_API_URL', 'https://api.example.onrender.com/');
     vi.resetModules();
     vi.useFakeTimers();
@@ -22,7 +22,7 @@ describe('hosted backend that is asleep', () => {
       .mockResolvedValueOnce(new Response('{}', { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
     const p = fetchAwake(apiUrl('/health'), {}, true);
-    await vi.advanceTimersByTimeAsync(4100);
+    await vi.advanceTimersByTimeAsync(3100);
     const res = await p;
     expect(res.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledTimes(2);

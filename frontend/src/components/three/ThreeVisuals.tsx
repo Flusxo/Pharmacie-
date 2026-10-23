@@ -33,6 +33,34 @@ function useFontsReady(): boolean {
   return ok;
 }
 
+/**
+ * True once the page has loaded and the browser has been idle for a moment: the 3D code (about 350 KB) and its
+ * set-up start only then, so the real content is on screen and usable first and a click or scroll is never
+ * blocked behind the 3D.
+ */
+export function useAfterIdle(minMs = 250): boolean {
+  const [ok, setOk] = useState(false);
+  useEffect(() => {
+    let timer = 0;
+    const start = () => setOk(true);
+    const go = () => {
+      const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+      if (ric) ric(start, { timeout: 2500 });
+      else timer = window.setTimeout(start, 300);
+    };
+    const after = () => {
+      timer = window.setTimeout(go, minMs);
+    };
+    if (document.readyState === 'complete') after();
+    else window.addEventListener('load', after, { once: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('load', after);
+    };
+  }, [minMs]);
+  return ok;
+}
+
 /** Any error inside a 3D scene (lost context, unsupported feature) shows the fallback instead. */
 export class ThreeBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
   override state = { failed: false };
@@ -58,9 +86,10 @@ export function RootStage() {
   const { resolvedTheme } = useSettings();
   const location = useLocation();
   const fonts = useFontsReady();
+  const idle = useAfterIdle();
   const { claim } = g;
   useEffect(() => (g.canRender3D ? claim('root', 0) : undefined), [g.canRender3D, claim]);
-  const draw = g.canRender3D && fonts;
+  const draw = g.canRender3D && fonts && idle;
   const paused = g.backdropPaused || (g.mobile && g.activeId !== null && g.activeId !== 'root');
   const [ready, setReady] = useState(false);
   const onReady = useCallback(() => setReady(true), []);

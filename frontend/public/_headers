@@ -1,0 +1,16 @@
+# Cloudflare Pages response headers.
+# Hashed build files never change under the same name: cache them for a year.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Rendered pictures and the environment map keep their names when re-rendered: a week, then check again.
+/renders/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/hdr/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/favicon.svg
+  Cache-Control: public, max-age=86400
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

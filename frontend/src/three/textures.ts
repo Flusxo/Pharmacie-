@@ -149,9 +149,22 @@ export function labelTexture(spec: LabelSpec, anisotropy = 8): THREE.Texture {
   }
   // Name (≤ 3 lines) and dosage (≤ 2) fitted inside the text box: shrink and wrap, never cropped.
   const family = 'Inter Variable, Inter, Arial, sans-serif';
+  // Memoised: the font search below asks for the same text at many sizes; setting ctx.font each time is the slow part.
+  const widths = new Map<string, number>();
+  let currentFont = '';
   const measure = (text: string, size: number, weight: number) => {
-    ctx.font = `${weight === 700 ? 800 : 700} ${size}px ${family}`;
-    return ctx.measureText(text).width * 1.02;
+    const font = `${weight === 700 ? 800 : 700} ${size}px ${family}`;
+    const key = `${font}|${text}`;
+    let w = widths.get(key);
+    if (w === undefined) {
+      if (font !== currentFont) {
+        ctx.font = font;
+        currentFont = font;
+      }
+      w = ctx.measureText(text).width * 1.02;
+      widths.set(key, w);
+    }
+    return w;
   };
   const box = { x: cx - maxW * 0.45, y: H * 0.21, w: maxW * 0.9, h: H * (wrap ? 0.43 : 0.42) };
   const lines = fitLabel(packTitle(spec.name), spec.dosage, box, {
@@ -253,6 +266,8 @@ function normalFromHeight(
 }
 
 export function foilNormal(): THREE.Texture {
+  const done = cache.get('foil');
+  if (done) return done;
   const r = rng(11);
   const pts = Array.from({ length: 40 }, () => [r() * 256, r() * 256, 10 + r() * 40, r() - 0.5]);
   return normalFromHeight(
@@ -265,6 +280,8 @@ export function foilNormal(): THREE.Texture {
 }
 
 export function paperNormal(): THREE.Texture {
+  const done = cache.get('paper');
+  if (done) return done;
   const r = rng(5);
   const noise = Array.from({ length: 128 * 128 }, () => r());
   return normalFromHeight('paper', 128, (x, y) => noise[(y % 128) * 128 + (x % 128)] * 0.6, 1.2, 6);
@@ -272,6 +289,8 @@ export function paperNormal(): THREE.Texture {
 
 /** Fine micro-surface for moulded plastics and caps (tiny orange-peel bumps). */
 export function plasticNormal(): THREE.Texture {
+  const done = cache.get('plastic-n');
+  if (done) return done;
   const r = rng(23);
   const n = 256;
   const noise = Array.from({ length: n * n }, () => r());

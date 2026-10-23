@@ -93,7 +93,8 @@ export function fitLabel(
 ): FittedLine[] {
   const tWords = title.trim().split(/\s+/).filter(Boolean);
   const dWords = dosage.trim() ? dosage.trim().split(/\s+/) : [];
-  for (let size = maxTitle; size >= 3; size -= 0.5) {
+  // Coarse steps while the text is large (a 4096 px label starts at 400), fine ones near the end.
+  for (let size = maxTitle; size >= 3; size -= size > 60 ? 4 : size > 24 ? 1 : 0.5) {
     const tLines = wrap(tWords, size, 700, box.w, 3, measure);
     if (!tLines) continue;
     const dSize = Math.min(maxDose, Math.max(size * 0.82, Math.min(7.5, size)));

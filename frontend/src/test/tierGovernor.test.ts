@@ -11,6 +11,21 @@ function feed(g: TierGovernor, fps: number, n: number, t: number): number {
 }
 
 describe('quality tier governor (hysteresis)', () => {
+  it('starts on medium and climbs to high on a strong device only after a long stable period', () => {
+    const g = new TierGovernor('medium', 'high');
+    let t = feed(g, 60, HIGH_SECONDS - 1, 0);
+    expect(g.tier).toBe('medium');
+    t = feed(g, 60, 1, t);
+    expect(g.tier).toBe('high');
+    expect(t).toBeGreaterThan(MIN_GAP_MS);
+  });
+
+  it('a device whose ceiling is medium never climbs, however smooth it runs', () => {
+    const g = new TierGovernor('medium', 'medium');
+    feed(g, 60, 1000, 0);
+    expect(g.tier).toBe('medium');
+  });
+
   it('ignores short dips: a single slow second or a few never lower the tier', () => {
     const g = new TierGovernor('high');
     let t = feed(g, 60, 10, 0);

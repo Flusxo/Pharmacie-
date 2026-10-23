@@ -6,6 +6,10 @@ import './styles/app.css';
 import './styles/public.css';
 import './styles/pictures.css';
 import { App } from './App';
+import { warmUp } from './lib/apiBase';
+
+// A sleeping free backend starts waking up now, not when the visitor first searches.
+warmUp();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

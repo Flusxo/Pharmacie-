@@ -2145,3 +2145,30 @@ table.table {
     order: 3;
   }
 }
+
+/* Placeholder while a page's code loads (route-level code splitting) */
+.page-fallback {
+  /* Tall enough that the footer is never visible (and then pushed away) while a page loads: no layout shift. */
+  min-height: 100dvh;
+  align-content: start;
+  display: grid;
+  gap: 14px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 88px 16px;
+}
+.sk {
+  display: block;
+  height: 14px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+.sk-title {
+  height: 34px;
+  width: 55%;
+}
+.sk.short {
+  width: 70%;
+}

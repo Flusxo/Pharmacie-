@@ -22,6 +22,41 @@ import {
 
 const v2 = (pts: [number, number][]) => pts.map(([x, y]) => new THREE.Vector2(x, y));
 
+/**
+ * Material detail. "full": physically based (clear coat, sheen, transmission, micro-surface maps): the product viewers
+ * and the High tier. "lite": plain standard materials with the same colours: the site background on Medium. Every
+ * distinct physical material is its own shader program (about 100 ms each to link on an integrated GPU), so the
+ * background uses a handful of programs instead of dozens. Set by PageScene / ProductModel before they build materials.
+ */
+let detail: 'full' | 'lite' = 'full';
+export const setMaterialDetail = (d: 'full' | 'lite') => {
+  detail = d;
+};
+const PHYSICAL_ONLY = [
+  'clearcoat',
+  'clearcoatRoughness',
+  'sheen',
+  'sheenColor',
+  'sheenRoughness',
+  'transmission',
+  'thickness',
+  'ior',
+  'attenuationColor',
+  'attenuationDistance',
+  'specularIntensity',
+  'normalMap',
+  'normalScale',
+  'roughnessMap',
+];
+function phys(p: THREE.MeshPhysicalMaterialParameters): THREE.MeshPhysicalMaterial | THREE.MeshStandardMaterial {
+  if (detail === 'full') return new THREE.MeshPhysicalMaterial(p);
+  const q = { ...p } as Record<string, unknown>;
+  for (const k of PHYSICAL_ONLY) delete q[k];
+  // A clear coat reads as gloss: keep that with a lower roughness.
+  if (p.clearcoat && typeof q.roughness === 'number') q.roughness = Math.min(q.roughness, 0.3);
+  return new THREE.MeshStandardMaterial(q as THREE.MeshStandardMaterialParameters);
+}
+
 // ---------- materials ----------
 
 export function useGlass(tint: 'amber' | 'clear', quality: 'high' | 'medium') {
@@ -29,7 +64,7 @@ export function useGlass(tint: 'amber' | 'clear', quality: 'high' | 'medium') {
     () =>
       // Medium: tinted transparent glass, no transmission pass (that pass re-renders the whole scene).
       quality === 'medium'
-        ? new THREE.MeshPhysicalMaterial({
+        ? phys({
             color: tint === 'amber' ? '#b8691c' : '#e8f4ef',
             transparent: true,
             opacity: tint === 'amber' ? 0.72 : 0.32,
@@ -39,7 +74,7 @@ export function useGlass(tint: 'amber' | 'clear', quality: 'high' | 'medium') {
             envMapIntensity: 1.4,
             depthWrite: false,
           })
-        : new THREE.MeshPhysicalMaterial({
+        : phys({
             color: '#ffffff',
             transmission: 1,
             thickness: 0.35,
@@ -57,8 +92,20 @@ export function useGlass(tint: 'amber' | 'clear', quality: 'high' | 'medium') {
   );
 }
 
+const plasticCache = new Map<string, THREE.Material & { color: THREE.Color }>();
+
+/** Moulded plastic. Identical settings share ONE material (fewer shader programs and uniform uploads). */
 export function plastic(color: string, opts: { clearcoat?: number; roughness?: number; sheen?: number; transmission?: number } = {}) {
-  return new THREE.MeshPhysicalMaterial({
+  const key = `${detail}|${color}|${opts.clearcoat ?? ''}|${opts.roughness ?? ''}|${opts.sheen ?? ''}|${opts.transmission ?? ''}`;
+  const hit = plasticCache.get(key);
+  if (hit) return hit;
+  const m = makePlastic(color, opts);
+  plasticCache.set(key, m);
+  return m;
+}
+
+function makePlastic(color: string, opts: { clearcoat?: number; roughness?: number; sheen?: number; transmission?: number }) {
+  return phys({
     color,
     // Micro-surface detail (procedural maps): highlights break up like real moulded plastic.
     normalMap: plasticNormal(),
@@ -89,7 +136,7 @@ function cardboard(map: THREE.Texture) {
     map,
     roughness: 0.82,
     metalness: 0,
-    normalMap: paperNormal(),
+    normalMap: detail === 'full' ? paperNormal() : undefined,
     normalScale: new THREE.Vector2(0.25, 0.25),
   });
 }
@@ -249,7 +296,7 @@ export function AmberBottle({ label, quality, open, onCapClick, burst = 0 }: Pro
   );
   const liquidMat = useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({
+      phys({
         color: '#7a3a0a',
         transmission: 0.55,
         thickness: 0.6,
@@ -348,10 +395,7 @@ export function Tube({ label, open, onCapClick, burst = 0 }: ProductProps) {
   }, []);
   const map = labelTexture({ ...label, kind: 'wrap' });
   const mat = useMemo(() => plastic('#ffffff', { clearcoat: 0.8, roughness: 0.25 }), []);
-  const labelMat = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ map, roughness: 0.35, clearcoat: 0.8, polygonOffset: true, polygonOffsetFactor: -2 }),
-    [map],
-  );
+  const labelMat = useMemo(() => phys({ map, roughness: 0.35, clearcoat: 0.8, polygonOffset: true, polygonOffsetFactor: -2 }), [map]);
   return (
     <group>
       <mesh geometry={body} material={mat} castShadow receiveShadow />
@@ -420,7 +464,7 @@ export function Sachet({ label }: ProductProps) {
   }, []);
   const map = labelTexture({ ...label, kind: 'panel' });
   const mat = useMemo(() => {
-    const m = new THREE.MeshPhysicalMaterial({
+    const m = phys({
       map,
       roughness: 0.4,
       metalness: 0.15,
@@ -608,7 +652,7 @@ export function GreenCross({ glow = 1.2, ...props }: { glow?: number } & JSX.Int
   }, []);
   const mat = useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({
+      phys({
         color: '#10B981',
         emissive: new THREE.Color('#10B981'),
         emissiveIntensity: glow,
@@ -675,7 +719,7 @@ export function NasalSpray({ label, open }: ProductProps) {
   const accent = useMemo(() => plastic(label.color, { clearcoat: 1, roughness: 0.3 }), [label.color]);
   const capGlass = useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({
+      phys({
         color: '#bfe3f2',
         transparent: true,
         opacity: 0.45,
@@ -812,6 +856,7 @@ export function productKindFor(form: string): ProductKind {
 }
 
 export function ProductModel(props: ProductProps & { form: string }): ReactNode {
+  setMaterialDetail('full'); // the viewers always show the full material detail
   switch (productKindFor(props.form)) {
     case 'amber':
       return <AmberBottle {...props} />;
@@ -952,7 +997,7 @@ export function Stethoscope(props: GroupProps) {
 
 /** Envelope with a folded flap. */
 export function Envelope(props: GroupProps) {
-  const paper = useMemo(() => new THREE.MeshPhysicalMaterial({ color: '#ffffff', roughness: 0.6, sheen: 0.6, clearcoat: 0.2 }), []);
+  const paper = useMemo(() => phys({ color: '#ffffff', roughness: 0.6, sheen: 0.6, clearcoat: 0.2 }), []);
   const flapGeo = useMemo(() => {
     const sh = new THREE.Shape();
     sh.moveTo(-0.75, 0);
@@ -1021,7 +1066,7 @@ export function Blob({
 }: { kind?: 'sphere' | 'torus' | 'pill'; color?: string } & GroupProps) {
   const m = useMemo(
     () =>
-      new THREE.MeshPhysicalMaterial({
+      phys({
         color,
         roughness: 0.18,
         clearcoat: 1,
@@ -1147,10 +1192,7 @@ export function Scooter() {
 /** Marble pharmacy counter. */
 export function Counter() {
   const marble = marbleTexture();
-  const top = useMemo(
-    () => new THREE.MeshPhysicalMaterial({ map: marble, roughness: 0.18, clearcoat: 0.6, clearcoatRoughness: 0.15 }),
-    [marble],
-  );
+  const top = useMemo(() => phys({ map: marble, roughness: 0.18, clearcoat: 0.6, clearcoatRoughness: 0.15 }), [marble]);
   const front = useMemo(() => new THREE.MeshStandardMaterial({ color: '#e9efe9', roughness: 0.55 }), []);
   return (
     <group>
