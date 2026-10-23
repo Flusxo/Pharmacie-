@@ -178,6 +178,39 @@ test.describe('3D layer', () => {
     expect(await p2.locator('canvas').count()).toBeLessThanOrEqual(2);
   });
 
+  test('scroll stories: the persistent canvas stays the same element and visible while every step of a page is read; the hero still fades out', async ({
+    page,
+  }) => {
+    test.setTimeout(300_000);
+    const stage = page.getByTestId('root-stage');
+    await page.goto('/patients');
+    await expect(stage.locator('canvas')).toHaveCount(1, { timeout: 120_000 });
+    await expect(stage).toHaveClass(/ready/, { timeout: 120_000 });
+    await page.evaluate(
+      () => ((window as unknown as { __c: Element | null }).__c = document.querySelector('[data-testid="root-stage"] canvas')),
+    );
+    // the live 3D has taken over: the still of the hero is faded out
+    await expect.poll(() => page.getByTestId('hero-still').evaluate((el) => getComputedStyle(el).opacity)).toBe('0');
+    const steps = page.getByTestId('story-live-step');
+    await expect(steps).toHaveCount(4);
+    for (let i = 0; i < 4; i++) {
+      await steps.nth(i).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      await page.waitForTimeout(700);
+      const state = await page.evaluate(() => {
+        const c = document.querySelector('[data-testid="root-stage"] canvas');
+        const holder = c?.closest('.page-bg-canvas') as HTMLElement | null;
+        return {
+          same: (window as unknown as { __c: Element | null }).__c === c,
+          visible: !!c && c.getBoundingClientRect().width > 100 && !!holder && getComputedStyle(holder).opacity === '1',
+          canvases: document.querySelectorAll('canvas').length,
+        };
+      });
+      expect(state, 'step ' + (i + 1)).toEqual({ same: true, visible: true, canvases: 1 });
+    }
+    // no framed picture anywhere around the objects
+    await expect(page.locator('.picture.framed')).toHaveCount(0);
+  });
+
   test('medicine details: 3D viewer with canvas, 3D / Photo toggle and a text alternative', async ({ page }) => {
     await loginByToken(page, 'alice@pharmacie.test');
     await page.goto('/search?q=Hélicidine');
