@@ -680,7 +680,7 @@ export function AdminDashboard() {
           {!orders.items ? (
             <CardSkeleton />
           ) : (
-            <Table head={[t('dash.date'), t('order.pharmacy'), t('dash.patient'), t('dash.items'), t('dash.status')]}>
+            <Table head={[t('dash.date'), t('order.pharmacy'), t('dash.patient'), t('dash.items'), t('dash.status'), t('pay.title')]}>
               {orders.items.map((o) => (
                 <tr key={str(o.id)}>
                   <td>{formatDateTime(str(o.createdAt), locale)}</td>
@@ -689,6 +689,9 @@ export function AdminDashboard() {
                   <td>{str(o.itemCount)}</td>
                   <td>
                     <StatusBadge status={str(o.status)} />
+                  </td>
+                  <td data-testid="admin-order-payment">
+                    {o.paymentStatus ? t(`pay.status.${str(o.paymentStatus)}` as MessageKey) : t('pay.status.none')}
                   </td>
                 </tr>
               ))}

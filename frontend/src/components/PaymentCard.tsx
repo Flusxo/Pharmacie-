@@ -32,9 +32,10 @@ export function PaymentCard({ orderId, orderStatus, total }: { orderId: string; 
       setError(e instanceof ApiError ? e.message : t('common.error'));
     }
   }, [orderId, t]);
+  // Look again whenever the order moves (the money follows the order: captured when ready, released or refunded when cancelled).
   useEffect(() => {
     void load();
-  }, [load]);
+  }, [load, orderStatus]);
 
   // Back from Stripe: the webhook may take a few seconds to arrive, so look again for a short while.
   const status = info?.payment?.status;
@@ -89,6 +90,11 @@ export function PaymentCard({ orderId, orderStatus, total }: { orderId: string; 
       {status === 'refunded' && <p>{t('pay.refundedText')}</p>}
       {status === 'capture_failed' && <p>{t('pay.captureFailedText')}</p>}
       {returning && !status && <p aria-live="polite">{t('pay.waiting')}</p>}
+      {params.get('payment') === 'cancelled' && !status && (
+        <p role="status" data-testid="payment-cancelled">
+          {t('pay.cancelledReturn')}
+        </p>
+      )}
       {canPay && info?.configured && (
         <div className="stack" style={{ gap: 8 }}>
           <p className="muted small">{t('pay.afterAccept')}</p>

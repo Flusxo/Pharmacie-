@@ -43,6 +43,8 @@ import {
 import { ContactPage } from './pages/public/ContactPage';
 
 // Development only: draws one picture for scripts/render-assets.ts (absent from production builds).
+// Development only: a stand-in for Stripe's payment page (no Stripe keys needed).
+const FakeStripe = import.meta.env.DEV ? lazy(() => import('./pages/dev/FakeStripe')) : null;
 const RenderStudio = import.meta.env.DEV ? lazy(() => import('./render/RenderStudio')) : null;
 
 /** Requires a logged-in user with one of the roles; unverified professionals go to /waiting. */
@@ -68,6 +70,16 @@ export function AppRoutes() {
   if (!ready) return null;
   return (
     <Routes>
+      {FakeStripe && (
+        <Route
+          path="/dev/fake-stripe/:sessionId"
+          element={
+            <Suspense fallback={null}>
+              <FakeStripe />
+            </Suspense>
+          }
+        />
+      )}
       {RenderStudio && (
         <Route
           path="/render"

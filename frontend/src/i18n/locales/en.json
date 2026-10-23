@@ -920,5 +920,12 @@
   "adm.analytics.pharmacies": "Most active pharmacies",
   "adm.analytics.pharmacy": "Pharmacy",
   "adm.analytics.accepted": "Accepted requests",
-  "adm.analytics.other": "Other"
+  "adm.analytics.other": "Other",
+  "pay.fake.notice": "Development simulation: this replaces Stripe’s payment page. No real card, no real payment.",
+  "pay.fake.title": "Test payment (simulated)",
+  "pay.fake.card": "Test card number",
+  "pay.fake.pay": "Pay",
+  "pay.fake.declined": "Your card was declined. Try another test card.",
+  "pay.fake.back": "Back to the order",
+  "pay.cancelledReturn": "Payment cancelled: nothing was charged. You can try again."
 }

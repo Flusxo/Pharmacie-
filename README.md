@@ -149,4 +149,8 @@ Set it up:
 4. Log in as a patient, send a request, log in as the pharmacy to accept it, then open the order as the patient and press **Pay (test)**.
 5. Test cards: `4242 4242 4242 4242` succeeds; `4000 0000 0000 0002` is declined (any future date, any CVC). Move the order to **Ready** as the pharmacy to see the capture; cancel to see the refund.
 
+### Try the payment flow without Stripe keys
+
+For development and the e2e tests only, `STRIPE_FAKE=1` (in `.env`) replaces Stripe by a simulated checkout page (`/dev/fake-stripe/...`; card `4242 4242 4242 4242` pays, any other number is declined). The server refuses to start with it in production and the route does not exist in the production build. It exercises our whole side of the flow (authorise, capture when ready, release or refund on cancel); only the real Stripe pages and signatures need your test keys.
+
 Without keys the order page says **"Payments not configured"** and everything else still works. Hosted: add the same two variables on Render and create a webhook endpoint `https://<your-service>.onrender.com/api/webhooks/stripe` (events: `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `payment_intent.canceled`, `charge.refunded`); see `DEPLOY.md`.

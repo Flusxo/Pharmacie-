@@ -28,3 +28,10 @@ const shutdown = () => {
 };
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
+
+// Never die silently: a stray rejection or exception is logged with its message (no data) before Node decides.
+process.on('unhandledRejection', (reason) => log('error', 'unhandled_rejection', { error: String(reason).slice(0, 300) }));
+process.on('uncaughtException', (err) => {
+  log('error', 'uncaught_exception', { error: err.message.slice(0, 300) });
+  process.exit(1);
+});

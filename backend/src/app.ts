@@ -3,13 +3,14 @@ import express, { type Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
+import { z } from 'zod';
 import { FRONTEND_ORIGINS, isProd } from './config.js';
-import { handleWebhook } from './services/payments.js';
+import { fakeCheckout, fakeEnabled, handleWebhook } from './services/payments.js';
 import { pool } from './db.js';
 import { errorHandler, notFoundHandler } from './errors.js';
 import { log } from './logger.js';
 import { langOf, tr } from './i18n/index.js';
-import { authenticate } from './middleware/auth.js';
+import { authenticate, requireRole } from './middleware/auth.js';
 import { authRouter } from './routes/auth.js';
 import { publicRouter } from './routes/public.js';
 import { patientRouter } from './routes/patient.js';
@@ -110,6 +111,14 @@ export function createApp(): Express {
   app.use('/api', publicRouter);
   app.use('/api', contactRouter);
   app.use('/api', commonRouter);
+  if (fakeEnabled()) {
+    // Simulated Stripe checkout (development and e2e only; the server refuses to start with it in production).
+    app.post('/api/dev/fake-stripe/:sessionId/complete', requireRole('patient'), async (req, res) => {
+      const { sessionId } = z.object({ sessionId: z.string().min(5).max(80) }).parse(req.params);
+      const { card } = z.object({ card: z.string().min(1).max(30) }).parse(req.body);
+      res.json(await fakeCheckout(sessionId, req.user!.id, card));
+    });
+  }
   app.use('/api/patient', patientRouter);
   app.use('/api/doctor', doctorRouter);
   app.use('/api/pharmacy', pharmacyRouter);

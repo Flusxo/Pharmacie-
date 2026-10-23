@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { config } from './config.js';
+import { log } from './logger.js';
 import { pgConfig } from './pgconfig.js';
 
 // numeric -> JS number (prices are small, 2 decimals)
@@ -8,6 +9,10 @@ pg.types.setTypeParser(1700, (v) => (v === null ? null : Number(v)));
 pg.types.setTypeParser(20, (v) => (v === null ? null : Number(v)));
 
 export const pool = new pg.Pool({ ...pgConfig(config.DATABASE_URL), max: 10 });
+
+// An idle connection that the server drops (restart, network) emits "error" on the pool; without a listener Node
+// would crash the whole API. Log it: the pool opens a new connection by itself on the next query.
+pool.on('error', (err) => log('warn', 'db_idle_client_error', { error: err.message.slice(0, 200) }));
 
 export type Db = pg.Pool | pg.PoolClient;
 

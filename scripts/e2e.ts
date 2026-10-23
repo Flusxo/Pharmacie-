@@ -85,6 +85,8 @@ try {
     DATABASE_URL: E2E_DB,
     PORT: String(API_PORT),
     LOGIN_RATE_LIMIT: '5000',
+    // The simulated Stripe page (development only) lets the e2e tests pay without Stripe keys.
+    STRIPE_FAKE: '1',
     FRONTEND_URL: `http://localhost:${WEB_PORT}`,
   });
   const vite = (port: number, tileUrl: string) =>

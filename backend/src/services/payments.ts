@@ -6,7 +6,7 @@
  * and idempotent.
  */
 import Stripe from 'stripe';
-import { PRIMARY_FRONTEND, config } from '../config.js';
+import { PRIMARY_FRONTEND, config, isProd } from '../config.js';
 import { one, query, tx } from '../db.js';
 import { HttpError, conflict, notFound } from '../errors.js';
 import { log } from '../logger.js';
@@ -15,16 +15,43 @@ import { notify } from '../notify.js';
 export type PaymentStatus = 'pending' | 'authorized' | 'captured' | 'cancelled' | 'refunded' | 'failed' | 'capture_failed';
 
 let injected: Stripe | null = null;
+const fakeCalls: string[] = [];
+
+/** Simulated Stripe (STRIPE_FAKE, development and tests only): same calls as the real client, no network. */
+function fakeStripe(): Stripe {
+  let n = 0;
+  const ok = (name: string) => async () => {
+    fakeCalls.push(name);
+    return {};
+  };
+  return {
+    checkout: {
+      sessions: {
+        create: async (params: Stripe.Checkout.SessionCreateParams) => {
+          fakeCalls.push('sessions.create');
+          const id = `cs_fake_${Date.now().toString(36)}_${++n}`;
+          return { id, url: `${PRIMARY_FRONTEND}/dev/fake-stripe/${id}?order=${params.client_reference_id}` };
+        },
+        expire: ok('sessions.expire'),
+      },
+    },
+    paymentIntents: { capture: ok('pi.capture'), cancel: ok('pi.cancel') },
+    refunds: { create: ok('refunds.create') },
+  } as unknown as Stripe;
+}
+let fake: Stripe | null = null;
 let cached: { key: string; client: Stripe } | null = null;
 /** Tests replace the Stripe client with a fake (no network). */
 export function setStripeForTests(c: Stripe | null): void {
   injected = c;
 }
 
-export const paymentsConfigured = () => injected !== null || Boolean(config.STRIPE_SECRET_KEY);
+export const paymentsConfigured = () => injected !== null || Boolean(config.STRIPE_SECRET_KEY) || fakeEnabled();
+export const fakeEnabled = () => Boolean(config.STRIPE_FAKE) && !isProd;
 
 export function stripeClient(): Stripe {
   if (injected) return injected;
+  if (fakeEnabled() && !config.STRIPE_SECRET_KEY) return (fake ??= fakeStripe());
   const key = config.STRIPE_SECRET_KEY;
   if (!key) {
     throw new HttpError(503, 'Payments not configured. Ask the administrator to set the Stripe test keys.', 'payments_not_configured');
@@ -217,6 +244,37 @@ export async function handleWebhook(raw: Buffer, signature: string | undefined):
 function orderIdOf(obj: { metadata?: Stripe.Metadata | null }): string | undefined {
   const id = obj.metadata?.orderId;
   return id && /^[0-9a-f-]{36}$/.test(id) ? id : undefined;
+}
+
+/**
+ * Development only (STRIPE_FAKE): what Stripe's page and webhook would do after the customer enters a card.
+ * 4242 4242 4242 4242 pays; any other number is declined. Only the patient who owns the order can use it.
+ */
+export async function fakeCheckout(
+  sessionId: string,
+  patientId: string,
+  card: string,
+): Promise<{ orderId: string; outcome: 'paid' | 'declined' }> {
+  if (!fakeEnabled()) throw notFound('Not found.');
+  const p = await one<PaymentRow>(
+    `SELECT p.* FROM payments p JOIN orders o ON o.id = p.order_id WHERE p.stripe_session_id = $1 AND o.patient_id = $2`,
+    [sessionId, patientId],
+  );
+  if (!p) throw notFound('Order not found.');
+  const paid = card.replace(/\s/g, '') === '4242424242424242';
+  const event = (paid
+    ? {
+        id: `evt_fake_${sessionId}`,
+        type: 'checkout.session.completed',
+        data: { object: { id: sessionId, payment_intent: `pi_fake_${sessionId}`, metadata: { orderId: p.order_id } } },
+      }
+    : {
+        id: `evt_fake_declined_${Date.now()}`,
+        type: 'payment_intent.payment_failed',
+        data: { object: { metadata: { orderId: p.order_id } } },
+      }) as unknown as Stripe.Event;
+  await applyEvent(event);
+  return { orderId: p.order_id, outcome: paid ? 'paid' : 'declined' };
 }
 
 async function applyEvent(event: Stripe.Event): Promise<void> {

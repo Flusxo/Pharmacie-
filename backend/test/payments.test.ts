@@ -9,6 +9,7 @@ import { medicineId, userId } from '../../db/src/index.js';
 beforeAll(freshDb);
 
 const DOLIPRANE = medicineId(0);
+const AMOXICILLINE = medicineId(11); // prescription only
 const TOURNON = userId.pharmacy('tournon');
 const SECRET = 'whsec_test_secret_for_tests';
 
@@ -42,18 +43,19 @@ function fakeStripe() {
 
 afterEach(() => setStripeForTests(null));
 
-async function newOrder(patient = 'alice', quantity = 2) {
+async function newOrder(patient = 'alice', quantity = 2, opts: { medicine?: string; note?: string } = {}) {
+  const medicine = opts.medicine ?? DOLIPRANE;
   await pool.query(`UPDATE requests SET created_at = created_at - interval '3 minutes' WHERE patient_id = $1`, [userId.patient(patient)]);
   await pool.query(
     `INSERT INTO pharmacy_inventory (pharmacy_id, medicine_id, quantity, price_eur) VALUES ($1,$2,50,3.00)
      ON CONFLICT (pharmacy_id, medicine_id) DO UPDATE SET quantity = 50, price_eur = 3.00`,
-    [TOURNON, DOLIPRANE],
+    [TOURNON, medicine],
   );
   const pt = auth(await login(patient));
   const r = await api()
     .post('/api/patient/requests')
     .set(pt)
-    .send({ items: [{ medicineId: DOLIPRANE, quantity }] });
+    .send({ items: [{ medicineId: medicine, quantity }], prescriptionNote: opts.note });
   expect(r.status, JSON.stringify(r.body)).toBe(201);
   expect((await api().post(`/api/patient/requests/${r.body.id}/choose`).set(pt).send({ pharmacyId: TOURNON })).status).toBe(200);
   const a = await api()
@@ -63,11 +65,11 @@ async function newOrder(patient = 'alice', quantity = 2) {
   expect(a.status, JSON.stringify(a.body)).toBe(200);
   return { requestId: r.body.id as string, orderId: a.body.orderId as string, pt };
 }
-const pharmacyMove = async (orderId: string, status: string) =>
+const pharmacyMove = async (orderId: string, status: string, prescriptionChecked = true) =>
   api()
     .patch(`/api/pharmacy/orders/${orderId}/status`)
     .set(auth(await login('pharmacie.tournon')))
-    .send({ status, prescriptionChecked: true });
+    .send({ status, prescriptionChecked });
 
 function webhook(event: object, secret = SECRET) {
   const payload = JSON.stringify(event);
@@ -208,6 +210,85 @@ describe('payments (Stripe test mode)', () => {
     expect((await pharmacyMove(b.orderId, 'cancelled')).status).toBe(200);
     expect(fake.count('refunds.create')).toBe(1);
     expect((await paymentOf(b.orderId)).status).toBe('refunded');
+  });
+
+  it('declined card: the payment is marked failed, nothing is held, and the patient can try again with a new payment page', async () => {
+    const fake = fakeStripe();
+    setStripeForTests(fake.client);
+    const { orderId, pt } = await newOrder('alice', 1);
+    expect((await api().post(`/api/patient/orders/${orderId}/pay`).set(pt).send()).status).toBe(200);
+    const declined = await webhook({
+      id: 'evt_test_declined',
+      object: 'event',
+      type: 'payment_intent.payment_failed',
+      data: { object: { id: 'pi_declined', object: 'payment_intent', metadata: { orderId } } },
+    });
+    expect(declined.status).toBe(200);
+    expect((await paymentOf(orderId)).status).toBe('failed');
+    expect((await api().get(`/api/patient/orders/${orderId}/receipt`).set(pt)).status).toBe(404); // nothing was charged
+    const again = await api().post(`/api/patient/orders/${orderId}/pay`).set(pt).send();
+    expect(again.status, JSON.stringify(again.body)).toBe(200);
+    expect((await paymentOf(orderId)).status).toBe('pending');
+    expect(fake.count('pi.capture')).toBe(0);
+  });
+
+  it('payment is impossible before the pharmacy accepts: a request that was only sent has no order to pay', async () => {
+    setStripeForTests(fakeStripe().client);
+    await pool.query(`UPDATE requests SET created_at = created_at - interval '3 minutes' WHERE patient_id = $1`, [userId.patient('alice')]);
+    const pt = auth(await login('alice'));
+    const r = await api()
+      .post('/api/patient/requests')
+      .set(pt)
+      .send({ items: [{ medicineId: DOLIPRANE, quantity: 1 }] });
+    await api().post(`/api/patient/requests/${r.body.id}/choose`).set(pt).send({ pharmacyId: TOURNON });
+    const noOrder = (await pool.query('SELECT 1 FROM orders WHERE request_id = $1', [r.body.id])).rowCount;
+    expect(noOrder).toBe(0);
+    // neither the request id nor a made-up id can be paid
+    expect((await api().post(`/api/patient/orders/${r.body.id}/pay`).set(pt).send()).status).toBe(404);
+    expect((await pool.query('SELECT 1 FROM payments')).rows.every(() => true)).toBe(true);
+    // once the pharmacy refuses, there is still nothing to pay
+    await api()
+      .post(`/api/pharmacy/requests/${r.body.id}/refuse`)
+      .set(auth(await login('pharmacie.tournon')))
+      .send({ reason: 'Out of stock today' });
+    expect((await api().post(`/api/patient/orders/${r.body.id}/pay`).set(pt).send()).status).toBe(404);
+  });
+
+  it('a prescription medicine is never charged before the pharmacy has checked the prescription and marked the order ready', async () => {
+    const fake = fakeStripe();
+    setStripeForTests(fake.client);
+    const { orderId, pt } = await newOrder('alice', 1, { medicine: AMOXICILLINE, note: 'Ordonnance du Dr Martin du 12 octobre' });
+    expect((await api().post(`/api/patient/orders/${orderId}/pay`).set(pt).send()).status).toBe(200);
+    await webhook(sessionCompleted('evt_test_rx', orderId));
+    expect((await paymentOf(orderId)).status).toBe('authorized'); // held, not taken
+    // the pharmacy cannot start preparing without confirming the prescription
+    const refused = await pharmacyMove(orderId, 'preparing', false);
+    expect(refused.status).toBe(400);
+    expect(refused.body.code).toBe('prescription_check_required');
+    expect(fake.count('pi.capture')).toBe(0);
+    expect((await pharmacyMove(orderId, 'preparing', true)).status).toBe(200);
+    expect(fake.count('pi.capture')).toBe(0);
+    expect((await pharmacyMove(orderId, 'ready', true)).status).toBe(200);
+    expect(fake.count('pi.capture')).toBe(1);
+  });
+
+  it('staff see the payment status of each order in the admin list; the status only', async () => {
+    setStripeForTests(fakeStripe().client);
+    const { orderId, pt } = await newOrder('alice', 1);
+    await api().post(`/api/patient/orders/${orderId}/pay`).set(pt).send();
+    await webhook(sessionCompleted('evt_test_admin', orderId));
+    const list = await api()
+      .get('/api/admin/orders')
+      .set(auth(await login('support')));
+    const row = list.body.items.find((o: { id: string }) => o.id === orderId);
+    expect(row.paymentStatus).toBe('authorized');
+    expect(JSON.stringify(row)).not.toMatch(/card|stripe|pi_|cs_/i);
+  });
+
+  it('the simulated checkout route does not exist unless STRIPE_FAKE is set (never in production)', async () => {
+    const { pt } = await newOrder('alice', 1);
+    const res = await api().post('/api/dev/fake-stripe/cs_x/complete').set(pt).send({ card: '4242424242424242' });
+    expect(res.status).toBe(404);
   });
 
   it('never stores card data: the payments table only holds ids, amount and status', async () => {

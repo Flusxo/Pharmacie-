@@ -920,5 +920,12 @@
   "adm.analytics.pharmacies": "Pharmacies les plus actives",
   "adm.analytics.pharmacy": "Pharmacie",
   "adm.analytics.accepted": "Demandes acceptées",
-  "adm.analytics.other": "Autres"
+  "adm.analytics.other": "Autres",
+  "pay.fake.notice": "Simulation de développement : ceci remplace la page de paiement Stripe. Aucune vraie carte, aucun vrai paiement.",
+  "pay.fake.title": "Paiement de test (simulé)",
+  "pay.fake.card": "Numéro de carte de test",
+  "pay.fake.pay": "Payer",
+  "pay.fake.declined": "Votre carte a été refusée. Essayez une autre carte de test.",
+  "pay.fake.back": "Retour à la commande",
+  "pay.cancelledReturn": "Paiement annulé : rien n’a été débité. Vous pouvez réessayer."
 }

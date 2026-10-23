@@ -15,6 +15,14 @@ const schema = z.object({
   /** Stripe TEST keys (optional: without them the site answers "Payments not configured"). */
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  /**
+   * Development and e2e only: a built-in simulated Stripe (a fake checkout page, no network). Refused in production.
+   * It exists so the whole payment flow can be tested end to end without Stripe keys.
+   */
+  STRIPE_FAKE: z
+    .enum(['0', '1', 'true', 'false'])
+    .optional()
+    .transform((v) => v === '1' || v === 'true'),
   /** Login attempts per 15 minutes per network (the e2e suite logs in far more often than a person). */
   LOGIN_RATE_LIMIT: z.coerce.number().int().positive().default(60),
   /** The hosted site's address; several allowed, separated by commas (the first one is used in e-mail links). */
@@ -36,6 +44,9 @@ export const PRIMARY_FRONTEND = FRONTEND_ORIGINS[0] ?? 'http://localhost:5173';
 export const isTest = config.NODE_ENV === 'test';
 export const isProd = config.NODE_ENV === 'production';
 
+if (isProd && config.STRIPE_FAKE) {
+  throw new Error('STRIPE_FAKE is for development and tests only: refusing to start in production.');
+}
 if (isProd && config.JWT_SECRET.startsWith('dev-only')) {
   throw new Error('Refusing to start in production with the example JWT_SECRET. Set a long random secret in .env.');
 }

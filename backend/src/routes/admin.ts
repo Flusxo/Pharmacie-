@@ -137,7 +137,8 @@ adminRouter.get('/orders', async (req, res) => {
     items: await query(
       `SELECT o.id, o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt", o.cancel_requested_at AS "cancelRequestedAt",
               p.name AS "pharmacyName", pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName",
-              (SELECT count(*) FROM request_items ri WHERE ri.request_id = o.request_id)::int AS "itemCount"
+              (SELECT count(*) FROM request_items ri WHERE ri.request_id = o.request_id)::int AS "itemCount",
+              (SELECT status FROM payments pay WHERE pay.order_id = o.id) AS "paymentStatus"
          FROM orders o JOIN pharmacies p ON p.user_id = o.pharmacy_id JOIN patients pt ON pt.user_id = o.patient_id
         WHERE ($1::order_status IS NULL OR o.status = $1) ORDER BY o.created_at DESC LIMIT 200`,
       [q.status ?? null],
