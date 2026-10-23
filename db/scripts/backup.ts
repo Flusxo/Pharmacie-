@@ -22,7 +22,9 @@ try {
     .filter((f) => /^\d+_.+\.sql$/.test(f))
     .sort();
   const hasTable = (await client.query("SELECT to_regclass('public.schema_migrations') AS t")).rows[0].t !== null;
-  const applied: string[] = hasTable ? (await client.query('SELECT name FROM schema_migrations ORDER BY name')).rows.map((r) => r.name) : [];
+  const applied: string[] = hasTable
+    ? (await client.query('SELECT name FROM schema_migrations ORDER BY name')).rows.map((r) => r.name)
+    : [];
   const pending = files.filter((f) => !applied.includes(f));
   console.log(`[backup] database: ${isLocalUrl(url) ? 'local' : 'hosted'} (${safeHost(url)})`);
   console.log(`[backup] applied migrations: ${applied.join(', ') || 'none'}`);
@@ -35,9 +37,9 @@ try {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const dir = path.join(ROOT, 'backups', stamp);
   fs.mkdirSync(dir, { recursive: true });
-  const tables: string[] = (
-    await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename")
-  ).rows.map((r) => r.tablename);
+  const tables: string[] = (await client.query("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename")).rows.map(
+    (r) => r.tablename,
+  );
   const manifest: Record<string, unknown> = { createdAt: new Date().toISOString(), applied, pending, rows: {} as Record<string, number> };
   let bytes = 0;
   for (const t of tables) {

@@ -625,32 +625,191 @@ export function GreenCross({ glow = 1.2, ...props }: { glow?: number } & JSX.Int
   );
 }
 
+// ---------- dedicated models: carton + blister, nasal spray, dropper bottle (Part G) ----------
+
+/** A label wrapped on a short arc of a cylinder (front of a bottle). */
+function ArcLabel({ radius, height, y, map, arc = 2.3 }: { radius: number; height: number; y: number; map: THREE.Texture; arc?: number }) {
+  const mat = useMemo(() => new THREE.MeshStandardMaterial({ map, roughness: 0.55, side: THREE.FrontSide }), [map]);
+  return (
+    <mesh position={[0, y, 0]} material={mat}>
+      {/* theta 0 is +z: the arc is centred on the front */}
+      <cylinderGeometry args={[radius + 0.004, radius + 0.004, height, 64, 1, true, -arc / 2, arc]} />
+    </mesh>
+  );
+}
+
+/** Carton box with the label on its front; `exploded` (or `open`) slides the blister out of the side. */
+export function CartonBlister({ label, quality, exploded = 0, open = 0 }: ProductProps) {
+  const slide = Math.max(exploded, open);
+  const map = labelTexture({ ...label, kind: 'carton' });
+  const front = useMemo(() => {
+    const m = cardboard(map);
+    return m;
+  }, [map]);
+  const side = useMemo(() => new THREE.MeshStandardMaterial({ color: '#f1f5f4', roughness: 0.85 }), []);
+  const size: [number, number, number] = [1.28, 0.8, 0.34];
+  return (
+    <group position={[0, size[1] / 2, 0]} rotation={[0, 0.32, 0]}>
+      <RoundedBox args={size} radius={0.02} smoothness={3} material={side} castShadow receiveShadow />
+      <mesh position={[0, 0, size[2] / 2 + 0.001]} material={front}>
+        <planeGeometry args={[size[0] - 0.03, size[1] - 0.03]} />
+      </mesh>
+      <mesh position={[0, 0, -size[2] / 2 - 0.001]} rotation={[0, Math.PI, 0]} material={front}>
+        <planeGeometry args={[size[0] - 0.03, size[1] - 0.03]} />
+      </mesh>
+      {/* the blister: hidden inside the carton at 0, out beside it at 1 */}
+      {slide > 0.02 && (
+        <group position={[0.35 + slide * 0.9, 0, 0.05]} rotation={[0, 0, Math.PI / 2]} scale={0.5}>
+          <group position={[0, -1.3, 0]} rotation={[0.22, 0, 0]}>
+            <Blister label={label} quality={quality} exploded={0} open={0} />
+          </group>
+        </group>
+      )}
+    </group>
+  );
+}
+
+/** Nasal spray: bottle, pump collar, nozzle and a transparent cap that lifts off with `open`. */
+export function NasalSpray({ label, open }: ProductProps) {
+  const body = useMemo(() => plastic('#F8FAFC', { clearcoat: 1, roughness: 0.22 }), []);
+  const accent = useMemo(() => plastic(label.color, { clearcoat: 1, roughness: 0.3 }), [label.color]);
+  const capGlass = useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: '#bfe3f2',
+        transparent: true,
+        opacity: 0.45,
+        roughness: 0.08,
+        clearcoat: 1,
+        depthWrite: false,
+      }),
+    [],
+  );
+  const metal = useMemo(() => new THREE.MeshStandardMaterial({ color: '#cfd5db', metalness: 0.9, roughness: 0.25 }), []);
+  const bottle = useMemo(
+    () =>
+      new THREE.LatheGeometry(
+        v2([
+          [0.001, 0],
+          [0.27, 0],
+          [0.31, 0.04],
+          [0.32, 0.12],
+          [0.32, 0.86],
+          [0.3, 0.98],
+          [0.2, 1.08],
+          [0.15, 1.12],
+          [0.15, 1.2],
+          [0.001, 1.2],
+        ]),
+        64,
+      ),
+    [],
+  );
+  const map = labelTexture({ ...label, kind: 'wrap' });
+  return (
+    <group>
+      <mesh geometry={bottle} material={body} castShadow />
+      <ArcLabel radius={0.32} height={0.6} y={0.5} map={map} arc={2.9} />
+      {/* pump collar and actuator */}
+      <mesh position={[0, 1.24, 0]} material={accent} castShadow>
+        <cylinderGeometry args={[0.17, 0.17, 0.1, 48]} />
+      </mesh>
+      <mesh position={[0, 1.38, 0]} material={metal} castShadow>
+        <cylinderGeometry args={[0.09, 0.11, 0.2, 32]} />
+      </mesh>
+      <mesh position={[0, 1.5, 0]} material={accent} castShadow>
+        <cylinderGeometry args={[0.07, 0.09, 0.1, 32]} />
+      </mesh>
+      <mesh position={[0, 1.58, 0]} material={metal} castShadow>
+        <cylinderGeometry args={[0.03, 0.045, 0.1, 24]} />
+      </mesh>
+      {/* the cap: a clear shell over the nozzle */}
+      <group position={[0, 1.18 + open * 0.8, 0]} rotation={[0, 0, open * 0.22]}>
+        <mesh material={capGlass} position={[0, 0.3, 0]} castShadow>
+          <capsuleGeometry args={[0.2, 0.34, 8, 32]} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+/** Dropper bottle: amber glass, black bulb and collar; `open` lifts the dropper out so the pipette shows. */
+export function DropperBottle({ label, quality, open }: ProductProps) {
+  const glass = useGlass('amber', quality);
+  const rubber = useMemo(() => plastic('#1f2937', { clearcoat: 0.5, roughness: 0.5 }), []);
+  const collar = useMemo(() => plastic('#111827', { clearcoat: 1, roughness: 0.3 }), []);
+  const pipette = useGlass('clear', quality);
+  const bottle = useMemo(
+    () =>
+      new THREE.LatheGeometry(
+        v2([
+          [0.001, 0],
+          [0.32, 0],
+          [0.37, 0.04],
+          [0.38, 0.12],
+          [0.38, 0.78],
+          [0.34, 0.9],
+          [0.2, 0.98],
+          [0.16, 1.03],
+          [0.16, 1.1],
+          [0.14, 1.1],
+          [0.14, 1.0],
+          [0.001, 0.9],
+        ]),
+        64,
+      ),
+    [],
+  );
+  const map = labelTexture({ ...label, kind: 'wrap' });
+  return (
+    <group>
+      <mesh geometry={bottle} material={glass} castShadow />
+      <ArcLabel radius={0.38} height={0.5} y={0.45} map={map} arc={2.9} />
+      <group position={[0, open * 1.0, 0]}>
+        <mesh position={[0, 1.18, 0]} material={collar} castShadow>
+          <cylinderGeometry args={[0.2, 0.2, 0.18, 48]} />
+        </mesh>
+        <mesh position={[0, 1.5, 0]} scale={[1, 1.7, 1]} material={rubber} castShadow>
+          <sphereGeometry args={[0.15, 32, 24]} />
+        </mesh>
+        {open > 0.05 && (
+          <mesh position={[0, 0.55, 0]} material={pipette}>
+            <cylinderGeometry args={[0.045, 0.03, 1.1, 24]} />
+          </mesh>
+        )}
+      </group>
+    </group>
+  );
+}
+
 /** Picks the model for a medicine form. */
 export function ProductModel(props: ProductProps & { form: string }): ReactNode {
   switch (props.form) {
     case 'syrup':
-    case 'drops':
       return <AmberBottle {...props} />;
+    case 'drops':
+      return <DropperBottle {...props} />;
     case 'cream':
       return <Tube {...props} />;
     case 'lozenge':
       return <Blister {...props} />;
     case 'sachet':
       return <Sachet {...props} />;
-    case 'inhaler':
     case 'spray':
+      return <NasalSpray {...props} />;
+    case 'inhaler':
       return <Inhaler {...props} />;
     case 'pen':
       return <Pen {...props} />;
     case 'tablet':
-      return props.exploded !== undefined && props.exploded > 0 ? <Blister {...props} /> : <PillBottle {...props} />;
+      return <CartonBlister {...props} />;
     default:
       return <PillBottle {...props} />;
   }
 }
 
 /** Which forms have a cap that can be unscrewed / an exploded view. */
-export const hasCap = (form: string) => ['syrup', 'drops', 'tablet', 'capsule', 'cream'].includes(form);
+export const hasCap = (form: string) => ['syrup', 'drops', 'spray', 'tablet', 'capsule', 'cream'].includes(form);
 export const hasExploded = (form: string) => ['lozenge', 'tablet'].includes(form);
 
 // ---------- scene props for the public pages (add-on Part C) ----------

@@ -95,6 +95,18 @@ After the first deployment, copy your site address (`https://<project>.pages.dev
 2. Log in with a demo account (see the README demo script).
 3. If login shows "The server cannot be reached": `VITE_API_URL` is wrong, or `FRONTEND_URL` on Render is not exactly your site address (CORS).
 
+## Payments with Stripe, step by step (optional, TEST MODE only)
+
+Without keys everything works and the order page says **"Payments not configured"**. To try payments:
+
+1. **Create the account.** Go to https://dashboard.stripe.com/register, sign up with your e-mail and confirm it. You do **not** need to activate your account or give bank details to use test mode.
+2. **Stay in Test mode.** At the top of the Stripe dashboard make sure the **Test mode** switch is on (orange "Test mode" label).
+3. **Copy the test secret key.** Developers → **API keys** → "Secret key" → **Reveal test key**. It starts with `sk_test_`. (A key starting with `sk_live_` is refused by the app, on purpose.)
+4. **Put it in your local `.env`** (the file at the project root, never committed): add the line `STRIPE_SECRET_KEY=sk_test_...` (paste your real key after the `=`).
+5. **Local webhook secret.** Install the Stripe CLI (https://docs.stripe.com/stripe-cli), run `stripe login`, then in a second terminal `stripe listen --forward-to localhost:4000/api/webhooks/stripe`. It prints `whsec_...`: add it to `.env` as `STRIPE_WEBHOOK_SECRET=whsec_...`, then restart `npm run dev`.
+6. **On Render** (hosted site): Dashboard → your service → **Environment** → **Add Environment Variable**: `STRIPE_SECRET_KEY` = your `sk_test_...` key, mark it secret. Then in Stripe (Test mode) → Developers → **Webhooks** → **Add endpoint**: URL `https://<your-service>.onrender.com/api/webhooks/stripe`, events `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `payment_intent.canceled`, `charge.refunded`. Open the endpoint, reveal its **Signing secret** (`whsec_...`) and add it on Render as `STRIPE_WEBHOOK_SECRET`. Save: Render restarts.
+7. **Try it.** Log in as a patient, send a request, accept it as the pharmacy, open the order as the patient and press **Pay (test)**. On Stripe's page use card `4242 4242 4242 4242` (any future date, any CVC) to succeed, or `4000 0000 0000 0002` to see a declined card. The amount is held; mark the order **Ready** as the pharmacy to capture it; cancel the order to see it released or refunded.
+
 ## Local development is unchanged
 
 Without `VITE_API_URL` the website calls the relative `/api` path and the Vite proxy forwards it to `localhost:4000`: `npm run dev` works as before.

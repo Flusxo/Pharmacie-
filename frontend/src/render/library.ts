@@ -403,7 +403,7 @@ export const MED_SLUG = (name: string, dosage: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 /** Forms whose cap comes off (the "open" view). */
-export const OPENABLE = ['syrup', 'drops', 'tablet', 'capsule', 'cream'];
+export const OPENABLE = ['syrup', 'drops', 'spray', 'tablet', 'capsule', 'cream'];
 export const medViews = (form: string): ('front' | 'angle' | 'open')[] =>
   OPENABLE.includes(form) ? ['front', 'angle', 'open'] : ['front', 'angle'];
 
@@ -423,7 +423,7 @@ const CATEGORY_LABEL: Record<string, [string, string]> = {
 
 export function medicineShot(m: MedSpec, view: 'front' | 'angle' | 'open'): Shot & { query: string } {
   const [color, light] = CATEGORY_LABEL[m.category] ?? ['#334155', '#E2E8F0'];
-  const flat = m.form === 'pen' || m.form === 'inhaler' || m.form === 'spray';
+  const flat = m.form === 'pen' || m.form === 'inhaler';
   const rot: [number, number, number] =
     view === 'angle' ? [0.1, -0.62, flat ? -0.2 : 0] : [0, flat ? -0.25 : 0, flat && view === 'open' ? -0.2 : 0];
   const query = new URLSearchParams({

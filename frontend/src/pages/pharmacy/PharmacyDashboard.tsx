@@ -10,6 +10,7 @@ import type { OrderStatus } from '../../lib/types';
 import { CountdownRing, Kpi, MedicinePicker, ReasonDialog, Tabs, type MedicineHit } from '../../components/dash';
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { ShelfVisual, useCan3D } from '../../components/three/ThreeVisuals';
+import { PackImage } from '../../components/PackImage';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { AnimatedNumber, Pop } from '../../components/motion';
 import { duration, easeOut } from '../../motion';
@@ -19,6 +20,8 @@ interface IncomingItem {
   medicineId: string;
   name: string;
   dosage: string;
+  form: string;
+  category: string;
   requiresPrescription: boolean;
   quantity: number;
   excluded: boolean;
@@ -49,6 +52,8 @@ interface PharmacyOrder {
     id: string;
     name: string;
     dosage: string;
+    form: string;
+    category: string;
     quantity: number;
     excluded: boolean;
     requiresPrescription: boolean;
@@ -61,6 +66,8 @@ interface StockRow {
   cip13: string;
   name: string;
   dosage: string;
+  form: string;
+  category: string;
   requiresPrescription: boolean;
   quantity: number;
   priceEur: number;
@@ -191,6 +198,9 @@ function IncomingTab({ onChange }: { onChange: () => void }) {
               {r.items.map((i) => (
                 <li key={i.id} className="row between" style={{ opacity: i.excluded ? 0.5 : 1 }}>
                   <span>
+                    <span className="thumb">
+                      <PackImage name={i.name} dosage={i.dosage} form={i.form} category={i.category} rx={i.requiresPrescription} />
+                    </span>
                     <strong>
                       {i.quantity} × {i.name}
                     </strong>{' '}
@@ -320,6 +330,9 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
       <ul className="plain-list">
         {o.items.map((i) => (
           <li key={i.id} style={{ opacity: i.excluded ? 0.5 : 1 }}>
+            <span className="thumb">
+              <PackImage name={i.name} dosage={i.dosage} form={i.form} category={i.category} rx={i.requiresPrescription} />
+            </span>
             {i.quantity} × {i.name} {i.excluded && <span className="badge warn">{t('requests.excluded')}</span>}{' '}
             <RxBadge rx={i.requiresPrescription} />
           </li>
@@ -430,6 +443,9 @@ function StockLine({ row, onSaved, onHistory }: { row: StockRow; onSaved: () => 
   return (
     <tr className={row.low ? 'row-low' : ''} data-testid="stock-row">
       <td>
+        <span className="thumb">
+          <PackImage name={row.name} dosage={row.dosage} form={row.form} category={row.category} rx={row.requiresPrescription} />
+        </span>
         <strong>{row.name}</strong>
         <div className="muted small">
           {row.cip13} <RxBadge rx={row.requiresPrescription} />
