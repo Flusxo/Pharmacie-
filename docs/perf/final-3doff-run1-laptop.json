@@ -1,0 +1,134 @@
+[
+  {
+    "page": "home",
+    "profile": "laptop",
+    "loadMs": 206,
+    "ttfb": 24,
+    "dcl": 197,
+    "fcp": 384,
+    "lcp": 1356,
+    "cls": 0.001,
+    "shifts": [[703, 0.001, "DIV.pub-actions"]],
+    "longTasks": 4,
+    "longList": [
+      [199, 67],
+      [317, 87],
+      [410, 175],
+      [587, 68]
+    ],
+    "tbt": 143,
+    "stage3dAt": 0,
+    "canvasAt": 0,
+    "fps": 60,
+    "worstFrameMs": 33,
+    "kb": {
+      "js": 205,
+      "css": 11,
+      "img": 51,
+      "font": 83,
+      "other": 0,
+      "total": 351
+    },
+    "requests": 24,
+    "canvases": 0,
+    "tier": "low"
+  },
+  {
+    "page": "login",
+    "profile": "laptop",
+    "loadMs": 145,
+    "ttfb": 17,
+    "dcl": 140,
+    "fcp": 204,
+    "lcp": 936,
+    "cls": 0,
+    "shifts": [[400, 0, "NAV.pub-nav"]],
+    "longTasks": 1,
+    "longList": [[278, 78]],
+    "tbt": 28,
+    "stage3dAt": 0,
+    "canvasAt": 0,
+    "fps": 60.3,
+    "worstFrameMs": 17,
+    "kb": {
+      "js": 205,
+      "css": 11,
+      "img": 28,
+      "font": 83,
+      "other": 0,
+      "total": 328
+    },
+    "requests": 21,
+    "canvases": 0,
+    "tier": "low"
+  },
+  {
+    "page": "search",
+    "profile": "laptop",
+    "loadMs": 141,
+    "ttfb": 14,
+    "dcl": 136,
+    "fcp": 584,
+    "lcp": 832,
+    "cls": 0.039,
+    "shifts": [
+      [632, 0, "NAV.topnav"],
+      [729, 0.038, "FOOTER.footer"],
+      [838, 0.001, "LABEL.row"]
+    ],
+    "longTasks": 1,
+    "longList": [[315, 104]],
+    "tbt": 0,
+    "stage3dAt": 0,
+    "canvasAt": 0,
+    "fps": 60.3,
+    "worstFrameMs": 17,
+    "kb": {
+      "js": 211,
+      "css": 11,
+      "img": 8,
+      "font": 83,
+      "other": 7,
+      "total": 320
+    },
+    "requests": 32,
+    "canvases": 0,
+    "tier": "low"
+  },
+  {
+    "page": "medicine",
+    "profile": "laptop",
+    "loadMs": 176,
+    "ttfb": 16,
+    "dcl": 169,
+    "fcp": 464,
+    "lcp": 564,
+    "cls": 0.039,
+    "shifts": [
+      [476, 0, "NAV.topnav"],
+      [527, 0.038, "FOOTER.footer"],
+      [602, 0.001, "LABEL.row"]
+    ],
+    "longTasks": 2,
+    "longList": [
+      [170, 52],
+      [1233, 55]
+    ],
+    "tbt": 5,
+    "stage3dAt": 0,
+    "canvasAt": 0,
+    "fps": 60.1,
+    "worstFrameMs": 17,
+    "kb": {
+      "js": 256,
+      "css": 17,
+      "img": 18,
+      "font": 83,
+      "other": 10,
+      "total": 384
+    },
+    "requests": 53,
+    "canvases": 0,
+    "tier": "low"
+  }
+]

@@ -2,42 +2,75 @@
   {
     "page": "home",
     "profile": "laptop",
-    "loadMs": 95,
-    "ttfb": 13,
-    "dcl": 90,
-    "fcp": 208,
-    "lcp": 1180,
+    "loadMs": 275,
+    "ttfb": 28,
+    "dcl": 262,
+    "fcp": 420,
+    "lcp": 1700,
     "cls": 0.002,
-    "longTasks": 6,
-    "longList": [
+    "shifts": [
       [
-        165,
-        54
+        1006,
+        0.001,
+        "DIV.pub-actions"
       ],
       [
-        221,
-        89
+        1218,
+        0,
+        "NAV.pub-nav"
       ],
       [
-        774,
-        283
-      ],
-      [
-        1313,
-        108
-      ],
-      [
-        1428,
-        216
-      ],
-      [
-        2362,
-        52
+        4133,
+        0,
+        "DIV.glass story-live-card"
       ]
     ],
-    "tbt": 498,
-    "stage3dAt": 2426,
-    "canvasAt": 586,
+    "longTasks": 10,
+    "longList": [
+      [
+        263,
+        51
+      ],
+      [
+        432,
+        97
+      ],
+      [
+        533,
+        285
+      ],
+      [
+        824,
+        176
+      ],
+      [
+        1167,
+        57
+      ],
+      [
+        1635,
+        116
+      ],
+      [
+        1754,
+        424
+      ],
+      [
+        2433,
+        160
+      ],
+      [
+        2601,
+        409
+      ],
+      [
+        3957,
+        74
+      ]
+    ],
+    "tbt": 1348,
+    "stage3dAt": 4076,
+    "canvasAt": 1461,
     "fps": 60.2,
     "worstFrameMs": 17,
     "kb": {
@@ -55,26 +88,49 @@
   {
     "page": "login",
     "profile": "laptop",
-    "loadMs": 101,
-    "ttfb": 13,
-    "dcl": 96,
-    "fcp": 144,
-    "lcp": 404,
-    "cls": 0,
-    "longTasks": 2,
-    "longList": [
+    "loadMs": 244,
+    "ttfb": 26,
+    "dcl": 212,
+    "fcp": 340,
+    "lcp": 952,
+    "cls": 0.002,
+    "shifts": [
       [
-        606,
-        447
-      ],
-      [
-        1212,
-        69
+        818,
+        0.002,
+        "DIV.pub-actions"
       ]
     ],
-    "tbt": 416,
-    "stage3dAt": 1907,
-    "canvasAt": 511,
+    "longTasks": 6,
+    "longList": [
+      [
+        213,
+        52
+      ],
+      [
+        747,
+        69
+      ],
+      [
+        1086,
+        57
+      ],
+      [
+        1144,
+        800
+      ],
+      [
+        2168,
+        109
+      ],
+      [
+        3019,
+        97
+      ]
+    ],
+    "tbt": 882,
+    "stage3dAt": 3133,
+    "canvasAt": 1045,
     "fps": 60.2,
     "worstFrameMs": 17,
     "kb": {
@@ -92,35 +148,55 @@
   {
     "page": "search",
     "profile": "laptop",
-    "loadMs": 88,
-    "ttfb": 9,
-    "dcl": 84,
-    "fcp": 268,
-    "lcp": 396,
-    "cls": 0.039,
-    "longTasks": 4,
-    "longList": [
+    "loadMs": 192,
+    "ttfb": 19,
+    "dcl": 188,
+    "fcp": 520,
+    "lcp": 716,
+    "cls": 0.001,
+    "shifts": [
       [
-        567,
-        100
+        539,
+        0,
+        "NAV.topnav"
       ],
       [
-        670,
-        129
-      ],
-      [
-        854,
-        69
-      ],
-      [
-        937,
-        78
+        722,
+        0.001,
+        "LABEL.row"
       ]
     ],
-    "tbt": 176,
-    "stage3dAt": 1345,
-    "canvasAt": 511,
-    "fps": 60.1,
+    "longTasks": 6,
+    "longList": [
+      [
+        193,
+        67
+      ],
+      [
+        840,
+        59
+      ],
+      [
+        920,
+        145
+      ],
+      [
+        1069,
+        248
+      ],
+      [
+        1529,
+        138
+      ],
+      [
+        1691,
+        126
+      ]
+    ],
+    "tbt": 466,
+    "stage3dAt": 2331,
+    "canvasAt": 813,
+    "fps": 60.2,
     "worstFrameMs": 17,
     "kb": {
       "js": 416,
@@ -137,53 +213,118 @@
   {
     "page": "medicine",
     "profile": "laptop",
-    "loadMs": 94,
-    "ttfb": 11,
-    "dcl": 90,
-    "fcp": 324,
-    "lcp": 400,
-    "cls": 0.217,
-    "longTasks": 6,
-    "longList": [
+    "loadMs": 166,
+    "ttfb": 18,
+    "dcl": 160,
+    "fcp": 444,
+    "lcp": 560,
+    "cls": 0.009,
+    "shifts": [
       [
-        635,
-        103
+        461,
+        0,
+        "NAV.topnav"
       ],
       [
-        841,
-        60
+        626,
+        0.001,
+        "LABEL.row"
+      ],
+      [
+        3324,
+        0.008,
+        "SECTION.card stack"
+      ]
+    ],
+    "longTasks": 18,
+    "longList": [
+      [
+        775,
+        57
+      ],
+      [
+        855,
+        56
       ],
       [
         915,
-        60
+        212
       ],
       [
-        1227,
-        292
+        1241,
+        140
       ],
       [
-        1536,
-        262
+        1415,
+        98
       ],
       [
-        2631,
-        81
+        1559,
+        605
+      ],
+      [
+        2235,
+        588
+      ],
+      [
+        2967,
+        106
+      ],
+      [
+        3076,
+        96
+      ],
+      [
+        3247,
+        51
+      ],
+      [
+        3342,
+        79
+      ],
+      [
+        3423,
+        71
+      ],
+      [
+        3530,
+        71
+      ],
+      [
+        3684,
+        121
+      ],
+      [
+        3823,
+        80
+      ],
+      [
+        3957,
+        61
+      ],
+      [
+        4096,
+        104
+      ],
+      [
+        4576,
+        124
       ]
     ],
-    "tbt": 558,
-    "stage3dAt": 1098,
-    "canvasAt": 517,
-    "fps": 60.1,
-    "worstFrameMs": 17,
+    "tbt": 1820,
+    "stage3dAt": 2900,
+    "canvasAt": 771,
+    "fps": 59.3,
+    "worstFrameMs": 50,
     "kb": {
       "js": 468,
       "css": 17,
-      "img": 21,
+      "img": 18,
       "font": 83,
       "other": 36,
-      "total": 625
+      "total": 622
     },
-    "requests": 61,
+    "requests": 60,
     "canvases": 2,
     "tier": "auto"
   }

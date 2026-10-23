@@ -115,7 +115,10 @@ export function MedicineDetailsPage() {
         <h2 id="ph">{t('med.pharmacies')}</h2>
         <LocationControl compact />
         {pharmacies === null ? (
-          <CardSkeleton />
+          // Space reserved for the list (about three rows and the map): when it arrives, nothing below it jumps.
+          <div style={{ minHeight: 560 }}>
+            <CardSkeleton lines={6} />
+          </div>
         ) : pharmacies.length === 0 ? (
           <Empty>{t('med.noPharmacies')}</Empty>
         ) : (

@@ -41,10 +41,11 @@ for (const [who, name, path, click] of pages.filter(([, n]) => !only || n === on
     hasTouch: phone,
   });
   await ctx.addInitScript(
-    ([tk]) => {
+    ([tk, gfx]) => {
       try {
         if (tk) localStorage.setItem('counter.token', tk);
         localStorage.setItem('counter.tour', 'done');
+        if (gfx) localStorage.setItem('counter.graphics', gfx);
       } catch {
         /* storage blocked */
       }
@@ -53,10 +54,17 @@ for (const [who, name, path, click] of pages.filter(([, n]) => !only || n === on
         type: 'largest-contentful-paint',
         buffered: true,
       });
-      new PerformanceObserver((l) => l.getEntries().forEach((e) => !e.hadRecentInput && (p.cls += e.value))).observe({
-        type: 'layout-shift',
-        buffered: true,
-      });
+      new PerformanceObserver((l) =>
+        l.getEntries().forEach((e) => {
+          if (e.hadRecentInput) return;
+          p.cls += e.value;
+          (p.shifts ??= []).push([
+            Math.round(e.startTime),
+            Math.round(e.value * 1000) / 1000,
+            String(e.sources?.[0]?.node?.nodeName ?? '') + '.' + String(e.sources?.[0]?.node?.className ?? '').slice(0, 30),
+          ]);
+        }),
+      ).observe({ type: 'layout-shift', buffered: true });
       new PerformanceObserver((l) => l.getEntries().forEach((e) => p.longtasks.push([e.startTime, e.duration]))).observe({
         type: 'longtask',
         buffered: true,
@@ -70,7 +78,7 @@ for (const [who, name, path, click] of pages.filter(([, n]) => !only || n === on
         if (!p.canvasAt && document.querySelector('[data-testid="root-stage"] canvas')) p.canvasAt = performance.now();
       }, 40);
     },
-    [token],
+    [token, process.env.GRAPHICS ?? null],
   );
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);
@@ -92,7 +100,11 @@ for (const [who, name, path, click] of pages.filter(([, n]) => !only || n === on
     await page.getByTestId(click).first().click();
   }
   // Give the live 3D time to appear (the page is usable before), then measure the frame rate for 6 s.
-  await page.waitForFunction(() => window.__perf.stage3d > 0, null, { timeout: phone ? 90_000 : 60_000 }).catch(() => {});
+  await page
+    .waitForFunction((skip) => skip || window.__perf.stage3d > 0, ['low', 'off'].includes(process.env.GRAPHICS ?? ''), {
+      timeout: phone ? 90_000 : 60_000,
+    })
+    .catch(() => {});
   await page.waitForTimeout(3000);
   const data = await page.evaluate(
     () =>
@@ -132,6 +144,7 @@ for (const [who, name, path, click] of pages.filter(([, n]) => !only || n === on
               fcp: Math.round(p.fcp),
               lcp: Math.round(p.lcp),
               cls: Math.round(p.cls * 1000) / 1000,
+              shifts: p.shifts ?? [],
               longTasks: p.longtasks.length,
               longList: p.longtasks.map(([s, d]) => [Math.round(s), Math.round(d)]),
               tbt: Math.round(blocking),

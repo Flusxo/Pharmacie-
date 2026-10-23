@@ -30,6 +30,6 @@ await ctx.addInitScript((tk) => {
 const page = await ctx.newPage();
 await page.goto(base + '/search?q=Doliprane');
 await page.getByTestId('medicine-card').first().click();
-await page.waitForTimeout(5000);
+await page.waitForTimeout(9000);
 console.log(JSON.stringify(await page.evaluate(() => window.__shifts), null, 1));
 await browser.close();

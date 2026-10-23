@@ -223,6 +223,8 @@ img {
 }
 .main {
   flex: 1;
+  /* The footer starts below the fold: nothing visible can be pushed away when the page content arrives (no layout shift). */
+  min-height: calc(100dvh - var(--topbar-h));
   width: 100%;
   max-width: 1160px;
   margin: 0 auto;

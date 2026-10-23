@@ -3,16 +3,16 @@
     "page": "home",
     "profile": "laptop",
     "runs": 3,
-    "fcp": 252,
-    "lcp": 1112,
-    "tbt": 644,
+    "fcp": 420,
+    "lcp": 1436,
+    "tbt": 1348,
     "cls": 0.002,
-    "stage3dAt": 2792,
-    "fps": 60.1,
+    "stage3dAt": 4076,
+    "fps": 59.9,
     "longList": [
       [
         0,
-        335
+        470
       ]
     ],
     "kb": {
@@ -28,16 +28,16 @@
     "page": "login",
     "profile": "laptop",
     "runs": 3,
-    "fcp": 144,
-    "lcp": 984,
-    "tbt": 416,
+    "fcp": 288,
+    "lcp": 1896,
+    "tbt": 913,
     "cls": 0,
-    "stage3dAt": 1907,
-    "fps": 60.1,
+    "stage3dAt": 3133,
+    "fps": 60.2,
     "longList": [
       [
         0,
-        447
+        800
       ]
     ],
     "kb": {
@@ -53,16 +53,16 @@
     "page": "search",
     "profile": "laptop",
     "runs": 3,
-    "fcp": 308,
-    "lcp": 408,
-    "tbt": 134,
-    "cls": 0.039,
-    "stage3dAt": 1286,
+    "fcp": 512,
+    "lcp": 716,
+    "tbt": 457,
+    "cls": 0.001,
+    "stage3dAt": 2274,
     "fps": 60.1,
     "longList": [
       [
         0,
-        114
+        248
       ]
     ],
     "kb": {
@@ -78,16 +78,16 @@
     "page": "medicine",
     "profile": "laptop",
     "runs": 3,
-    "fcp": 316,
-    "lcp": 384,
-    "tbt": 558,
-    "cls": 0.216,
-    "stage3dAt": 1098,
-    "fps": 60.1,
+    "fcp": 516,
+    "lcp": 656,
+    "tbt": 1693,
+    "cls": 0.009,
+    "stage3dAt": 2900,
+    "fps": 60,
     "longList": [
       [
         0,
-        292
+        605
       ]
     ],
     "kb": {

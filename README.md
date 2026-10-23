@@ -128,6 +128,18 @@ The API is an Express app under `/api`. The full list (80 routes, with who may c
 - `frontend/`: React 18 + Vite app (React Router, Leaflet, framer-motion, lazy-loaded three.js scenes), French by default, English available.
 - `e2e/`: Playwright tests. `scripts/`: dev runner, e2e runner, design sweep tools.
 
+## Performance and graphics
+
+- **Quality** (Profile → Graphics): Automatic (recommended), High (4K), High, Medium, Low (still pictures) and Off. Every device starts on Medium; Automatic raises it to High only on a strong desktop GPU after a long smooth stretch, and lowers it again if frames stay late. The render resolution adapts by itself (never above the screen's pixel ratio; up to 2 only on "High (4K)").
+- **Glass panels**: every panel is frosted glass; on Low/Off, when the resolution had to drop, or when the system asks for less transparency, they become plain tinted panels with no blur.
+- **Measure it yourself** (production build, this machine's GPU): `npm run build`, `node scripts/serve-prod.mjs`, then `node scripts/perf-median.mjs mytag laptop` or `phone` (phone = CPU 4x slower and slow 4G, emulated). Results and method: `docs/PERF.md`.
+- **Medicine pictures and heroes** are rendered from our own 3D models: `npm run render` (with `npm run dev` running); `-- --meds` for the medicines.
+
+## Pharmacies add medicines, staff review, analytics
+
+- A pharmacy can propose a medicine that is not in the catalogue (Stock tab → "Medicine not in the list? Propose it"): same-code and look-alike detection first, an audit-log entry, and it stays invisible to patients until a moderator or admin approves it (Staff → Proposals). The stock CSV also accepts new medicines (extra columns, see the hint on the page).
+- Staff → Statistics: aggregated numbers only (requests, orders, acceptance, response time, top medicines and categories, payments in test mode). No names, e-mails or addresses; groups smaller than three are folded into "Other".
+
 ## Payments (Stripe test mode)
 
 Payment is optional and **test mode only**: no real money, and a live key (`sk_live_…`) is refused. Card data is typed on Stripe's own page; counter. never sees it and the database only stores Stripe ids, the amount and a status.

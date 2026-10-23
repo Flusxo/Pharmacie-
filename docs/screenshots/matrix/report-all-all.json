@@ -1,0 +1,842 @@
+[
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 1440,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 768,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "light",
+    "width": 390,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 768,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "fr",
+    "scheme": "dark",
+    "width": 390,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 1440,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 768,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "light",
+    "width": 390,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 1440,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 768,
+    "page": "admin",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "home",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "how",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "patients",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "login",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "register",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "search",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "medicine",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "map",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "pharmacy",
+    "overflow": 0
+  },
+  {
+    "lang": "en",
+    "scheme": "dark",
+    "width": 390,
+    "page": "admin",
+    "overflow": 0
+  }
+]

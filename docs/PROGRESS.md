@@ -1,18 +1,30 @@
 # Progress
 
-Tick a phase only when its checks pass (run and seen). **New session: read `CLAUDE.md`, then continue at "Next step" below.**
+Tick a phase only when its checks pass (run and seen). **New session: read `CLAUDE.md`, then continue at "Status" below.**
 
-## Next step (where the last session stopped)
+## Status (2026-10-23) — what works, what is simulated, what is not verified
 
-**STOPPED on 2026-10-22 (usage limit) in the middle of the "3D appears and disappears" task — the part below marked done is committed.**
+**Hosted**: backend https://pharmacie-mb83.onrender.com (Render, Frankfurt), site https://pharmacie-58e.pages.dev (Cloudflare Pages), database Neon (migrations 001-008 applied, each after a read-only backup in `backups/`, never reset). Steps for the owner: `DEPLOY.md`.
 
-- **Done and committed**: user steps 1–7; add-on Parts G (languages), A (public site), B (How it works), C/C2 (3D per page), D (palette + 24 rendered pictures). From the new task: persistent root 3D stage (never unmounted by navigation, every app and public page has a composition, the patient home hero moved into it), tier governor with hysteresis (unit test), WebGL context loss/restore + hidden-tab pause, footer "API" links removed and `/api/docs` development-only (test), more detail (procedural normal/roughness maps, embossed cartons, threads, 4096 px labels on High, 1024×512 HDR, film grain/vignette/bloom on High), pharmacy interior with baked lighting, light beams with dust, delivery route; e2e test that the canvas stays the same element and visible across 11 pages.
-- **Frame rate measured** (`node scripts/measure-fps.mjs high|medium [width]`, headless Chromium on this laptop's Intel UHD 620 through ANGLE, 8 pages, 10 s each): **Medium 1440 px: 54.9 fps average** (41–60 per page), **High 1440 px: 35.1 fps** (24–44; the governor would step a slow page to Medium), **Medium 390 px: 58.3 fps**. Not measured on a discrete GPU or a real phone.
-- **In progress / not done from the new task**: (a) pre-rendered hero stills at **7680 px** (the render script still stops at 3840 px; add 7680 to the hero widths and re-run `npm run render` with `npm run dev` running); (b) re-render the library so it shows the new materials (optional); (c) the verification pass: screenshots at 1440 and 390 px of at least 8 pages (login, home, search, map, medicine details, a dashboard…) after navigating and after a refresh, with the 3D present, saved to `docs/screenshots/`.
-- **Exact next step**: finish (a) and (c) above, then commit; then **Part G medicine pictures** (models already planned: carton box with blister, nasal spray, dropper bottle; labels already fit on up to 3 lines with an Rx mark in `three/textures.ts`; render front / three-quarter / open per medicine with `npm run render`, use them in search, details (Photo/3D gallery), requests, orders, dashboards, inventory), then **Part E** (Stripe test mode), then **Part F** (screenshots, review, final report).
-- **Remaining task list**: 7680 px stills → verification screenshots → Part G pictures → Part E payments → Part F checks and final report.
-- **Known bugs / limits**: the High tier is ~25 fps on the heaviest pages on an integrated GPU (the governor steps down after 6 s); gradient backgrounds of the rendered pictures look a little grey (tone mapping); the patient home hero no longer has its scripted camera path (the scroll travel of the root stage replaces it); seeded contact messages appear only after a `db:reset`.
-- **How to run**: `npm run dev` (API :4000 + web :5173 on Neon), `npm test` (local PostgreSQL :5433, never Neon), `npm run e2e`, `npm run build`, `npm run lint`, `npm run format:check`; after pulling: `npm run db:migrate` (keeps data); pictures: `npm run render` (dev server running); frame rate: `node scripts/measure-fps.mjs medium 1440`.
+**Done and tested** (unit 145 backend + 90 frontend; e2e 59 including the payment flow, the design checks and the persistent canvas):
+
+- Everything of the first seven steps and add-on parts A-D, G (see "Phases").
+- **Performance** (docs/PERF.md): the 4-9 s freeze while the 3D started is gone (shader programs 27 → 11 and compiled in parallel, 3D after the page is usable, route-level code splitting, post-processing chunk, adaptive resolution, safe start tier Medium, cache headers, backend warm-up and short catalogue cache).
+- **Design**: soft full-background light instead of cones; slightly lighter dark palette; frosted-glass panels with an automatic flat fallback; live scroll stories on the persistent canvas instead of framed pictures; the "all shapes, all colours" gallery removed everywhere; the real hero still from the first frame; instanced decorative capsules; crisp pill bottle, paper bag and a rebuilt scooter; "High (4K)" option.
+- **Payments (Stripe TEST MODE)**: authorise when paid after the pharmacy accepted, capture when ready, release or refund on cancel, webhooks with signature and idempotency, receipt, status for patient, pharmacy and staff. Tested with a fake Stripe client (backend) and a simulated checkout page (STRIPE_FAKE, development and e2e only). **Not verified against the real Stripe: no test keys yet.** Without keys the order page says "Payments not configured" (checked locally and on the hosted API).
+- **Pharmacies add medicines** (proposal with duplicate detection, audit log, staff review list, CSV with new medicines) and **admin analytics** (aggregated, no personal data, small groups folded).
+
+**Simulated**: delivery tracking, the payment page in development, the demo data. **Not built**: real couriers, real money, HDS hosting, real prescription checks, legal review.
+
+**Known limits / not verified**
+
+- 7680 px stills are not produced (the integrated GPU returns a blank canvas); heroes are 3840 px.
+- Live 3D at 8K does not exist; see "4K / 8K" in docs/DECISIONS.md.
+- Phone numbers are an emulation (CPU x4, slow 4G) on this laptop, not a real phone; Lighthouse mobile score on the home page is 45 (TBT dominated by the 3D start; the page is usable before).
+- One full e2e run is ~20 minutes; the 3D specs run on software GL and can need long timeouts.
+- The sleeping free backend still needs up to a minute for the very first call after a pause (banner shown after 1.5 s).
+
+**How to run**: `npm run dev`, `npm test`, `npm run e2e`, `npm run build`, `npm run lint`; measure: `node scripts/serve-prod.mjs` then `node scripts/perf-median.mjs <tag> laptop|phone`; pictures: `npm run render` (dev server running; `-- --meds` for the medicines); database safety: `npx tsx db/scripts/backup.ts` before `npm run db:migrate`.
 
 ### Add-on plan (requested 2026-10-22, starts after step 7)
 
@@ -175,22 +187,20 @@ Note: the user referred to "section 11b of claude_code_master_prompt.md"; that f
 
 - Map tiles (`VITE_MAP_TILE_URL`, currently empty).
 
-## Not done yet
+## Not done yet (priority order, with the exact next step)
 
-- The add-on plan (see Next step). Fresh-clone check and a hand replay of the README demo script (Part F).
-- TOTP recovery codes / staff reset of a lost authenticator.
-
-## Hosting preparation (2026-10-22)
-
-- Done: CORS from `FRONTEND_URL` (comma list, tested), helmet CORP cross-origin, `VITE_API_URL` (empty = Vite proxy as before), "Waking up the server" banner + GET retry on 502/503/504 (unit-tested), `frontend/public/_redirects` (Cloudflare Pages SPA fallback), `DEPLOY.md` (exact Render + Cloudflare form values, variable names only).
-- Not verified: anything on real Render / Cloudflare; the push to GitHub (`Flusxo/Pharmacie-`, branch `main`, remote has only an "Initial commit" README) was not done yet.
-- Still pending from before: 7680 px hero stills (changes reverted so tests stay green), 8-page screenshot verification, Parts G, E, F.
-
-## Session of 2026-10-22/23 — where it stopped (user asked to commit and continue later)
-
-- **Done**: back to Cloudflare Pages (wrangler.jsonc removed, DEPLOY.md restored); 10-page 3D verification at 1440 and 390 px, navigated and refreshed (`scripts/verify-3d.mjs`, results in `docs/screenshots/verify/`: same canvas element kept on every navigation, canvas present after refresh); render script now refuses blank pictures.
-- **7680 px stills: NOT possible here.** A 7680×4320 canvas came back blank on this Intel UHD 620 (files of ~600 bytes). Reverted; heroes stay at 3840 px. The guard in `scripts/render-assets.ts` now stops such a render instead of writing it.
-- **Part G (medicine pictures) — in progress**: `npm run render -- --meds` renders one cut-out per medicine and view (front / three-quarter / cap off) from the demo data into `frontend/public/renders` + manifest (1024 px AVIF, 512 WebP). `PackImage` shows the picture when it exists (SVG pack as fallback); details page photo mode uses `MedicineGallery` (thumbnails, hover zoom, float). ~110 of ~144 pictures were rendered when this was committed; re-run `npm run render -- --meds` (skips existing) with `npm run dev` running to finish. Not done: the dedicated carton-with-blister / nasal spray / dropper models (existing bottle / blister / inhaler models are used), picture use in dashboards/inventory.
-- **Part E (Stripe test mode) — code written, not all verified**: migration `db/migrations/007_payments.sql` (**NOT yet applied to Neon: run `npm run db:migrate` BEFORE deploying/pushing, otherwise the pharmacy orders list fails on Render**), `backend/src/services/payments.ts`, routes (`/api/patient/orders/:id/pay|payment|receipt`, `/api/pharmacy/orders/:id/payment`, `/api/webhooks/stripe`), UI `PaymentCard` + `Receipt` page, README/DEPLOY/.env.example docs, French messages. 7 backend payment tests passed against a fake Stripe client; the full `npm test`, lint and e2e were NOT confirmed after the last changes. Never run against the real Stripe (no test keys here).
-- **Not pushed**: this commit is local only, because pushing would redeploy Render before the Neon migration exists.
-- **Still to do**: finish the pictures, run full tests/lint/e2e, apply the migration on Neon, push; then e2e for the payment card (Stripe screens cannot be automated: only "Payments not configured" and a mocked flow), Part F (screenshots light/dark fr/en, review, honest final report).
+1. **Payments — real Stripe test run (code, UI, tests and the Neon migration 007 are done; only the owner's keys are missing).**
+   Hosted today: pay endpoint answers 503 `payments_not_configured` and the UI shows "Payments not configured" (verified). Fake-Stripe e2e passes.
+   Next step:
+   1. Create a free Stripe account, stay in **Test mode**, copy the secret key `sk_test_...` (Developers > API keys).
+   2. Render > service `pharmacie` > Environment: add `STRIPE_SECRET_KEY` = `sk_test_...` (secret) and `FRONTEND_URL` = `https://pharmacie-58e.pages.dev`. **Nothing on Cloudflare Pages** (hosted Checkout needs no publishable key, no `VITE_` variable).
+   3. Stripe > Developers > Webhooks > Add endpoint: URL `https://pharmacie-mb83.onrender.com/api/webhooks/stripe`; events `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`, `payment_intent.canceled`, `charge.refunded`. Copy the signing secret `whsec_...` to Render as `STRIPE_WEBHOOK_SECRET`. Render redeploys.
+   4. As patient (alice@pharmacie.test) send a request, press "Pay (test)", use card `4242 4242 4242 4242`, any future date, any CVC. Then as the pharmacy mark the order Ready: the payment is captured. Cancel another order: the payment is refunded. Declined card: `4000 0000 0000 0002`.
+   5. Locally: `stripe listen --forward-to localhost:4000/api/webhooks/stripe` and put the printed `whsec_` in the root `.env`.
+   Details: DEPLOY.md, section Stripe.
+2. **Glass panels** — implemented (`glass.css`, flat fallback), tested, screenshots in `docs/screenshots/matrix`. Next: owner looks at it on a real phone and says what to tune (blur strength is one variable in `glass.css`).
+3. **Design fixes and lighter colours** — done and tested (gallery and frames removed, scroll stories, lighter dark palette). Next: owner review; the how-it-works page still has its 5-step diagram (not live scroll stories): convert it with `StorySection`.
+4. **Pharmacies adding their own medicines** — done (propose, staff review, CSV, duplicates). Next: polish only after owner feedback.
+5. **Remaining 3D** — viewers (product, shelf, delivery, flow, check) still use their own canvas (max 2 canvases). Next: move them to drei `View` on the root canvas. Phone profile (4x CPU, slow 4G) still freezes 0.5–2 s while the 3D chunk starts; Lighthouse mobile about 50.
+6. **Analytics page** — done. Next: owner review.
+7. Part F leftovers: fresh-clone check and hand replay of the README demo; `docs/ASSETS.md` does not list this session's new renders; TOTP recovery codes / staff reset of a lost authenticator.

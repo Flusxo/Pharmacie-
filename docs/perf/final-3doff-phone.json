@@ -1,0 +1,82 @@
+[
+  {
+    "page": "home",
+    "profile": "phone",
+    "runs": 2,
+    "fcp": 2204,
+    "lcp": 4752,
+    "tbt": 2042,
+    "cls": 0.001,
+    "stage3dAt": 0,
+    "fps": 59.9,
+    "longList": [[0, 1501]],
+    "kb": {
+      "js": 205,
+      "css": 11,
+      "img": 73,
+      "font": 83,
+      "other": 0,
+      "total": 373
+    }
+  },
+  {
+    "page": "login",
+    "profile": "phone",
+    "runs": 2,
+    "fcp": 2404,
+    "lcp": 4912,
+    "tbt": 966,
+    "cls": 0.001,
+    "stage3dAt": 0,
+    "fps": 60.3,
+    "longList": [[0, 675]],
+    "kb": {
+      "js": 205,
+      "css": 11,
+      "img": 29,
+      "font": 83,
+      "other": 0,
+      "total": 329
+    }
+  },
+  {
+    "page": "search",
+    "profile": "phone",
+    "runs": 2,
+    "fcp": 3372,
+    "lcp": 4064,
+    "tbt": 361,
+    "cls": 0,
+    "stage3dAt": 0,
+    "fps": 60.3,
+    "longList": [[0, 343]],
+    "kb": {
+      "js": 211,
+      "css": 11,
+      "img": 15,
+      "font": 83,
+      "other": 7,
+      "total": 327
+    }
+  },
+  {
+    "page": "medicine",
+    "profile": "phone",
+    "runs": 2,
+    "fcp": 3076,
+    "lcp": 4068,
+    "tbt": 1426,
+    "cls": 0.166,
+    "stage3dAt": 0,
+    "fps": 56.3,
+    "longList": [[0, 411]],
+    "kb": {
+      "js": 256,
+      "css": 17,
+      "img": 33,
+      "font": 83,
+      "other": 10,
+      "total": 399
+    }
+  }
+]

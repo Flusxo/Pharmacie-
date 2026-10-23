@@ -2,44 +2,68 @@
   {
     "page": "home",
     "profile": "laptop",
-    "loadMs": 123,
-    "ttfb": 15,
-    "dcl": 119,
-    "fcp": 252,
-    "lcp": 988,
+    "loadMs": 208,
+    "ttfb": 25,
+    "dcl": 197,
+    "fcp": 408,
+    "lcp": 1312,
     "cls": 0.002,
-    "longTasks": 6,
-    "longList": [
+    "shifts": [
       [
-        206,
-        61
+        692,
+        0.001,
+        "DIV.pub-actions"
       ],
       [
-        269,
-        144
-      ],
-      [
-        416,
-        57
-      ],
-      [
-        1014,
-        380
-      ],
-      [
-        1646,
-        121
-      ],
-      [
-        1780,
-        240
+        3712,
+        0,
+        "DIV.glass story-live-card"
       ]
     ],
-    "tbt": 692,
-    "stage3dAt": 2792,
-    "canvasAt": 798,
-    "fps": 60.1,
-    "worstFrameMs": 17,
+    "longTasks": 9,
+    "longList": [
+      [
+        201,
+        65
+      ],
+      [
+        325,
+        82
+      ],
+      [
+        411,
+        168
+      ],
+      [
+        585,
+        71
+      ],
+      [
+        1244,
+        152
+      ],
+      [
+        1402,
+        564
+      ],
+      [
+        2197,
+        148
+      ],
+      [
+        2356,
+        315
+      ],
+      [
+        3517,
+        78
+      ]
+    ],
+    "tbt": 1146,
+    "stage3dAt": 3624,
+    "canvasAt": 985,
+    "fps": 59.9,
+    "worstFrameMs": 33,
     "kb": {
       "js": 410,
       "css": 11,
@@ -55,32 +79,51 @@
   {
     "page": "login",
     "profile": "laptop",
-    "loadMs": 92,
-    "ttfb": 10,
-    "dcl": 88,
-    "fcp": 136,
-    "lcp": 984,
+    "loadMs": 181,
+    "ttfb": 21,
+    "dcl": 169,
+    "fcp": 276,
+    "lcp": 1896,
     "cls": 0,
-    "longTasks": 3,
-    "longList": [
+    "shifts": [
       [
-        177,
-        55
-      ],
-      [
-        582,
-        369
-      ],
-      [
-        1090,
-        60
+        542,
+        0,
+        "NAV.pub-nav"
       ]
     ],
-    "tbt": 334,
-    "stage3dAt": 1711,
-    "canvasAt": 507,
-    "fps": 60.1,
-    "worstFrameMs": 17,
+    "longTasks": 6,
+    "longList": [
+      [
+        314,
+        137
+      ],
+      [
+        453,
+        59
+      ],
+      [
+        956,
+        130
+      ],
+      [
+        1092,
+        746
+      ],
+      [
+        2016,
+        70
+      ],
+      [
+        2754,
+        71
+      ]
+    ],
+    "tbt": 913,
+    "stage3dAt": 2838,
+    "canvasAt": 925,
+    "fps": 60,
+    "worstFrameMs": 33,
     "kb": {
       "js": 410,
       "css": 11,
@@ -96,36 +139,56 @@
   {
     "page": "search",
     "profile": "laptop",
-    "loadMs": 86,
-    "ttfb": 9,
-    "dcl": 83,
-    "fcp": 312,
-    "lcp": 416,
-    "cls": 0.039,
-    "longTasks": 4,
-    "longList": [
+    "loadMs": 137,
+    "ttfb": 14,
+    "dcl": 131,
+    "fcp": 512,
+    "lcp": 788,
+    "cls": 0.001,
+    "shifts": [
       [
-        602,
-        110
+        539,
+        0,
+        "NAV.topnav"
       ],
       [
-        715,
-        105
-      ],
-      [
-        878,
-        57
-      ],
-      [
-        942,
-        62
+        791,
+        0.001,
+        "LABEL.row"
       ]
     ],
-    "tbt": 134,
-    "stage3dAt": 1286,
-    "canvasAt": 543,
-    "fps": 60.1,
-    "worstFrameMs": 17,
+    "longTasks": 6,
+    "longList": [
+      [
+        293,
+        82
+      ],
+      [
+        377,
+        99
+      ],
+      [
+        1116,
+        122
+      ],
+      [
+        1241,
+        384
+      ],
+      [
+        1727,
+        84
+      ],
+      [
+        1814,
+        67
+      ]
+    ],
+    "tbt": 457,
+    "stage3dAt": 2274,
+    "canvasAt": 1059,
+    "fps": 59.5,
+    "worstFrameMs": 50,
     "kb": {
       "js": 416,
       "css": 11,
@@ -141,48 +204,97 @@
   {
     "page": "medicine",
     "profile": "laptop",
-    "loadMs": 98,
-    "ttfb": 13,
-    "dcl": 95,
-    "fcp": 284,
-    "lcp": 372,
-    "cls": 0.216,
-    "longTasks": 7,
-    "longList": [
+    "loadMs": 228,
+    "ttfb": 38,
+    "dcl": 218,
+    "fcp": 516,
+    "lcp": 656,
+    "cls": 0.009,
+    "shifts": [
       [
-        604,
-        105
+        532,
+        0,
+        "NAV.topnav"
       ],
       [
-        762,
-        62
+        726,
+        0.001,
+        "LABEL.row"
       ],
       [
-        851,
-        77
-      ],
-      [
-        1137,
-        286
-      ],
-      [
-        1434,
-        230
-      ],
-      [
-        2072,
-        62
-      ],
-      [
-        2573,
-        73
+        2933,
+        0.008,
+        "SECTION.card stack"
       ]
     ],
-    "tbt": 545,
-    "stage3dAt": 987,
-    "canvasAt": 507,
-    "fps": 60.2,
-    "worstFrameMs": 17,
+    "longTasks": 15,
+    "longList": [
+      [
+        384,
+        50
+      ],
+      [
+        900,
+        51
+      ],
+      [
+        954,
+        187
+      ],
+      [
+        1219,
+        106
+      ],
+      [
+        1348,
+        70
+      ],
+      [
+        1476,
+        94
+      ],
+      [
+        1654,
+        563
+      ],
+      [
+        2218,
+        407
+      ],
+      [
+        2762,
+        74
+      ],
+      [
+        2990,
+        68
+      ],
+      [
+        3162,
+        112
+      ],
+      [
+        3293,
+        66
+      ],
+      [
+        3413,
+        64
+      ],
+      [
+        3765,
+        55
+      ],
+      [
+        4015,
+        120
+      ]
+    ],
+    "tbt": 1337,
+    "stage3dAt": 2639,
+    "canvasAt": 895,
+    "fps": 60.1,
+    "worstFrameMs": 33,
     "kb": {
       "js": 468,
       "css": 17,
