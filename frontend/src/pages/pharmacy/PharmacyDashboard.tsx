@@ -11,6 +11,7 @@ import { CountdownRing, Kpi, MedicinePicker, ReasonDialog, Tabs, type MedicineHi
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { ShelfVisual, useCan3D } from '../../components/three/ThreeVisuals';
 import { PackImage } from '../../components/PackImage';
+import { ProposeMedicine } from '../../components/pharmacy/ProposeMedicine';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { AnimatedNumber, Pop } from '../../components/motion';
 import { duration, easeOut } from '../../motion';
@@ -591,6 +592,8 @@ function InventoryTab({ onChange }: { onChange: () => void }) {
           <MedicinePicker id="stock-add" label={t('dash.medicineSearch')} onPick={setAdding} />
         )}
       </section>
+
+      <ProposeMedicine onSaved={reload} />
 
       <div className="row between">
         <label className="field" style={{ flex: 1, minWidth: 200 }}>

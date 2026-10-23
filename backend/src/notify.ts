@@ -17,6 +17,7 @@ export type NotificationKind =
   | 'account_rejected'
   | 'substitution'
   | 'cancel_request'
+  | 'medicine_review'
   | 'password_reset';
 
 /** Neutral subjects: never contain medicine names. */
@@ -32,6 +33,7 @@ const SUBJECTS: Record<NotificationKind, string> = {
   account_rejected: 'Update on your account',
   substitution: 'Update on your request',
   cancel_request: 'Update on an order',
+  medicine_review: 'Update on your medicine proposal',
   password_reset: 'Reset your password',
 };
 

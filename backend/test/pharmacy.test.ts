@@ -29,7 +29,7 @@ describe('pharmacy inventory', () => {
     const t = await login('pharmacie.tournon');
     const csv = `cip13,quantity,price_eur,low_stock_threshold\n${CIP(0)},41,2.15,6\n${CIP(20)},7,5.5,`;
     const res = await api().post('/api/pharmacy/inventory/csv').set(auth(t)).send({ csv, dryRun: false });
-    expect(res.body).toEqual({ dryRun: false, applied: 2 });
+    expect(res.body).toEqual({ dryRun: false, applied: 2, submitted: 0 });
     const inv = await api().get('/api/pharmacy/inventory?q=Doliprane 1000').set(auth(t));
     expect(inv.body.items[0]).toMatchObject({ quantity: 41, priceEur: 2.15, lowStockThreshold: 6 });
     const hist = await api()

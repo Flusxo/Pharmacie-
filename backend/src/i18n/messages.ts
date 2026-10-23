@@ -24,6 +24,25 @@ export const FR: Record<string, string> = {
   'Waiting for staff approval. You can use this feature once your account is verified.':
     'En attente de validation par l’équipe. Vous pourrez utiliser cette fonction une fois votre compte vérifié.',
 
+  // Medicine proposals
+  'looks like an existing medicine ({existingName}, {existingCip}): use its CIP13 code':
+    'ressemble à un médicament existant ({existingName}, {existingCip}) : utilisez son code CIP13',
+  'A medicine with this CIP13 code has already been proposed and is waiting for review.':
+    'Un médicament avec ce code CIP13 a déjà été proposé et attend sa validation.',
+  'You already have {MAX_PENDING_PER_PHARMACY} proposals waiting for review. Wait for staff to review them.':
+    'Vous avez déjà {MAX_PENDING_PER_PHARMACY} propositions en attente de validation. Attendez que l’équipe les examine.',
+  'Medicine proposal not found.': 'Proposition de médicament introuvable.',
+  'This proposal has already been reviewed.': 'Cette proposition a déjà été examinée.',
+  'A medicine with this CIP13 code already exists. Use it instead of creating a new one.':
+    'Un médicament avec ce code CIP13 existe déjà. Utilisez-le plutôt que d’en créer un nouveau.',
+  'This medicine looks like one that already exists. Use the existing one, or confirm that yours is different.':
+    'Ce médicament ressemble à un médicament existant. Utilisez l’existant, ou confirmez que le vôtre est différent.',
+  'Your medicine proposal was approved. Patients can now find it.':
+    'Votre proposition de médicament a été approuvée. Les patients peuvent désormais le trouver.',
+  'Your medicine proposal was not accepted: {why}': 'Votre proposition de médicament n’a pas été acceptée : {why}',
+  'see the review note': 'voir la note de validation',
+  'Update on your medicine proposal': 'Mise à jour de votre proposition de médicament',
+
   // Payments (Stripe test mode)
   'Payments not configured. Ask the administrator to set the Stripe test keys.':
     'Paiements non configurés. Demandez à l’administrateur de renseigner les clés de test Stripe.',

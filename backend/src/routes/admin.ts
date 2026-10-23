@@ -18,6 +18,8 @@ import { requireStaff } from '../middleware/auth.js';
 import { notify } from '../notify.js';
 import { addRoutes } from '../openapi.js';
 import { MEDICINE_COLUMNS } from '../services/search.js';
+import { analytics } from '../services/analytics.js';
+import { listReviewQueue, reviewSubmission } from '../services/submissions.js';
 import { emailField, idParam, page, passwordField, reasonField } from '../validate.js';
 
 export const adminRouter = Router();
@@ -41,11 +43,18 @@ adminRouter.get('/stats', async (_req, res) => {
        (SELECT count(*) FROM requests WHERE (created_at AT TIME ZONE 'Europe/Paris')::date = (now() AT TIME ZONE 'Europe/Paris')::date)::int AS "requestsToday",
        (SELECT coalesce(json_object_agg(status, n), '{}') FROM (SELECT status, count(*)::int n FROM orders GROUP BY status) x) AS "ordersByStatus",
        (SELECT count(*) FROM reports WHERE status = 'open')::int AS "openReports",
+       (SELECT count(*) FROM medicines WHERE status = 'pending' AND deleted_at IS NULL)::int AS "pendingMedicines",
        (SELECT count(*) FROM contact_messages WHERE handled_at IS NULL)::int AS "openContactMessages",
        (SELECT round(avg(extract(epoch FROM responded_at - sent_at) / 60)::numeric, 1)::float FROM request_pharmacies
          WHERE response IN ('accepted', 'refused') AND sent_at > now() - interval '7 days') AS "avgResponseMinutes7d"`,
   );
   res.json(s);
+});
+
+/** Aggregated numbers only (no personal data); every staff role can read them. */
+adminRouter.get('/analytics', async (req, res) => {
+  const { days } = z.object({ days: z.coerce.number().int().min(7).max(365).default(30) }).parse(req.query);
+  res.json(await analytics(days));
 });
 
 adminRouter.get('/users', async (req, res) => {
@@ -392,6 +401,25 @@ adminRouter.delete('/medicines/:id', canModerate, async (req, res) => {
   res.json({ ok: true });
 });
 
+// ---------- Medicine proposals from pharmacies ----------
+
+adminRouter.get('/medicine-reviews', async (req, res) => {
+  const { status } = z.object({ status: z.enum(['pending', 'approved', 'rejected']).default('pending') }).parse(req.query);
+  res.json({ items: await listReviewQueue(status) });
+});
+
+adminRouter.post('/medicine-reviews/:id/approve', canModerate, async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const { note } = z.object({ note: z.string().trim().max(300).optional() }).parse(req.body ?? {});
+  res.json(await reviewSubmission(id, req.user!.id, true, note ?? null));
+});
+
+adminRouter.post('/medicine-reviews/:id/reject', canModerate, async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const { reason } = z.object({ reason: reasonField }).parse(req.body ?? {});
+  res.json(await reviewSubmission(id, req.user!.id, false, reason));
+});
+
 adminRouter.post('/reports/:id/resolve', async (req, res) => {
   const { id } = z.object({ id: z.coerce.number().int().positive() }).parse(req.params);
   const { resolution } = z.object({ resolution: reasonField }).parse(req.body);
@@ -405,6 +433,13 @@ adminRouter.post('/reports/:id/resolve', async (req, res) => {
 
 addRoutes([
   ['get', '/api/admin/stats', 'Admin', 'KPIs', 'bearer'],
+  [
+    'get',
+    '/api/admin/analytics',
+    'Admin',
+    'Aggregated analytics (days=7..365), no personal data, small groups folded into "other"',
+    'bearer',
+  ],
   ['get', '/api/admin/users', 'Admin', 'Users with filters (role, status, q, page)', 'bearer'],
   ['get', '/api/admin/verifications', 'Admin', 'Verification queue (pending doctors and pharmacies)', 'bearer'],
   ['get', '/api/admin/pharmacies', 'Admin', 'Pharmacies', 'bearer'],
@@ -423,5 +458,8 @@ addRoutes([
   ['post', '/api/admin/medicines', 'Admin', 'Create a medicine — admin, moderator', 'bearer'],
   ['patch', '/api/admin/medicines/:id', 'Admin', 'Update a medicine — admin, moderator', 'bearer'],
   ['delete', '/api/admin/medicines/:id', 'Admin', 'Soft-delete a medicine with reason — admin, moderator', 'bearer'],
+  ['get', '/api/admin/medicine-reviews', 'Admin', 'Medicine proposals from pharmacies (status=pending|approved|rejected)', 'bearer'],
+  ['post', '/api/admin/medicine-reviews/:id/approve', 'Admin', 'Approve a proposal — admin, moderator', 'bearer'],
+  ['post', '/api/admin/medicine-reviews/:id/reject', 'Admin', 'Reject a proposal with a reason — admin, moderator', 'bearer'],
   ['post', '/api/admin/reports/:id/resolve', 'Admin', 'Resolve a report — any staff', 'bearer'],
 ]);

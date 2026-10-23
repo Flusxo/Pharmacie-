@@ -30,7 +30,15 @@ const testPg = (...args: string[]) =>
 
 const children: ChildProcess[] = [];
 function start(cmd: string, cwd: string, env: NodeJS.ProcessEnv): ChildProcess {
-  const c = spawn(cmd, { cwd, env: { ...process.env, ...env }, stdio: ['ignore', 'ignore', 'inherit'], shell: true });
+  // Detached on Windows: a Ctrl+C aimed at another process of the console (e.g. a timed-out tool call) must not stop the API in the middle of a run.
+  const c = spawn(cmd, {
+    cwd,
+    env: { ...process.env, ...env },
+    stdio: ['ignore', 'ignore', 'inherit'],
+    shell: true,
+    detached: process.platform === 'win32',
+    windowsHide: true,
+  });
   children.push(c);
   return c;
 }
@@ -76,6 +84,7 @@ try {
   start('npx tsx backend/src/server.ts', ROOT, {
     DATABASE_URL: E2E_DB,
     PORT: String(API_PORT),
+    LOGIN_RATE_LIMIT: '5000',
     FRONTEND_URL: `http://localhost:${WEB_PORT}`,
   });
   const vite = (port: number, tileUrl: string) =>

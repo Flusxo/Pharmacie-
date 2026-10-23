@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { loginByToken } from './helpers';
+import { apiAs, loginByToken } from './helpers';
 
 /** The 3D layer itself, with Graphics quality "Medium" (software WebGL in headless Chromium). */
 test.describe('3D layer', () => {
@@ -100,6 +100,82 @@ test.describe('3D layer', () => {
     await expect(stage).toHaveAttribute('data-mode', 'static');
     await expect(stage.locator('canvas')).toHaveCount(0);
     await expect(page.locator('.pub-hero-visual .hero-art')).toBeVisible();
+  });
+
+  test('every page has its own scene: sign-up, password recovery and privacy are not the login scene', async ({ page }) => {
+    const stage = page.getByTestId('root-stage');
+    await page.goto('/login');
+    await expect(stage).toHaveAttribute('data-scene', 'auth');
+    for (const [path, scene] of [
+      ['/register', 'register'],
+      ['/forgot-password', 'recover'],
+      ['/privacy', 'privacy'],
+      ['/terms', 'terms'],
+    ] as const) {
+      await page.evaluate((p) => {
+        history.pushState({}, '', p);
+        dispatchEvent(new PopStateEvent('popstate'));
+      }, path);
+      await expect(stage).toHaveAttribute('data-scene', scene);
+      await expect(stage.locator('canvas')).toHaveCount(1);
+    }
+  });
+
+  test('product viewer has a dedicated model per form: carton with blister (exploded view), nasal spray and dropper bottle', async ({
+    page,
+  }) => {
+    await loginByToken(page, 'alice@pharmacie.test');
+    for (const [query, exploded] of [
+      ['Doliprane', true],
+      ['Physiomer', false],
+      ['ZymaD', false],
+    ] as const) {
+      await page.goto(`/search?q=${query}`);
+      await page.getByTestId('medicine-card').first().click();
+      const viewer = page.getByTestId('product-visual');
+      await expect(viewer).toHaveAttribute('data-mode', '3d');
+      await expect(viewer.locator('canvas')).toHaveCount(1, { timeout: 90_000 });
+      await expect(page.getByRole('button', { name: 'Vue éclatée' })).toHaveCount(exploded ? 1 : 0);
+      if (exploded) await page.getByRole('button', { name: 'Vue éclatée' }).click();
+      // the stage behind is still the one persistent canvas: root + this viewer, never more
+      expect(await page.locator('canvas').count()).toBeLessThanOrEqual(2);
+    }
+  });
+
+  test('delivery scene is labelled "Suivi simulé" on the persistent canvas; the pharmacy stock has a 3D shelf', async ({
+    page,
+    browser,
+  }) => {
+    const alice = await apiAs('alice@pharmacie.test');
+    const pharmacy = await apiAs('pharmacie.tournon@pharmacie.test');
+    const found = await alice.call<{ items: { id: string }[] }>('GET', '/medicines?q=Dafalgan');
+    const medicineId = found.items[0].id;
+    const near = await alice.call<{ items: { id: string; name: string }[] }>(
+      'GET',
+      `/medicines/${medicineId}/pharmacies?lat=45.07&lon=4.83`,
+    );
+    const pharmacyId = near.items.find((p) => p.name === 'Pharmacie du Rhône')!.id;
+    const created = await alice.call<{ id: string }>('POST', '/patient/requests', { items: [{ medicineId, quantity: 1 }] });
+    await alice.call('POST', `/patient/requests/${created.id}/choose`, { pharmacyId });
+    const accepted = await pharmacy.call<{ orderId: string }>('POST', `/pharmacy/requests/${created.id}/accept`);
+
+    await loginByToken(page, 'alice@pharmacie.test');
+    await page.goto(`/orders/${accepted.orderId}`);
+    await expect(page.getByTestId('root-stage')).toHaveAttribute('data-scene', 'app-tracking');
+    await expect(page.getByTestId('sim-tag-3d')).toContainText('Suivi simulé', { timeout: 120_000 });
+
+    const ph = await browser.newContext({ baseURL: 'http://localhost:5174', locale: 'fr-FR' });
+    await ph.addInitScript(() => {
+      localStorage.setItem('counter.graphics', 'medium');
+      localStorage.setItem('counter.tour', 'done');
+    });
+    const p2 = await ph.newPage();
+    await loginByToken(p2, 'pharmacie.tournon@pharmacie.test');
+    await p2.goto('/pharmacy');
+    await p2.getByRole('tab', { name: /Stock/ }).click();
+    await p2.getByRole('tab', { name: 'Étagère 3D' }).click();
+    await expect(p2.getByTestId('shelf-visual').locator('canvas')).toHaveCount(1, { timeout: 120_000 });
+    expect(await p2.locator('canvas').count()).toBeLessThanOrEqual(2);
   });
 
   test('medicine details: 3D viewer with canvas, 3D / Photo toggle and a text alternative', async ({ page }) => {

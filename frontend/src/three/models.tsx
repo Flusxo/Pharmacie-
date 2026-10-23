@@ -783,15 +783,43 @@ export function DropperBottle({ label, quality, open }: ProductProps) {
 }
 
 /** Picks the model for a medicine form. */
-export function ProductModel(props: ProductProps & { form: string }): ReactNode {
-  switch (props.form) {
+export type ProductKind = 'amber' | 'dropper' | 'tube' | 'blister' | 'sachet' | 'spray' | 'inhaler' | 'pen' | 'carton' | 'pillbottle';
+
+/** Which 3D model shows a medicine form (every form has its own; unknown forms get the pill bottle). */
+export function productKindFor(form: string): ProductKind {
+  switch (form) {
     case 'syrup':
-      return <AmberBottle {...props} />;
+      return 'amber';
     case 'drops':
-      return <DropperBottle {...props} />;
+      return 'dropper';
     case 'cream':
-      return <Tube {...props} />;
+      return 'tube';
     case 'lozenge':
+      return 'blister';
+    case 'sachet':
+      return 'sachet';
+    case 'spray':
+      return 'spray';
+    case 'inhaler':
+      return 'inhaler';
+    case 'pen':
+      return 'pen';
+    case 'tablet':
+      return 'carton';
+    default:
+      return 'pillbottle';
+  }
+}
+
+export function ProductModel(props: ProductProps & { form: string }): ReactNode {
+  switch (productKindFor(props.form)) {
+    case 'amber':
+      return <AmberBottle {...props} />;
+    case 'dropper':
+      return <DropperBottle {...props} />;
+    case 'tube':
+      return <Tube {...props} />;
+    case 'blister':
       return <Blister {...props} />;
     case 'sachet':
       return <Sachet {...props} />;
@@ -801,7 +829,7 @@ export function ProductModel(props: ProductProps & { form: string }): ReactNode 
       return <Inhaler {...props} />;
     case 'pen':
       return <Pen {...props} />;
-    case 'tablet':
+    case 'carton':
       return <CartonBlister {...props} />;
     default:
       return <PillBottle {...props} />;

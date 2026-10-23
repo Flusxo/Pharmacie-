@@ -66,7 +66,7 @@ export async function createRequest(input: {
     if (!patient) throw notFound('Patient not found.');
 
     const meds = await query<{ id: string; requires_prescription: boolean }>(
-      'SELECT id, requires_prescription FROM medicines WHERE id = ANY($1::uuid[]) AND deleted_at IS NULL',
+      "SELECT id, requires_prescription FROM medicines WHERE id = ANY($1::uuid[]) AND deleted_at IS NULL AND status = 'approved'",
       [items.map((i) => i.medicineId)],
       c,
     );
@@ -376,7 +376,7 @@ export async function proposeSubstitution(requestId: string, pharmacyId: string,
     if (!item) throw notFound('Item not found in this request.');
     const generic = await one(
       `SELECT 1 FROM medicines o JOIN medicines g ON g.id = $2
-        WHERE o.id = $1 AND g.id <> o.id AND g.deleted_at IS NULL
+        WHERE o.id = $1 AND g.id <> o.id AND g.deleted_at IS NULL AND g.status = 'approved'
           AND f_norm(g.active_substance) = f_norm(o.active_substance) AND f_norm(g.dosage) = f_norm(o.dosage)`,
       [item.medicine_id, proposedMedicineId],
       c,

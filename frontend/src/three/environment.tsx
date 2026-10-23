@@ -5,9 +5,10 @@
  * - DeliveryRoute: a glowing path with light pulses running along it and a scooter riding it
  * All procedural (own work, CC0). Animation stops with reduced motion.
  */
-import { useLayoutEffect, useMemo, useRef } from 'react';
+import { createContext, useContext, useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
 import { Counter, GreenCross, MapPin, Scooter, plastic } from './models';
 import { marbleTexture } from './textures';
 
@@ -252,6 +253,9 @@ export function LightBeams({
 }
 
 /** Glowing delivery path from the pharmacy to a home pin, light pulses and a scooter riding it. */
+/** Texts the 3D scene needs (the canvas cannot read the app's i18n context itself). */
+export const StageLabels = createContext<{ simulated: string }>({ simulated: '' });
+
 export function DeliveryRoute({ reduced = false, ...props }: { reduced?: boolean } & JSX.IntrinsicElements['group']) {
   const curve = useMemo(
     () =>
@@ -272,6 +276,7 @@ export function DeliveryRoute({ reduced = false, ...props }: { reduced?: boolean
     [],
   );
   const ground = useMemo(() => plastic('#eef6f3', { roughness: 0.8, clearcoat: 0 }), []);
+  const { simulated } = useContext(StageLabels);
   const pulses = useRef<(THREE.Mesh | null)[]>([]);
   const rider = useRef<THREE.Group>(null);
   const tmp = useMemo(() => new THREE.Vector3(), []);
@@ -306,6 +311,13 @@ export function DeliveryRoute({ reduced = false, ...props }: { reduced?: boolean
       <group ref={rider} scale={1.2}>
         <Scooter />
       </group>
+      {simulated && (
+        <Html position={[0, 1.0, 0]} center distanceFactor={7} zIndexRange={[0, 0]}>
+          <div className="sim-tag" data-testid="sim-tag-3d">
+            {simulated}
+          </div>
+        </Html>
+      )}
       <GreenCross glow={1.6} scale={0.22} position={[-3.3, 0.55, 0.8]} />
       <MapPin scale={0.6} position={[3.3, 0.1, 0.6]} />
     </group>

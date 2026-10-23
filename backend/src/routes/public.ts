@@ -40,7 +40,7 @@ publicRouter.get('/medicines/suggest', async (req, res) => {
 publicRouter.get('/medicines/categories', async (_req, res) => {
   const rows = await query(
     `SELECT category, count(*)::int AS count, bool_or(requires_prescription) AS "hasPrescription"
-       FROM medicines WHERE deleted_at IS NULL GROUP BY category ORDER BY count DESC, category`,
+       FROM medicines WHERE deleted_at IS NULL AND status = 'approved' GROUP BY category ORDER BY count DESC, category`,
   );
   res.json({ items: rows });
 });
@@ -51,14 +51,14 @@ publicRouter.get('/medicines/:id', async (req, res) => {
     `SELECT ${MEDICINE_COLUMNS},
             (SELECT count(*) FROM pharmacy_inventory i JOIN eligible_pharmacies ep ON ep.user_id = i.pharmacy_id
               WHERE i.medicine_id = m.id AND i.quantity > 0)::int AS "availableAt"
-       FROM medicines m WHERE m.id = $1 AND m.deleted_at IS NULL`,
+       FROM medicines m WHERE m.id = $1 AND m.deleted_at IS NULL AND m.status = 'approved'`,
     [id],
   );
   if (!m) throw notFound('This medicine does not exist.');
   // Generics: same active substance and same dosage.
   const generics = await query(
     `SELECT ${MEDICINE_COLUMNS} FROM medicines m
-      WHERE m.deleted_at IS NULL AND m.id <> $1 AND f_norm(m.active_substance) = f_norm($2) AND f_norm(m.dosage) = f_norm($3)
+      WHERE m.deleted_at IS NULL AND m.status = 'approved' AND m.id <> $1 AND f_norm(m.active_substance) = f_norm($2) AND f_norm(m.dosage) = f_norm($3)
       ORDER BY m.name`,
     [id, m.activeSubstance, m.dosage],
   );
@@ -68,7 +68,7 @@ publicRouter.get('/medicines/:id', async (req, res) => {
 publicRouter.get('/medicines/:id/pharmacies', async (req, res) => {
   const { id } = idParam.parse(req.params);
   const loc = location.parse(req.query);
-  const exists = await one('SELECT 1 FROM medicines WHERE id = $1 AND deleted_at IS NULL', [id]);
+  const exists = await one("SELECT 1 FROM medicines WHERE id = $1 AND deleted_at IS NULL AND status = 'approved'", [id]);
   if (!exists) throw notFound('This medicine does not exist.');
   res.json({ items: await nearbyForMedicine(id, loc.lat, loc.lon, loc.radiusKm) });
 });

@@ -74,7 +74,7 @@ export async function searchMedicines(p: SearchParams) {
            word_similarity($1, f_norm(m.name)), word_similarity($1, f_norm(m.active_substance)), similarity($1, f_norm(m.name))
          ) END AS sim
        FROM medicines m
-       WHERE m.deleted_at IS NULL AND ($4::text IS NULL OR m.category = $4)
+       WHERE m.deleted_at IS NULL AND m.status = 'approved' AND ($4::text IS NULL OR m.category = $4)
      )
      SELECT ${MEDICINE_COLUMNS}, m.rank, round(m.sim::numeric, 3)::float AS score,
        (SELECT count(*) FROM pharmacy_inventory i JOIN eligible_pharmacies ep ON ep.user_id = i.pharmacy_id
@@ -93,7 +93,7 @@ export async function searchMedicines(p: SearchParams) {
   let didYouMean: string | null = null;
   if (q && items.length === 0) {
     const s = await one<{ name: string }>(
-      `SELECT name FROM medicines WHERE deleted_at IS NULL AND similarity(f_norm(name), $1) > 0.1
+      `SELECT name FROM medicines WHERE deleted_at IS NULL AND status = 'approved' AND similarity(f_norm(name), $1) > 0.1
         ORDER BY similarity(f_norm(name), $1) DESC LIMIT 1`,
       [q],
     );
@@ -109,7 +109,7 @@ export async function suggest(qRaw: string) {
   return query(
     `SELECT id, name, dosage, form, category, requires_prescription AS "requiresPrescription"
        FROM medicines
-      WHERE deleted_at IS NULL AND (f_norm(name) LIKE '%' || $2 || '%' ESCAPE '\\' OR word_similarity($1, f_norm(name)) >= 0.35
+      WHERE deleted_at IS NULL AND status = 'approved' AND (f_norm(name) LIKE '%' || $2 || '%' ESCAPE '\\' OR word_similarity($1, f_norm(name)) >= 0.35
             OR f_norm(active_substance) LIKE $2 || '%' ESCAPE '\\')
       ORDER BY (f_norm(name) LIKE $2 || '%' ESCAPE '\\') DESC, word_similarity($1, f_norm(name)) DESC, name
       LIMIT 8`,

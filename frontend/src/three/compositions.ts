@@ -75,8 +75,11 @@ export type CompositionName =
   | 'about'
   | 'contact'
   | 'faq'
-  | 'legal'
+  | 'privacy'
+  | 'terms'
   | 'auth'
+  | 'register'
+  | 'recover'
   // After login: calmer, at the sides of the content, each page with its own objects.
   | 'app-home'
   | 'app-search'
@@ -162,40 +165,95 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'tablet', pos: [1.8, -1.5, 1.1], rot: [1.1, 0.3, 0], scale: 2.3, spin: 3, float: 1.1 },
       { kind: 'tablet', pos: [4.5, -1.2, 0.7], rot: [0.6, 1.2, 0.2], scale: 2.0, spin: -2, float: 0.9 },
       { kind: 'interior', pos: [1.5, -3.4, -8], rot: [0, -0.12, 0] },
+      { kind: 'beams', pos: [1.5, -3.4, -6.5] },
       ...calm(201, [TEAL, GREEN, SKY]).items.filter((it) => it.pos[1] < -2),
     ],
   },
-  'app-search': calm(211, [SKY, TEAL, AMBER], [{ kind: 'pin', pos: [-5.2, 1.6, -1.8], scale: 0.7, float: 0.8 }]),
+  'app-search': calm(
+    211,
+    [SKY, TEAL, AMBER],
+    [
+      { kind: 'shelf', pos: [-5.6, 1.1, -3.4], rot: [0.05, 0.4, 0], scale: 0.7, float: 0.3 },
+      { kind: 'pin', pos: [5.2, 1.6, -1.8], scale: 0.7, float: 0.8 },
+      { kind: 'blob', pos: [5.0, -1.2, -2.4], rot: [0.9, 0.3, 0], scale: 0.8, color: '#99f6e4', blob: 'torus', spin: 2, float: 0.8 },
+    ],
+  ),
   'app-details': calm(
     223,
     [TEAL, VIOLET, GREEN],
-    [{ kind: 'blister', pos: [5.2, 1.4, -2.2], rot: [0.3, -0.5, 0.3], scale: 0.8, label: CALMORA, float: 0.7 }],
+    [
+      { kind: 'blister', pos: [5.2, 1.4, -2.2], rot: [0.3, -0.5, 0.3], scale: 0.8, label: CALMORA, float: 0.7 },
+      { kind: 'amber', pos: [-5.3, 1.2, -2.6], rot: [0.05, 0.5, 0.05], scale: 0.8, label: APAISA, spin: 1, float: 0.6 },
+      { kind: 'box', pos: [5.0, -1.4, -2.0], rot: [0.2, -0.6, 0.1], scale: 0.7, brand: 'Vitalis', color: '#C2410C', float: 0.8 },
+    ],
   ),
   'app-map': calm(
     227,
     [GREEN, TEAL],
     [
-      { kind: 'pin', pos: [5.2, 1.8, -2], scale: 0.8, float: 0.8 },
+      { kind: 'phone', pos: [5.4, 1.2, -2.4], rot: [0.12, -0.5, 0.08], scale: 0.9, float: 0.6 },
+      { kind: 'pin', pos: [-5.2, 1.8, -2], scale: 0.8, float: 0.8 },
       { kind: 'pin', pos: [-5.1, -1, -2.4], scale: 0.6, color: '#94a3b8', float: 1 },
+      { kind: 'pin', pos: [5.0, -1.6, -2.2], scale: 0.65, color: '#0d9488', float: 0.9 },
     ],
   ),
-  'app-requests': calm(229, [AMBER, TEAL, SKY], [{ kind: 'bag', pos: [5.1, 1.6, -2], rot: [0, -0.5, 0], scale: 0.7, float: 0.7 }]),
+  'app-requests': calm(
+    229,
+    [AMBER, TEAL, SKY],
+    [
+      { kind: 'clipboard', pos: [5.2, 1.5, -2.2], rot: [0.1, -0.5, 0.06], scale: 0.8, float: 0.7 },
+      { kind: 'bag', pos: [-5.1, 1.6, -2], rot: [0, 0.5, 0], scale: 0.7, float: 0.7 },
+      { kind: 'envelope', pos: [5.1, -1.4, -2.2], rot: [0.1, -0.4, 0.1], scale: 0.7, float: 0.9 },
+    ],
+  ),
   'app-tracking': calm(
     233,
     [AMBER, GREEN],
     [
       { kind: 'bag', pos: [-5.2, 1.6, -2], rot: [0, 0.5, 0], scale: 0.7, float: 0.7 },
+      { kind: 'phone', pos: [5.3, 1.3, -2.4], rot: [0.12, -0.5, 0.08], scale: 0.85, float: 0.6 },
       { kind: 'route', pos: [0, -3.2, -6], rot: [0.25, 0, 0], scale: 1.1 },
     ],
   ),
-  'app-account': calm(239, [TEAL, ROSE]),
+  'app-account': calm(
+    239,
+    [TEAL, ROSE],
+    [
+      { kind: 'figure-pharmacist', pos: [5.4, 0.2, -3.4], rot: [0, -0.4, 0], scale: 0.62, float: 0.3 },
+      { kind: 'cross', pos: [-5.2, 1.6, -2.4], rot: [0.1, 0.4, 0], scale: 0.45, float: 0.7 },
+      { kind: 'pillbottle', pos: [-5.0, -1.4, -2.2], rot: [0.05, 0.3, 0.08], scale: 0.8, label: VITALIS, float: 0.8 },
+    ],
+  ),
   'app-pharmacy': calm(
     241,
     [AMBER, TEAL, VIOLET],
-    [{ kind: 'box', pos: [5.2, 1.5, -2.2], rot: [0.2, -0.5, 0.1], scale: 0.8, brand: 'Calmora', color: '#065F46', float: 0.7 }],
+    [
+      { kind: 'shelf', pos: [-5.7, 0.9, -3.6], rot: [0.05, 0.4, 0], scale: 0.75, float: 0.3 },
+      { kind: 'box', pos: [5.2, 1.5, -2.2], rot: [0.2, -0.5, 0.1], scale: 0.8, brand: 'Calmora', color: '#065F46', float: 0.7 },
+      { kind: 'box', pos: [5.4, -0.6, -2.6], rot: [0.1, 0.4, -0.1], scale: 0.65, brand: 'Apaisa', color: '#0369A1', float: 0.9 },
+      { kind: 'cross', pos: [-5.2, 2.4, -2.6], rot: [0, 0.4, 0], scale: 0.4, float: 0.7 },
+      { kind: 'beams', pos: [0, -2.4, -7] },
+    ],
   ),
-  'app-doctor': calm(251, [TEAL, SKY], [{ kind: 'stethoscope', pos: [5.1, 1.5, -2], rot: [0.3, -0.5, 0.4], scale: 0.9, float: 0.7 }]),
-  'app-admin': calm(257, [TEAL, GREEN], [{ kind: 'blob', pos: [5.1, 1.7, -2.4], scale: 0.9, color: '#a7f3d0', blob: 'torus', float: 0.6 }]),
+  'app-doctor': calm(
+    251,
+    [TEAL, SKY],
+    [
+      { kind: 'figure-doctor', pos: [5.4, 0.2, -3.4], rot: [0, -0.4, 0], scale: 0.62, float: 0.3 },
+      { kind: 'stethoscope', pos: [-5.1, 1.5, -2], rot: [0.3, 0.5, 0.4], scale: 0.9, float: 0.7 },
+      { kind: 'clipboard', pos: [-5.2, -1.2, -2.4], rot: [0.1, 0.5, -0.06], scale: 0.7, float: 0.8 },
+    ],
+  ),
+  'app-admin': calm(
+    257,
+    [TEAL, GREEN],
+    [
+      { kind: 'blob', pos: [5.1, 1.7, -2.4], scale: 0.9, color: '#a7f3d0', blob: 'torus', float: 0.6 },
+      { kind: 'clipboard', pos: [-5.2, 1.4, -2.4], rot: [0.1, 0.5, -0.06], scale: 0.8, float: 0.7 },
+      { kind: 'shelf', pos: [5.5, -1.6, -3.4], rot: [0.05, -0.4, 0], scale: 0.6, float: 0.3 },
+      { kind: 'blob', pos: [-5.0, -1.3, -2.2], scale: 0.7, color: '#99f6e4', blob: 'sphere', float: 0.9 },
+    ],
+  ),
   home: {
     heroX: 2.9,
     travel: [0, -9, 0],
@@ -240,6 +298,7 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
     items: [
       { kind: 'shelf', pos: [2.9, -0.1, -0.6], rot: [0.04, -0.32, 0], scale: 1.05, spin: 0.3, float: 0.3 },
       { kind: 'interior', pos: [0, -3.4, -9], rot: [0, 0.1, 0] },
+      { kind: 'beams', pos: [0, -3.4, -7.5] },
       { kind: 'cross', pos: [3.9, 1.85, -1.0], rot: [0, -0.3, 0], scale: 0.45, float: 0.7 },
       { kind: 'box', pos: [1.2, -1.3, 1.0], rot: [0.2, 0.5, 0.1], scale: 1.1, brand: 'Calmora', color: '#065F46', spin: 2, float: 1.1 },
       { kind: 'capsule', pos: [1.25, 1.45, 0.9], rot: [0.4, 0.2, 0.9], scale: 2.8, colors: AMBER, split: true, spin: 2, float: 1.2 },
@@ -290,13 +349,24 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       ...depth(103, [SKY, TEAL]),
     ],
   },
-  legal: {
+  privacy: {
     heroX: 3,
     travel: [0, -9, 0],
     items: [
-      { kind: 'blob', pos: [3.6, 0.6, -1], scale: 1.4, color: '#99f6e4', blob: 'sphere', float: 0.5 },
-      { kind: 'blob', pos: [2.3, -1, 0.2], rot: [0.9, 0.3, 0], scale: 1.1, color: '#ffffff', blob: 'torus', spin: 1.5, float: 0.7 },
+      { kind: 'cross', pos: [3.2, 0.5, -0.6], rot: [0.1, -0.4, 0], scale: 0.75, spin: 0.8, float: 0.6 },
+      { kind: 'clipboard', pos: [4.6, -0.9, 0.2], rot: [0.1, -0.5, 0.06], scale: 1.2, float: 0.8 },
+      { kind: 'blob', pos: [2.1, -1.1, 0.4], rot: [0.9, 0.3, 0], scale: 1.1, color: '#ffffff', blob: 'torus', spin: 1.5, float: 0.7 },
       ...depth(127, [TEAL, GREEN]),
+    ],
+  },
+  terms: {
+    heroX: 3,
+    travel: [0, -9, 0],
+    items: [
+      { kind: 'clipboard', pos: [3.0, 0.4, -0.4], rot: [0.08, -0.4, -0.06], scale: 1.5, spin: 0.6, float: 0.6 },
+      { kind: 'envelope', pos: [4.7, -0.9, 0.3], rot: [0.1, -0.4, 0.1], scale: 1.0, float: 0.8 },
+      { kind: 'blob', pos: [1.9, -1.2, 0.5], rot: [0.3, 0, 0.8], scale: 1.0, color: '#99f6e4', blob: 'pill', spin: -1.5, float: 1 },
+      ...depth(131, [TEAL, SKY]),
     ],
   },
   auth: {
@@ -315,6 +385,31 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'capsule', pos: [4.8, 0.6, -2.5], rot: [0.4, 0.2, 0.9], scale: 2.2, colors: SKY, float: 1 },
       { kind: 'tablet', pos: [4.6, -2.2, -2], rot: [1.1, 0.3, 0], scale: 2, float: 1 },
       { kind: 'beams', pos: [0, -3.6, -7] },
+    ],
+  },
+  register: {
+    heroX: -2.9,
+    travel: [0, -3, 0],
+    items: [
+      { kind: 'clipboard', pos: [-3.2, -2.0, 0], rot: [0.1, 0.4, -0.06], scale: 1.1, float: 0.6 },
+      { kind: 'figure-pharmacist', pos: [-5.3, -2.3, -1.2], rot: [0, 0.4, 0], scale: 0.7, float: 0.3 },
+      { kind: 'phone', pos: [-1.3, -1.9, 0.3], rot: [0.12, 0.45, 0.08], scale: 0.9, float: 0.7 },
+      { kind: 'capsule', pos: [-2.2, -2.8, 1.1], rot: [1.2, 0.2, 0.3], scale: 2.6, colors: GREEN, split: true, float: 1.2 },
+      { kind: 'tablet', pos: [-4.2, -2.9, 1.0], rot: [0.6, 1.2, 0.2], scale: 1.9, float: 0.9 },
+      { kind: 'cross', pos: [4.9, 2.1, -2.2], rot: [0.1, -0.5, 0], scale: 0.5, float: 0.7 },
+      { kind: 'capsule', pos: [4.8, 0.2, -2.5], rot: [0.4, 0.2, 0.9], scale: 2.2, colors: AMBER, float: 1 },
+      { kind: 'beams', pos: [0, -3.6, -7] },
+    ],
+  },
+  recover: {
+    heroX: -2.9,
+    travel: [0, -3, 0],
+    items: [
+      { kind: 'envelope', pos: [-3.0, -2.0, 0], rot: [0.1, 0.45, 0.08], scale: 1.2, float: 0.8 },
+      { kind: 'cross', pos: [-1.2, -2.0, 0.4], rot: [0.1, 0.4, 0], scale: 0.55, float: 0.7 },
+      { kind: 'capsule', pos: [-4.4, -2.5, 0.9], rot: [0.4, 0.2, 0.9], scale: 2.4, colors: SKY, split: true, float: 1 },
+      { kind: 'tablet', pos: [-2.2, -2.9, 1.2], rot: [1.1, 0.3, 0], scale: 2.0, float: 1.1 },
+      { kind: 'blob', pos: [4.7, 1.0, -2.4], scale: 1.1, color: '#a7f3d0', blob: 'pill', rot: [0.3, 0, 0.9], spin: 2, float: 0.8 },
     ],
   },
 };
@@ -341,6 +436,9 @@ export function compositionFor(path: string): CompositionName {
   if (at('/about')) return 'about';
   if (at('/contact')) return 'contact';
   if (at('/faq')) return 'faq';
-  if (at('/privacy') || at('/terms')) return 'legal';
+  if (at('/privacy')) return 'privacy';
+  if (at('/terms')) return 'terms';
+  if (at('/register')) return 'register';
+  if (at('/forgot-password') || at('/reset-password')) return 'recover';
   return 'auth';
 }

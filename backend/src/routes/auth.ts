@@ -3,7 +3,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
-import { PRIMARY_FRONTEND, RULES, isTest } from '../config.js';
+import { PRIMARY_FRONTEND, RULES, config, isTest } from '../config.js';
 import { one, pool, tx, type Db } from '../db.js';
 import { HttpError, badRequest, conflict } from '../errors.js';
 import { requireAuth, signToken, type Role } from '../middleware/auth.js';
@@ -24,7 +24,7 @@ const limiterOpts = { standardHeaders: 'draft-7' as const, legacyHeaders: false,
 const loginLimiter = rateLimit({
   ...limiterOpts,
   windowMs: 15 * 60_000,
-  limit: 60,
+  limit: config.LOGIN_RATE_LIMIT,
   message: { error: 'Too many login attempts from this network. Please wait a few minutes.' },
 });
 const registerLimiter = rateLimit({

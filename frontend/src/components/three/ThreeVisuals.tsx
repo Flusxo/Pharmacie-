@@ -223,6 +223,7 @@ const CapsuleScene = lazy(() => import('../../three/ExtraScenes').then((m) => ({
 /** Simulated delivery in 3D. Returns null when 3D is not available (the 2D map is used instead). */
 export function DeliveryVisual({ progress, delivered }: { progress: number; delivered: boolean }) {
   const g = useGraphics();
+  const { t } = useI18n();
   const fonts = useFontsReady();
   const draw = useCanvasSlot('delivery', 2) && fonts;
   const [ready, setReady] = useState(false);
@@ -230,6 +231,7 @@ export function DeliveryVisual({ progress, delivered }: { progress: number; deli
   if (!draw) return null;
   return (
     <div className={`scene-box delivery-visual ${ready ? 'ready' : ''}`} data-testid="delivery-visual">
+      <span className="sim-tag overlay">{t('order.simulated')}</span>
       <ThreeBoundary fallback={null}>
         <Suspense fallback={null}>
           <DeliveryScene

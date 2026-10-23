@@ -15,6 +15,8 @@ const schema = z.object({
   /** Stripe TEST keys (optional: without them the site answers "Payments not configured"). */
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  /** Login attempts per 15 minutes per network (the e2e suite logs in far more often than a person). */
+  LOGIN_RATE_LIMIT: z.coerce.number().int().positive().default(60),
   /** The hosted site's address; several allowed, separated by commas (the first one is used in e-mail links). */
   FRONTEND_URL: z.string().default('http://localhost:5173'),
 });

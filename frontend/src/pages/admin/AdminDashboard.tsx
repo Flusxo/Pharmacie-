@@ -11,8 +11,22 @@ import { m as motion } from 'framer-motion';
 import { AnimatedNumber } from '../../components/motion';
 import { duration, easeOut, stagger } from '../../motion';
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
+import { AnalyticsPanel } from '../../components/admin/AnalyticsPanel';
+import { MedicineReviews } from '../../components/admin/MedicineReviews';
 
-type Tab = 'verify' | 'users' | 'pharmacies' | 'doctors' | 'medicines' | 'orders' | 'reports' | 'messages' | 'audit' | 'performance';
+type Tab =
+  | 'verify'
+  | 'reviews'
+  | 'users'
+  | 'pharmacies'
+  | 'doctors'
+  | 'medicines'
+  | 'orders'
+  | 'reports'
+  | 'messages'
+  | 'audit'
+  | 'performance'
+  | 'analytics';
 type Row = Record<string, unknown>;
 
 interface Stats {
@@ -22,6 +36,7 @@ interface Stats {
   ordersByStatus: Record<string, number>;
   openReports: number;
   openContactMessages: number;
+  pendingMedicines?: number;
   avgResponseMinutes7d: number | null;
 }
 interface Dialog {
@@ -241,7 +256,20 @@ export function AdminDashboard() {
         value={tab}
         onChange={setTab}
         tabs={(
-          ['verify', 'users', 'pharmacies', 'doctors', 'medicines', 'orders', 'reports', 'messages', 'audit', 'performance'] as const
+          [
+            'verify',
+            'reviews',
+            'users',
+            'pharmacies',
+            'doctors',
+            'medicines',
+            'orders',
+            'reports',
+            'messages',
+            'audit',
+            'performance',
+            'analytics',
+          ] as const
         ).map((k) => ({
           key: k,
           label: t(`adm.tab${k === 'verify' ? 'Verify' : k.charAt(0).toUpperCase() + k.slice(1)}` as MessageKey),
@@ -299,6 +327,9 @@ export function AdminDashboard() {
             </div>
           ))
         ))}
+
+      {tab === 'reviews' && <MedicineReviews canModerate={canModerate} onChanged={refreshAll} />}
+      {tab === 'analytics' && <AnalyticsPanel />}
 
       {tab === 'users' && (
         <div className="stack">

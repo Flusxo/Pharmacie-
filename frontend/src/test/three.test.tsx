@@ -76,7 +76,7 @@ describe('3D fallbacks', () => {
   it('with WebGL the root stage shows the composition of the route and marks the page as 3D', async () => {
     render(wrap(<RootStage />, strong));
     expect(await screen.findByTestId('bg-scene')).toHaveAttribute('data-name', 'home');
-    expect(document.documentElement.dataset.stage).toBe('3d');
+    await waitFor(() => expect(document.documentElement.dataset.stage).toBe('3d'));
   });
 
   it('on a phone, a page viewer pauses the root stage instead of destroying it', async () => {

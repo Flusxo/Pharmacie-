@@ -36,7 +36,8 @@ import {
   Stethoscope,
   Tablet,
 } from './models';
-import { DeliveryRoute, LightBeams, PharmacyInterior } from './environment';
+import { DeliveryRoute, LightBeams, PharmacyInterior, StageLabels } from './environment';
+import { useI18n } from '../i18n';
 import { COMPOSITIONS, type CompositionName, type Item } from './compositions';
 
 export interface Inputs {
@@ -271,6 +272,8 @@ export default function PageScene({
   onFps?: (fps: number) => void;
   onReady?: () => void;
 }) {
+  const { t } = useI18n();
+  const labels = useMemo(() => ({ simulated: t('order.simulated') }), [t]);
   const inputs = useRef<Inputs>({ scroll: 0, x: 0, y: 0 });
   useEffect(() => {
     const onScroll = () => {
@@ -317,7 +320,9 @@ export default function PageScene({
       paused={paused}
       alwaysRender
     >
-      <Stage name={name} inputs={inputs} reduced={reduced} dark={dark} quality={tier} />
+      <StageLabels.Provider value={labels}>
+        <Stage name={name} inputs={inputs} reduced={reduced} dark={dark} quality={tier} />
+      </StageLabels.Provider>
     </Scene3D>
   );
 }

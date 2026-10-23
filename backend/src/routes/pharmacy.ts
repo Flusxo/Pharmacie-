@@ -14,6 +14,7 @@ import {
   type OrderStatus,
 } from '../services/orders.js';
 import { getPayment } from '../services/payments.js';
+import { listOwnSubmissions, similarMedicines, submissionBody, submitMedicine, type SubmissionInput } from '../services/submissions.js';
 import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
 import { idParam, uuid } from '../validate.js';
@@ -80,7 +81,7 @@ pharmacyRouter.get('/inventory', async (req, res) => {
   const q = z.object({ low: z.enum(['0', '1', 'true', 'false']).optional(), q: z.string().trim().max(80).optional() }).parse(req.query);
   const lowOnly = q.low === '1' || q.low === 'true';
   const rows = await query(
-    `SELECT m.id AS "medicineId", m.cip13, m.name, m.dosage, m.form, m.category, m.requires_prescription AS "requiresPrescription",
+    `SELECT m.id AS "medicineId", m.cip13, m.name, m.dosage, m.form, m.category, m.requires_prescription AS "requiresPrescription", m.status,
             i.quantity, i.price_eur AS "priceEur", i.low_stock_threshold AS "lowStockThreshold", i.updated_at AS "updatedAt",
             i.quantity <= i.low_stock_threshold AS low
        FROM pharmacy_inventory i JOIN medicines m ON m.id = i.medicine_id
@@ -103,7 +104,11 @@ pharmacyRouter.put('/inventory/:medicineId', async (req, res) => {
   const { medicineId } = z.object({ medicineId: uuid }).parse(req.params);
   const body = stockBody.parse(req.body);
   const result = await tx(async (c) => {
-    const m = await one('SELECT 1 FROM medicines WHERE id = $1 AND deleted_at IS NULL', [medicineId], c);
+    const m = await one(
+      "SELECT 1 FROM medicines WHERE id = $1 AND deleted_at IS NULL AND (status = 'approved' OR submitted_by = $2)",
+      [medicineId, req.user!.id],
+      c,
+    );
     if (!m) throw notFound('This medicine does not exist.');
     const before = await one<{ quantity: number }>(
       'SELECT quantity FROM pharmacy_inventory WHERE pharmacy_id = $1 AND medicine_id = $2 FOR UPDATE',
@@ -165,6 +170,8 @@ interface CsvRow {
   quantity: number | null;
   priceEur: number | null;
   lowStockThreshold: number;
+  /** unknown CIP13 with the full description: becomes a proposal for staff review */
+  submit?: SubmissionInput;
   error: string | null;
 }
 
@@ -187,7 +194,14 @@ pharmacyRouter.post('/inventory/csv', async (req, res) => {
     qty: cols.indexOf('quantity'),
     price: cols.indexOf('price_eur'),
     low: cols.indexOf('low_stock_threshold'),
+    name: cols.indexOf('name'),
+    substance: cols.indexOf('active_substance'),
+    form: cols.indexOf('form'),
+    dosage: cols.indexOf('dosage'),
+    category: cols.indexOf('category'),
+    rx: cols.indexOf('requires_prescription'),
   };
+  const canSubmit = [idx.name, idx.substance, idx.form, idx.dosage, idx.category, idx.rx].every((i) => i >= 0);
   if (idx.cip < 0 || idx.qty < 0 || idx.price < 0) {
     throw badRequest('The first line must be the header: cip13,quantity,price_eur (optional: low_stock_threshold).');
   }
@@ -195,7 +209,8 @@ pharmacyRouter.post('/inventory/csv', async (req, res) => {
 
   const meds = await query<{ id: string; cip13: string; name: string; quantity: number | null }>(
     `SELECT m.id, m.cip13, m.name, i.quantity FROM medicines m
-       LEFT JOIN pharmacy_inventory i ON i.medicine_id = m.id AND i.pharmacy_id = $1 WHERE m.deleted_at IS NULL`,
+       LEFT JOIN pharmacy_inventory i ON i.medicine_id = m.id AND i.pharmacy_id = $1
+      WHERE m.deleted_at IS NULL AND (m.status = 'approved' OR m.submitted_by = $1)`,
     [req.user!.id],
   );
   const byCip = new Map(meds.map((m) => [m.cip13, m]));
@@ -212,8 +227,22 @@ pharmacyRouter.post('/inventory/csv', async (req, res) => {
     const price = num(f[idx.price]);
     const low = idx.low >= 0 && (f[idx.low] ?? '').trim() !== '' ? num(f[idx.low]) : 5;
     let error: string | null = null;
+    let submit: SubmissionInput | undefined;
+    if (!m && canSubmit && /^\d{13}$/.test(cip)) {
+      const parsed = submissionBody.safeParse({
+        cip13: cip,
+        name: f[idx.name]?.trim(),
+        activeSubstance: f[idx.substance]?.trim(),
+        form: f[idx.form]?.trim().toLowerCase(),
+        dosage: f[idx.dosage]?.trim(),
+        category: f[idx.category]?.trim(),
+        requiresPrescription: ['1', 'true', 'oui', 'yes'].includes((f[idx.rx] ?? '').trim().toLowerCase()),
+        stock: { quantity: qty, priceEur: price, lowStockThreshold: low },
+      });
+      if (parsed.success) submit = parsed.data;
+    }
     if (!/^\d{13}$/.test(cip)) error = 'cip13 must be 13 digits';
-    else if (!m) error = 'unknown CIP13 code';
+    else if (!m && !submit) error = 'unknown CIP13 code';
     else if (seen.has(cip)) error = 'this CIP13 appears twice';
     else if (!Number.isInteger(qty) || qty < 0) error = 'quantity must be a whole number ≥ 0';
     else if (!Number.isFinite(price) || price < 0) error = 'price_eur must be a number ≥ 0';
@@ -228,9 +257,20 @@ pharmacyRouter.post('/inventory/csv', async (req, res) => {
       quantity: Number.isFinite(qty) ? qty : null,
       priceEur: Number.isFinite(price) ? price : null,
       lowStockThreshold: low,
+      submit,
       error,
     };
   });
+  // A new medicine that looks like an existing one is reported before anything is written.
+  for (const r of rows) {
+    if (r.submit && !r.error) {
+      const similar = await similarMedicines(r.submit);
+      if (similar.length) {
+        const { name: existingName, cip13: existingCip } = similar[0];
+        r.error = `looks like an existing medicine (${existingName}, ${existingCip}): use its CIP13 code`;
+      }
+    }
+  }
   const errors = rows.filter((r) => r.error).length;
   // Row errors in the reader's language.
   const lang = langOf(req);
@@ -244,6 +284,10 @@ pharmacyRouter.post('/inventory/csv', async (req, res) => {
   }
   await tx(async (c) => {
     for (const r of rows) {
+      if (r.submit) {
+        await submitMedicine(c, req.user!.id, r.submit);
+        continue;
+      }
       await c.query(
         `INSERT INTO pharmacy_inventory (pharmacy_id, medicine_id, quantity, price_eur, low_stock_threshold, updated_at)
          VALUES ($1,$2,$3,$4,$5,now())
@@ -258,7 +302,34 @@ pharmacyRouter.post('/inventory/csv', async (req, res) => {
       }
     }
   });
-  res.json({ dryRun: false, applied: rows.length });
+  res.json({ dryRun: false, applied: rows.length, submitted: rows.filter((r) => r.submit).length });
+});
+
+// ---------- Proposing a medicine that is not in the catalogue yet ----------
+
+pharmacyRouter.post('/medicines', async (req, res) => {
+  const body = submissionBody.parse(req.body);
+  const id = await tx((c) => submitMedicine(c, req.user!.id, body));
+  res.status(201).json({ id, status: 'pending' });
+});
+
+pharmacyRouter.get('/medicines/proposals', async (req, res) => {
+  res.json({ items: await listOwnSubmissions(req.user!.id) });
+});
+
+/** Same check as the proposal, without storing anything: the form asks it as the pharmacy types. */
+pharmacyRouter.post('/medicines/check', async (req, res) => {
+  const b = z
+    .object({ name: z.string().trim().min(2).max(120), dosage: z.string().trim().min(1).max(60), cip13: z.string().trim().optional() })
+    .parse(req.body);
+  const byCip =
+    b.cip13 && /^\d{13}$/.test(b.cip13)
+      ? await one('SELECT id, name, dosage, form, cip13 FROM medicines WHERE cip13 = $1 AND deleted_at IS NULL AND status = $2', [
+          b.cip13,
+          'approved',
+        ])
+      : undefined;
+  res.json({ candidates: byCip ? [byCip] : await similarMedicines(b) });
 });
 
 /** "Mark all out of stock" switch: a paused pharmacy is never proposed and cannot accept. */
@@ -299,6 +370,15 @@ addRoutes([
   ['get', '/api/pharmacy/orders/:id', 'Pharmacy', 'One of my orders (printable slip; patient as "First L.")', 'bearer'],
   ['patch', '/api/pharmacy/orders/:id/status', 'Pharmacy', 'Move an order forward (or cancel before delivery)', 'bearer'],
   ['post', '/api/pharmacy/orders/:id/cancellation', 'Pharmacy', "Approve or decline a patient's cancellation request", 'bearer'],
+  [
+    'post',
+    '/api/pharmacy/medicines',
+    'Pharmacy',
+    'Propose a medicine that is not in the catalogue (duplicates detected; staff review)',
+    'bearer',
+  ],
+  ['get', '/api/pharmacy/medicines/proposals', 'Pharmacy', 'My proposals and their review status', 'bearer'],
+  ['post', '/api/pharmacy/medicines/check', 'Pharmacy', 'Look for similar existing medicines before proposing one', 'bearer'],
   ['get', '/api/pharmacy/inventory', 'Pharmacy', 'My stock (low=1 for low stock only)', 'bearer'],
   ['put', '/api/pharmacy/inventory/:medicineId', 'Pharmacy', 'Set stock, price and threshold (history kept)', 'bearer'],
   ['delete', '/api/pharmacy/inventory/:medicineId', 'Pharmacy', 'Remove a medicine from my stock', 'bearer'],
