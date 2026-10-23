@@ -17,6 +17,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, PerformanceMonitor } from '@react-three/drei';
 import { releaseTextures, setLabelResolution } from './textures';
 import { frameloopFor } from '../lib/graphics';
+import { setGlassFlat } from '../lib/glassMode';
 
 // Post-processing (High tier only) is its own chunk: Medium and Low never download it.
 const HighEffects = lazy(() => import('./HighEffects'));
@@ -286,8 +287,21 @@ export function Scene3D({
         {adaptive && !reduced && (
           <PerformanceMonitor
             bounds={(refresh) => [42, refresh > 90 ? 85 : 56]}
-            onDecline={() => setScale((s) => Math.max(0.6, s - 0.15))}
-            onIncline={() => setScale((s) => Math.min(1, s + 0.1))}
+            onDecline={() =>
+              setScale((s) => {
+                const next = Math.max(0.6, s - 0.15);
+                // Frames are late even after lowering the resolution: the glass panels stop blurring too.
+                if (next <= 0.75) setGlassFlat('fps', true);
+                return next;
+              })
+            }
+            onIncline={() =>
+              setScale((s) => {
+                const next = Math.min(1, s + 0.1);
+                if (next >= 0.95) setGlassFlat('fps', false);
+                return next;
+              })
+            }
             flipflops={4}
           />
         )}

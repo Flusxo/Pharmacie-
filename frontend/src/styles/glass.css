@@ -1,0 +1,114 @@
+/*
+ * Frosted glass (iOS style) for every panel: ONE set of tokens and ONE rule, loaded last so it applies everywhere
+ * (top bars, cards, forms, dashboards, sheets, menus, toasts, tab bars) in both themes.
+ *
+ *  - a translucent tint, blur with saturation, a thin light border, a soft highlight on the top edge, a gentle shadow;
+ *  - the blur radius is modest (16-20 px; 12 px on phones) and overlapping blurred layers are avoided: a panel inside
+ *    a panel is a plain tint (blurring twice costs a lot and looks the same);
+ *  - on weak devices (the Low tier, a falling frame rate: html[data-glass="flat"], or the OS asking for less
+ *    transparency) every panel becomes a nearly opaque tint with NO blur, so the site stays smooth;
+ *  - text contrast is checked on the tint colours (test/contrast.test.ts).
+ */
+:root {
+  --glass-blur: 18px;
+  --glass-sat: 1.6;
+  --glass-bg: rgb(255 255 255 / 0.62);
+  --glass-bg-flat: rgb(255 255 255 / 0.9);
+  --glass-edge: rgb(255 255 255 / 0.78);
+  --glass-top: inset 0 1px 0 rgb(255 255 255 / 0.9);
+  --glass-bottom: inset 0 -1px 0 rgb(13 148 136 / 0.07);
+  --glass-shadow: 0 1px 2px rgb(11 37 48 / 0.05), 0 10px 30px rgb(13 148 136 / 0.1);
+}
+:root[data-theme='dark'] {
+  --glass-bg: rgb(24 70 79 / 0.56);
+  --glass-bg-flat: rgb(18 55 64 / 0.94);
+  --glass-edge: rgb(255 255 255 / 0.14);
+  --glass-top: inset 0 1px 0 rgb(255 255 255 / 0.18);
+  --glass-bottom: inset 0 -1px 0 rgb(0 0 0 / 0.18);
+  --glass-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px rgb(0 0 0 / 0.32);
+}
+@media (pointer: coarse), (max-width: 767px) {
+  :root {
+    --glass-blur: 12px;
+  }
+}
+
+.card,
+.glass,
+.hero-panel,
+.hero-steps li,
+.sheet,
+.popover,
+.toast,
+.tabbar,
+.topbar,
+.pub-footer,
+.pub-app .auth-wrap > .card,
+.pub-app .pub-main > .card,
+.pub-app .pub-main > form.card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-top), var(--glass-bottom), var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+}
+/* The top bar and tab bar are thin strips: no side borders or heavy shadow. */
+.topbar {
+  border-width: 0 0 1px;
+  box-shadow: var(--glass-top);
+}
+.tabbar {
+  border-width: 1px 0 0;
+  box-shadow: none;
+}
+/* A panel inside a panel: tint only (one blur layer is enough). */
+.card .card,
+.glass .glass,
+.glass .card,
+.card .glass,
+.sheet .card,
+.popover .card,
+.hero-panel .card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: color-mix(in srgb, var(--glass-bg) 70%, var(--surface));
+  box-shadow: var(--glass-top);
+}
+/* Very wide tables and long lists scroll inside a panel: no blur behind a big moving area. */
+.card.table-wrap {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: var(--glass-bg-flat);
+}
+
+/* Weak device or falling frame rate: translucent tint, no blur. */
+:root[data-glass='flat'] .card,
+:root[data-glass='flat'] .glass,
+:root[data-glass='flat'] .hero-panel,
+:root[data-glass='flat'] .hero-steps li,
+:root[data-glass='flat'] .sheet,
+:root[data-glass='flat'] .popover,
+:root[data-glass='flat'] .toast,
+:root[data-glass='flat'] .tabbar,
+:root[data-glass='flat'] .topbar,
+:root[data-glass='flat'] .pub-footer {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: var(--glass-bg-flat);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .card,
+  .glass,
+  .hero-panel,
+  .hero-steps li,
+  .sheet,
+  .popover,
+  .toast,
+  .tabbar,
+  .topbar,
+  .pub-footer {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--glass-bg-flat);
+  }
+}

@@ -37,7 +37,7 @@ import {
   Tablet,
 } from './models';
 import { setMaterialDetail } from './models';
-import { DeliveryRoute, LightBeams, PharmacyInterior, StageLabels } from './environment';
+import { DeliveryRoute, PharmacyInterior, SoftLight, StageLabels } from './environment';
 import { useI18n } from '../i18n';
 import { COMPOSITIONS, type CompositionName, type Item } from './compositions';
 
@@ -100,8 +100,6 @@ export function Model({ it, split, quality, reduced = false }: { it: Item; split
       return <Scooter />;
     case 'interior':
       return <PharmacyInterior />;
-    case 'beams':
-      return <LightBeams reduced={reduced} />;
     case 'route':
       return <DeliveryRoute reduced={reduced} />;
     case 'figure-pharmacist':
@@ -136,8 +134,8 @@ function ItemView({
   const base = useMemo<[number, number, number]>(() => {
     const [x, y, z] = it.pos;
     if (!portrait) return [x, y, z];
-    // Set pieces (room, beams, route) stay centred behind everything.
-    if (it.kind === 'interior' || it.kind === 'beams' || it.kind === 'route') return [x * 0.3, y, z];
+    // Set pieces (room, route) stay centred behind everything.
+    if (it.kind === 'interior' || it.kind === 'route') return [x * 0.3, y, z];
     return hero ? [(x - heroX) * 0.42, y * 0.62 + 1.3, z] : [Math.sign(x) * 1.5, y, z - 0.5];
   }, [it.pos, portrait, hero, heroX]);
   const scale = (it.scale ?? 1) * (portrait ? 0.62 : 1);
@@ -236,12 +234,13 @@ function Stage({
       return [...ls.map((l) => ({ ...l, leaving: true })), { name, leaving: false, id }];
     });
   }, [name]);
-  const fog = dark ? '#061a1f' : '#eef9f8';
+  const fog = dark ? '#0b2a31' : '#eef9f8';
   return (
     <>
       <fog attach="fog" args={[fog, 10, 24]} />
-      <ambientLight intensity={dark ? 0.3 : 0.55} />
+      <ambientLight intensity={dark ? 0.4 : 0.55} />
       <Rig name={name} inputs={inputs} reduced={reduced} />
+      <SoftLight target={COMPOSITIONS[name].light ?? 0} reduced={reduced} />
       {layers.map((l) => (
         <Layer
           key={l.id}
@@ -319,8 +318,8 @@ export default function PageScene({
       label=""
       className="page-bg-canvas"
       camera={{ position: [0, 0.3, 9], fov: 35 }}
-      exposure={dark ? 0.85 : 1.05}
-      environmentIntensity={dark ? 0.6 : 1}
+      exposure={dark ? 0.95 : 1.05}
+      environmentIntensity={dark ? 0.75 : 1}
       onFps={onFps}
       onReady={onReady}
       paused={paused}

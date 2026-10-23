@@ -15,6 +15,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useReducedMotion, useSettings, type GraphicsPref } from './settings';
 import { TierGovernor, type AutoTier } from './tierGovernor';
+import { setGlassFlat } from './glassMode';
 
 export type Tier = 'high' | 'medium' | 'low' | 'off';
 
@@ -120,6 +121,10 @@ export function GraphicsProvider({ children, device }: { children: ReactNode; de
   }, []);
 
   const tier: Tier = graphics === 'auto' && autoTier ? autoTier : base;
+  // Low and Off have no live 3D behind the panels: they get the plain tint (and save the blur).
+  useEffect(() => {
+    setGlassFlat('tier', tier === 'low' || tier === 'off');
+  }, [tier]);
 
   const reportFps = useCallback((fps: number) => {
     const g = governor.current;

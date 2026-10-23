@@ -55,19 +55,19 @@
 }
 
 :root[data-theme='dark'] {
-  --bg: #061a1f;
+  --bg: #0b2a31;
   --page-bg:
-    radial-gradient(70% 50% at 100% 0%, rgb(45 212 191 / 0.12), transparent 60%),
-    radial-gradient(60% 45% at 0% 30%, rgb(52 211 153 / 0.08), transparent 60%),
-    linear-gradient(180deg, #061a1f 0%, #071d1c 60%, #06161a 100%);
-  --surface: #0b252b;
-  --surface-2: #10323a;
-  --glass: rgb(11 37 43 / 0.72);
-  --glass-line: rgb(255 255 255 / 0.08);
+    radial-gradient(70% 50% at 100% 0%, rgb(45 212 191 / 0.18), transparent 60%),
+    radial-gradient(60% 45% at 0% 30%, rgb(52 211 153 / 0.12), transparent 60%),
+    linear-gradient(180deg, #0b2a31 0%, #0d302f 60%, #0a262b 100%);
+  --surface: #123740;
+  --surface-2: #19464f;
+  --glass: rgb(18 55 64 / 0.74);
+  --glass-line: rgb(255 255 255 / 0.12);
   --ink: #e3f4f2;
   --ink-2: #c1dcda;
-  --muted: #92b3b2;
-  --line: #1c434b;
+  --muted: #a1c1c0;
+  --line: #2a5961;
   --brand: #2dd4bf;
   --brand-ink: #032a26;
   --accent: #34d399;

@@ -181,72 +181,114 @@ export function PharmacyInterior(props: JSX.IntrinsicElements['group']) {
   );
 }
 
-/** Ceiling lamp beams (additive cones) with slowly drifting dust. */
-export function LightBeams({
-  count = 3,
-  reduced = false,
-  ...props
-}: { count?: number; reduced?: boolean } & JSX.IntrinsicElements['group']) {
-  const beamMat = useMemo(() => {
+/**
+ * One large, very soft light for the whole background: a warm glow from above with a few big blurred colour blobs
+ * (teal, green) and fine dust drifting across the whole screen. It is glued to the camera, so it always fills the
+ * view whatever the page, and replaces the old separate cone shapes. `target` (0..1) fades it in and out per page.
+ */
+const DUST = 150;
+export function SoftLight({ target, reduced = false }: { target: number; reduced?: boolean }) {
+  const group = useRef<THREE.Group>(null);
+  const plane = useRef<THREE.Mesh>(null);
+  const dust = useRef<THREE.Points>(null);
+  const level = useRef(0);
+  const glowMat = useMemo(() => {
     const c = document.createElement('canvas');
-    c.width = 4;
+    c.width = 256;
     c.height = 256;
     const g = c.getContext('2d')!;
-    const grad = g.createLinearGradient(0, 0, 0, 256);
-    grad.addColorStop(0, 'rgba(255,255,240,0.55)');
-    grad.addColorStop(1, 'rgba(255,255,240,0)');
-    g.fillStyle = grad;
-    g.fillRect(0, 0, 4, 256);
+    const blob = (x: number, y: number, r: number, color: string) => {
+      const grad = g.createRadialGradient(x, y, 0, x, y, r);
+      grad.addColorStop(0, color);
+      grad.addColorStop(1, color.replace(/[\d.]+\)$/, '0)'));
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 256, 256);
+    };
+    blob(128, -20, 215, 'rgba(205,255,242,0.58)'); // the main glow from above (teal-white)
+    blob(40, 190, 150, 'rgba(45,212,191,0.20)'); // soft teal blob, lower left
+    blob(220, 150, 130, 'rgba(52,211,153,0.16)'); // soft green blob, right
     const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
     return new THREE.MeshBasicMaterial({
       map: tex,
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
-      side: THREE.DoubleSide,
-      opacity: 0.35,
+      depthTest: false,
+      fog: false,
+      opacity: 0,
     });
   }, []);
-  const dust = useRef<THREE.Points>(null);
-  const N = 420;
+  const dustMat = useMemo(() => {
+    const c = document.createElement('canvas');
+    c.width = 32;
+    c.height = 32;
+    const g = c.getContext('2d')!;
+    const grad = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+    grad.addColorStop(0, 'rgba(255,255,245,1)');
+    grad.addColorStop(1, 'rgba(255,255,245,0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 32, 32);
+    return new THREE.PointsMaterial({
+      map: new THREE.CanvasTexture(c),
+      size: 0.09,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      depthTest: false,
+      fog: false,
+      opacity: 0,
+    });
+  }, []);
   const { positions, speeds } = useMemo(() => {
-    const p = new Float32Array(N * 3);
-    const v = new Float32Array(N);
-    let s = 7;
+    const p = new Float32Array(DUST * 3);
+    const v = new Float32Array(DUST);
+    let s = 19;
     const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
-    for (let i = 0; i < N; i++) {
-      const beam = i % count;
-      const x = (beam - (count - 1) / 2) * 3;
-      const y = r() * 5;
-      const spread = 0.15 + (5 - y) * 0.16;
-      p.set([x + (r() - 0.5) * spread * 2, y, (r() - 0.5) * spread * 2], i * 3);
-      v[i] = 0.02 + r() * 0.05;
+    for (let i = 0; i < DUST; i++) {
+      p[i * 3] = (r() - 0.5) * 22;
+      p[i * 3 + 1] = (r() - 0.5) * 13;
+      p[i * 3 + 2] = -3 - r() * 9;
+      v[i] = 0.03 + r() * 0.07;
     }
     return { positions: p, speeds: v };
-  }, [count]);
-  useFrame((_, dt) => {
+  }, []);
+  useFrame(({ camera, size }, dt) => {
+    const g = group.current;
+    if (!g) return;
+    level.current += (target - level.current) * Math.min(1, dt * 2.5);
+    const on = level.current > 0.01;
+    g.visible = on;
+    if (!on) return;
+    // Glued to the camera: always fills the view.
+    g.position.copy(camera.position);
+    g.quaternion.copy(camera.quaternion);
+    const fov = (camera as THREE.PerspectiveCamera).fov ?? 35;
+    const dist = 14;
+    const h = 2 * dist * Math.tan(THREE.MathUtils.degToRad(fov / 2)) * 1.2;
+    plane.current?.scale.set(h * (size.width / size.height), h, 1);
+    glowMat.opacity = 0.55 * level.current;
+    dustMat.opacity = 0.7 * level.current;
     if (reduced || !dust.current) return;
     const pos = dust.current.geometry.attributes.position as THREE.BufferAttribute;
-    for (let i = 0; i < N; i++) {
-      let y = pos.getY(i) - speeds[i] * dt;
-      if (y < 0) y = 5;
-      pos.setY(i, y);
-      pos.setX(i, pos.getX(i) + Math.sin(y * 3 + i) * 0.0008);
+    const arr = pos.array as Float32Array;
+    for (let i = 0; i < DUST; i++) {
+      let y = arr[i * 3 + 1] + speeds[i] * dt;
+      if (y > 6.5) y = -6.5;
+      arr[i * 3 + 1] = y;
+      arr[i * 3] += Math.sin(y * 1.3 + i) * 0.0009;
     }
     pos.needsUpdate = true;
   });
   return (
-    <group {...props}>
-      {Array.from({ length: count }, (_, b) => (
-        <mesh key={b} position={[(b - (count - 1) / 2) * 3, 2.5, 0]} material={beamMat}>
-          <coneGeometry args={[1.0, 5, 32, 1, true]} />
-        </mesh>
-      ))}
-      <points ref={dust}>
+    <group ref={group} visible={false}>
+      <mesh ref={plane} position={[0, 0, -14]} material={glowMat} renderOrder={-20} frustumCulled={false}>
+        <planeGeometry args={[1, 1]} />
+      </mesh>
+      <points ref={dust} material={dustMat} renderOrder={-19} frustumCulled={false}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[positions, 3]} />
         </bufferGeometry>
-        <pointsMaterial size={0.025} color="#fffbea" transparent opacity={0.8} depthWrite={false} blending={THREE.AdditiveBlending} />
       </points>
     </group>
   );

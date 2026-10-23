@@ -5,6 +5,7 @@ import '@fontsource-variable/fraunces';
 import './styles/app.css';
 import './styles/public.css';
 import './styles/pictures.css';
+import './styles/glass.css';
 import { App } from './App';
 import { warmUp } from './lib/apiBase';
 

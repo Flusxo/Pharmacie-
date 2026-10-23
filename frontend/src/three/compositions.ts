@@ -29,7 +29,6 @@ export type ItemKind =
   | 'figure-pharmacist'
   | 'figure-doctor'
   | 'interior'
-  | 'beams'
   | 'route'
   /** any medicine pack by its form (used by the rendered medicine pictures) */
   | 'product';
@@ -60,6 +59,8 @@ export interface Item {
 
 export interface Composition {
   items: Item[];
+  /** the soft full-background light (0..1): the old cone shapes are gone */
+  light?: number;
   /** camera travels by this much over the page scroll */
   travel: [number, number, number];
   /** where the hero cluster is centred (used to recentre it on phones) */
@@ -165,7 +166,6 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'tablet', pos: [1.8, -1.5, 1.1], rot: [1.1, 0.3, 0], scale: 2.3, spin: 3, float: 1.1 },
       { kind: 'tablet', pos: [4.5, -1.2, 0.7], rot: [0.6, 1.2, 0.2], scale: 2.0, spin: -2, float: 0.9 },
       { kind: 'interior', pos: [1.5, -3.4, -8], rot: [0, -0.12, 0] },
-      { kind: 'beams', pos: [1.5, -3.4, -6.5] },
       ...calm(201, [TEAL, GREEN, SKY]).items.filter((it) => it.pos[1] < -2),
     ],
   },
@@ -232,7 +232,6 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'box', pos: [5.2, 1.5, -2.2], rot: [0.2, -0.5, 0.1], scale: 0.8, brand: 'Calmora', color: '#065F46', float: 0.7 },
       { kind: 'box', pos: [5.4, -0.6, -2.6], rot: [0.1, 0.4, -0.1], scale: 0.65, brand: 'Apaisa', color: '#0369A1', float: 0.9 },
       { kind: 'cross', pos: [-5.2, 2.4, -2.6], rot: [0, 0.4, 0], scale: 0.4, float: 0.7 },
-      { kind: 'beams', pos: [0, -2.4, -7] },
     ],
   ),
   'app-doctor': calm(
@@ -266,7 +265,6 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'tablet', pos: [4.6, -0.2, 0.7], rot: [0.6, 1.2, 0.2], scale: 2.1, spin: -2, float: 0.9 },
       { kind: 'cross', pos: [4.7, 2.3, -1.6], rot: [0.1, -0.5, 0], scale: 0.55, float: 0.7 },
       { kind: 'interior', pos: [1.5, -3.4, -8], rot: [0, -0.12, 0] },
-      { kind: 'beams', pos: [1.5, -3.4, -6.5] },
       ...depth(11, [TEAL, GREEN, SKY, AMBER]),
     ],
   },
@@ -298,7 +296,6 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
     items: [
       { kind: 'shelf', pos: [2.9, -0.1, -0.6], rot: [0.04, -0.32, 0], scale: 1.05, spin: 0.3, float: 0.3 },
       { kind: 'interior', pos: [0, -3.4, -9], rot: [0, 0.1, 0] },
-      { kind: 'beams', pos: [0, -3.4, -7.5] },
       { kind: 'cross', pos: [3.9, 1.85, -1.0], rot: [0, -0.3, 0], scale: 0.45, float: 0.7 },
       { kind: 'box', pos: [1.2, -1.3, 1.0], rot: [0.2, 0.5, 0.1], scale: 1.1, brand: 'Calmora', color: '#065F46', spin: 2, float: 1.1 },
       { kind: 'capsule', pos: [1.25, 1.45, 0.9], rot: [0.4, 0.2, 0.9], scale: 2.8, colors: AMBER, split: true, spin: 2, float: 1.2 },
@@ -384,7 +381,6 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'cross', pos: [4.9, 2.1, -2.2], rot: [0.1, -0.5, 0], scale: 0.5, float: 0.7 },
       { kind: 'capsule', pos: [4.8, 0.6, -2.5], rot: [0.4, 0.2, 0.9], scale: 2.2, colors: SKY, float: 1 },
       { kind: 'tablet', pos: [4.6, -2.2, -2], rot: [1.1, 0.3, 0], scale: 2, float: 1 },
-      { kind: 'beams', pos: [0, -3.6, -7] },
     ],
   },
   register: {
@@ -398,7 +394,6 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'tablet', pos: [-4.2, -2.9, 1.0], rot: [0.6, 1.2, 0.2], scale: 1.9, float: 0.9 },
       { kind: 'cross', pos: [4.9, 2.1, -2.2], rot: [0.1, -0.5, 0], scale: 0.5, float: 0.7 },
       { kind: 'capsule', pos: [4.8, 0.2, -2.5], rot: [0.4, 0.2, 0.9], scale: 2.2, colors: AMBER, float: 1 },
-      { kind: 'beams', pos: [0, -3.6, -7] },
     ],
   },
   recover: {
@@ -413,6 +408,18 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
     ],
   },
 };
+
+// The soft background light per page (it replaces the old cone shapes): strongest where a hero or a form sits.
+const LIGHT: Partial<Record<CompositionName, number>> = {
+  home: 1,
+  auth: 1,
+  register: 1,
+  recover: 0.8,
+  pharmacies: 0.8,
+  'app-home': 0.6,
+  'app-pharmacy': 0.5,
+};
+for (const [k, v] of Object.entries(LIGHT)) COMPOSITIONS[k as CompositionName].light = v;
 
 /** Which composition a route shows (public site and app). */
 export function compositionFor(path: string): CompositionName {
