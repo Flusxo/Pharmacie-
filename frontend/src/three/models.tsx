@@ -609,11 +609,12 @@ export function PharmaBox({
   ...props
 }: { brand: string; color: string; size?: [number, number, number] } & JSX.IntrinsicElements['group']) {
   const map = boxTexture(brand, color);
-  const emboss = boxNormal(brand);
+  // The embossed brand is a CPU-built normal map (hundreds of ms on a phone): full detail only.
+  const emboss = detail === 'full' ? boxNormal(brand) : undefined;
   const front = useMemo(() => {
     const m = cardboard(map);
     // Embossed brand name and cross.
-    m.normalMap = emboss;
+    if (emboss) m.normalMap = emboss;
     m.normalScale = new THREE.Vector2(0.6, 0.6);
     return m;
   }, [map, emboss]);

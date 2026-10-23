@@ -1,0 +1,190 @@
+[
+  {
+    "page": "home",
+    "profile": "laptop",
+    "loadMs": 95,
+    "ttfb": 13,
+    "dcl": 90,
+    "fcp": 208,
+    "lcp": 1180,
+    "cls": 0.002,
+    "longTasks": 6,
+    "longList": [
+      [
+        165,
+        54
+      ],
+      [
+        221,
+        89
+      ],
+      [
+        774,
+        283
+      ],
+      [
+        1313,
+        108
+      ],
+      [
+        1428,
+        216
+      ],
+      [
+        2362,
+        52
+      ]
+    ],
+    "tbt": 498,
+    "stage3dAt": 2426,
+    "canvasAt": 586,
+    "fps": 60.2,
+    "worstFrameMs": 17,
+    "kb": {
+      "js": 410,
+      "css": 11,
+      "img": 51,
+      "font": 83,
+      "other": 26,
+      "total": 582
+    },
+    "requests": 29,
+    "canvases": 1,
+    "tier": "auto"
+  },
+  {
+    "page": "login",
+    "profile": "laptop",
+    "loadMs": 101,
+    "ttfb": 13,
+    "dcl": 96,
+    "fcp": 144,
+    "lcp": 404,
+    "cls": 0,
+    "longTasks": 2,
+    "longList": [
+      [
+        606,
+        447
+      ],
+      [
+        1212,
+        69
+      ]
+    ],
+    "tbt": 416,
+    "stage3dAt": 1907,
+    "canvasAt": 511,
+    "fps": 60.2,
+    "worstFrameMs": 17,
+    "kb": {
+      "js": 410,
+      "css": 11,
+      "img": 28,
+      "font": 83,
+      "other": 26,
+      "total": 559
+    },
+    "requests": 26,
+    "canvases": 1,
+    "tier": "auto"
+  },
+  {
+    "page": "search",
+    "profile": "laptop",
+    "loadMs": 88,
+    "ttfb": 9,
+    "dcl": 84,
+    "fcp": 268,
+    "lcp": 396,
+    "cls": 0.039,
+    "longTasks": 4,
+    "longList": [
+      [
+        567,
+        100
+      ],
+      [
+        670,
+        129
+      ],
+      [
+        854,
+        69
+      ],
+      [
+        937,
+        78
+      ]
+    ],
+    "tbt": 176,
+    "stage3dAt": 1345,
+    "canvasAt": 511,
+    "fps": 60.1,
+    "worstFrameMs": 17,
+    "kb": {
+      "js": 416,
+      "css": 11,
+      "img": 8,
+      "font": 83,
+      "other": 33,
+      "total": 551
+    },
+    "requests": 37,
+    "canvases": 1,
+    "tier": "auto"
+  },
+  {
+    "page": "medicine",
+    "profile": "laptop",
+    "loadMs": 94,
+    "ttfb": 11,
+    "dcl": 90,
+    "fcp": 324,
+    "lcp": 400,
+    "cls": 0.217,
+    "longTasks": 6,
+    "longList": [
+      [
+        635,
+        103
+      ],
+      [
+        841,
+        60
+      ],
+      [
+        915,
+        60
+      ],
+      [
+        1227,
+        292
+      ],
+      [
+        1536,
+        262
+      ],
+      [
+        2631,
+        81
+      ]
+    ],
+    "tbt": 558,
+    "stage3dAt": 1098,
+    "canvasAt": 517,
+    "fps": 60.1,
+    "worstFrameMs": 17,
+    "kb": {
+      "js": 468,
+      "css": 17,
+      "img": 21,
+      "font": 83,
+      "other": 36,
+      "total": 625
+    },
+    "requests": 61,
+    "canvases": 2,
+    "tier": "auto"
+  }
+]

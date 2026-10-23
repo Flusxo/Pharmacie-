@@ -10,8 +10,11 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // 1024 × 512: enough for sharp reflections of the softboxes (an environment map is used blurred for
 // lighting, a bigger file would not look different and would cost download time).
-const W = 1024;
-const H = 512;
+// A second, half-size file (studio-lite.hdr, 512 x 256) is written for Medium and phones: the lighting is the same,
+// it downloads and decodes four times faster. `node scripts/make-hdr.mjs lite`
+const LITE = process.argv[2] === 'lite';
+const W = LITE ? 512 : 1024;
+const H = LITE ? 256 : 512;
 
 // Lights in (longitude, latitude) degrees, with angular size and colour * intensity.
 const LIGHTS = [
@@ -78,7 +81,7 @@ for (let y = 0; y < H; y++) {
 }
 // Flat (non-RLE) scanlines; readers detect this because a line does not start with 2,2.
 if (data[0] === 2 && data[1] === 2) data[0] = 3;
-const out = path.join(ROOT, 'frontend', 'public', 'hdr', 'studio.hdr');
+const out = path.join(ROOT, 'frontend', 'public', 'hdr', LITE ? 'studio-lite.hdr' : 'studio.hdr');
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, Buffer.concat([header, data]));
 console.log(`wrote ${path.relative(ROOT, out)} (${W}x${H}, ${(fs.statSync(out).size / 1024).toFixed(0)} KB)`);

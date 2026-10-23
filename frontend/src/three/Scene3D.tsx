@@ -261,7 +261,7 @@ export function Scene3D({
         }}
       >
         <Suspense fallback={null}>
-          <Environment files="/hdr/studio.hdr" environmentIntensity={environmentIntensity} />
+          <Environment files={high ? '/hdr/studio.hdr' : '/hdr/studio-lite.hdr'} environmentIntensity={environmentIntensity} />
           <directionalLight
             position={[-3, 5, 4]}
             intensity={1.6}

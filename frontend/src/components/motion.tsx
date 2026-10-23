@@ -21,14 +21,14 @@ export function AnimatedOutlet() {
   return (
     <motion.div
       key={location.pathname}
-      initial={{ opacity: 0, y: 12, filter: 'blur(4px)' }}
+      // Opacity and transform only: a blur filter forces layout and repaint work on every frame (slow on phones).
+      initial={{ opacity: 0, y: 12 }}
       // transitionEnd clears transform/filter: they would otherwise trap position:fixed dialogs inside the page.
       animate={{
         opacity: 1,
         y: 0,
-        filter: 'blur(0px)',
         transition: { duration: duration.base, ease: easeOut },
-        transitionEnd: { filter: 'none', transform: 'none' },
+        transitionEnd: { transform: 'none' },
       }}
     >
       {/* Only the page area waits for a lazy page: the header and footer stay (no flash, no layout shift). */}

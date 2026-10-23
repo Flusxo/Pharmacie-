@@ -10,6 +10,39 @@
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>counter. — pharmacies near you</title>
+    <script>
+      // Preload the pre-rendered hero of this page (the largest paint) while the scripts download.
+      (function () {
+        var map = {
+          '/': 'home',
+          '/how-it-works': 'how',
+          '/patients': 'patients',
+          '/pharmacies': 'pharmacies',
+          '/doctors': 'doctors',
+          '/about': 'about',
+          '/contact': 'contact',
+          '/faq': 'faq',
+          '/login': 'auth',
+          '/register': 'register',
+        };
+        var n = map[location.pathname];
+        if (!n) return;
+        var portrait = window.matchMedia('(orientation: portrait)').matches;
+        var l = document.createElement('link');
+        l.rel = 'preload';
+        l.as = 'image';
+        l.type = 'image/avif';
+        l.setAttribute('fetchpriority', 'high');
+        l.setAttribute('imagesizes', '100vw');
+        l.setAttribute(
+          'imagesrcset',
+          portrait
+            ? '/renders/hero-' + n + '-p-400.avif 400w, /renders/hero-' + n + '-p-800.avif 800w'
+            : '/renders/hero-' + n + '-480.avif 480w, /renders/hero-' + n + '-960.avif 960w, /renders/hero-' + n + '-1920.avif 1920w',
+        );
+        document.head.appendChild(l);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
