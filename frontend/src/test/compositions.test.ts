@@ -50,9 +50,12 @@ describe('3D: a scene on every page', () => {
     }
   });
 
-  it('the set pieces are used: pharmacy interior, lit cross, dust in light beams, delivery route with scooter', () => {
+  it('the set pieces are used: pharmacy interior, lit cross, delivery route with scooter, and the soft light with dust on the login, sign-up and home pages', () => {
     const kinds = new Set(Object.values(COMPOSITIONS).flatMap((c) => c.items.map((i) => i.kind)));
-    for (const k of ['interior', 'cross', 'beams', 'route', 'shelf', 'capsule', 'tablet']) expect(kinds.has(k as never), k).toBe(true);
+    // the old cone-shaped beams are gone: one soft light fills the whole background instead
+    expect(kinds.has('beams' as never)).toBe(false);
+    for (const name of ['home', 'auth', 'register'] as const) expect(COMPOSITIONS[name].light, name).toBeGreaterThan(0.5);
+    for (const k of ['interior', 'cross', 'route', 'shelf', 'capsule', 'tablet']) expect(kinds.has(k as never), k).toBe(true);
   });
 });
 
