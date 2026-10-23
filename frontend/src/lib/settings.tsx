@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 export type ThemePref = 'system' | 'light' | 'dark';
-export type GraphicsPref = 'auto' | 'high' | 'medium' | 'low' | 'off';
+export type GraphicsPref = 'auto' | 'ultra' | 'high' | 'medium' | 'low' | 'off';
 interface Settings {
   theme: ThemePref;
   resolvedTheme: 'light' | 'dark';

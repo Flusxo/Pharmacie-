@@ -35,8 +35,16 @@ export interface ManifestEntry {
 }
 
 const widthsFor = (max: number) =>
-  max === 1024 ? [256, 512, 1024] : max === 3840 ? [480, 960, 1920, 3840] : max === 1920 ? [480, 960, 1920] : [400, 800, 1600];
-const webpFor = (max: number) => (max === 1024 ? 512 : max === 3840 ? 1920 : max === 1920 ? 960 : 800);
+  max === 1024
+    ? [256, 512, 1024]
+    : max === 800
+      ? [400, 800]
+      : max === 3840
+        ? [480, 960, 1920, 3840]
+        : max === 1920
+          ? [480, 960, 1920]
+          : [400, 800, 1600];
+const webpFor = (max: number) => (max === 1024 ? 512 : max === 800 ? 800 : max === 3840 ? 1920 : max === 1920 ? 960 : 800);
 
 async function main() {
   const args = process.argv.slice(2);

@@ -140,6 +140,7 @@ export function ProfilePage() {
               data-testid="graphics-quality"
             >
               <option value="auto">{t('acc.graphicsAuto')}</option>
+              <option value="ultra">{t('acc.graphicsUltra')}</option>
               <option value="high">{t('acc.graphicsHigh')}</option>
               <option value="medium">{t('acc.graphicsMedium')}</option>
               <option value="low">{t('acc.graphicsLow')}</option>

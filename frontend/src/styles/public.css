@@ -873,3 +873,75 @@
 :root[data-stage='3d'] .hero-sticky .hero-poster {
   opacity: 0;
 }
+
+/* ---------- Live scroll stories: steps on the left, the 3D object on the page behind (no picture frames) ---------- */
+.story-live-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 520px;
+}
+.story-live-step {
+  min-height: 62vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.story-live-card {
+  padding: 22px 24px;
+  border-radius: var(--radius-lg);
+}
+.story-live-card h3 {
+  margin: 4px 0 6px;
+}
+.story-live-card p {
+  margin: 0;
+}
+.story-live-fallback {
+  display: none;
+}
+/* No live 3D (Low / Off): the cut-out of the step sits beside its card instead. */
+:root:not([data-stage='3d']) .story-live-step {
+  min-height: 0;
+  padding: 10px 0;
+  gap: 18px;
+  align-items: center;
+}
+:root:not([data-stage='3d']) .story-live-fallback {
+  display: block;
+  width: 120px;
+  flex: none;
+}
+@media (max-width: 899px) {
+  .story-live-steps {
+    max-width: none;
+  }
+  /* Phone: the object sits at the top of the screen, each card passes below it. */
+  :root[data-stage='3d'] .story-live-step {
+    min-height: 70vh;
+    align-items: flex-end;
+    padding-bottom: 8vh;
+  }
+}
+
+/* The still of the real hero (same camera as the live stage) behind the page; the live 3D fades in over it. */
+.hero-still {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transition: opacity 0.9s ease;
+}
+.hero-still img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.page-bg.ready .hero-still {
+  opacity: 0;
+}
+/* The flat icon illustration is gone: the still above is the hero. Its place stays for the objects. */
+.pub-hero-visual .hero-art {
+  display: none;
+}

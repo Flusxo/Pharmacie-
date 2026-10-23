@@ -109,12 +109,14 @@ export function RootStage() {
       data-scene={name}
       data-mode={draw ? '3d' : 'static'}
     >
+      <HeroStill name={name} />
       {draw && (
         <ThreeBoundary fallback={null}>
           <Suspense fallback={null}>
             <PageScene
               name={name}
               tier={g.tier === 'high' ? 'high' : 'medium'}
+              fourK={g.fourK}
               reduced={g.reduced}
               dark={resolvedTheme === 'dark'}
               paused={paused}
@@ -125,6 +127,23 @@ export function RootStage() {
         </ThreeBoundary>
       )}
     </div>
+  );
+}
+
+/**
+ * The real hero, pre-rendered with the live stage's own camera (npm run render, hero-<page>): the page looks the same
+ * from the very first frame, and also when the 3D is off. The live canvas fades in over it and the still fades out.
+ */
+const STILLS = new Set(['home', 'how', 'patients', 'pharmacies', 'doctors', 'about', 'contact', 'faq', 'auth', 'register']);
+function HeroStill({ name }: { name: string }) {
+  if (!STILLS.has(name)) return null;
+  const set = (id: string, widths: number[]) => widths.map((w) => `/renders/${id}-${w}.avif ${w}w`).join(', ');
+  return (
+    <picture className="hero-still" data-testid="hero-still">
+      <source media="(orientation: portrait)" type="image/avif" srcSet={set(`hero-${name}-p`, [400, 800])} sizes="100vw" />
+      <source type="image/avif" srcSet={set(`hero-${name}`, [480, 960, 1920])} sizes="100vw" />
+      <img src={`/renders/hero-${name}-960.webp`} alt="" decoding="async" fetchPriority="high" />
+    </picture>
   );
 }
 

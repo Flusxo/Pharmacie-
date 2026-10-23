@@ -2,7 +2,8 @@
 import { useRef, useState, type ReactElement } from 'react';
 import { useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
 import { FlowStage } from '../../components/public/FlowStage';
-import { CutOut, Gallery, ImageBand, Story } from '../../components/public/Media';
+import { CutOut } from '../../components/public/Media';
+import { StorySection } from '../../components/public/StorySection';
 import { Link } from 'react-router-dom';
 import { useI18n, type MessageKey } from '../../i18n';
 import { CtaBand, Faq, FeatureGrid, PublicHero, Section, SimNote, Steps } from '../../components/public/Sections';
@@ -71,11 +72,13 @@ export function PublicHome() {
         ))}
       </ul>
 
-      <Story
+      <StorySection
+        id="story"
+        labelKey="pub.story.label"
         steps={[
-          { id: 'hero-counter', title: 'pub.story.s1t', text: 'pub.story.s1' },
-          { id: 'hero-spill', title: 'pub.story.s2t', text: 'pub.story.s2' },
-          { id: 'scene-delivery', title: 'pub.story.s3t', text: 'pub.story.s3' },
+          { title: 'pub.story.s1t', text: 'pub.story.s1', fallback: 'cut-syrup' },
+          { title: 'pub.story.s2t', text: 'pub.story.s2', fallback: 'cut-tablets' },
+          { title: 'pub.story.s3t', text: 'pub.story.s3', fallback: 'cut-scooter' },
         ]}
       />
 
@@ -130,10 +133,6 @@ export function PublicHome() {
           ))}
         </div>
         <SimNote />
-      </Section>
-
-      <Section id="gallery" title={t('pub.gallery.title')} lead={t('pub.gallery.lead')}>
-        <Gallery ids={['scene-rainbow', 'scene-amber-bottles', 'scene-vitamins']} />
       </Section>
 
       <CtaBand title={t('pub.home.ctaTitle')} text={t('pub.home.ctaText')} actions={<AccountCtas />} />
@@ -207,7 +206,6 @@ export function HowItWorksPage() {
           </Link>
         </Section>
       </div>
-      <ImageBand id="hero-capsules" heading="pub.band.how.t" body="pub.band.how" />
       <Section id="how-faq" title={t('pub.faq.title')}>
         <Faq items={[FAQ_ALL[1], FAQ_ALL[3], FAQ_ALL[4], FAQ_ALL[5]]} />
       </Section>
@@ -221,15 +219,13 @@ function RolePage({
   prefix,
   art,
   icons,
-  band,
-  gallery,
+  fallbacks,
 }: {
   role: 'patient' | 'pharmacy' | 'doctor';
   prefix: 'patients' | 'pharmacies' | 'doctors';
   art: 'patients' | 'pharmacies' | 'doctors';
   icons: ReactElement[];
-  band: string;
-  gallery: string[];
+  fallbacks: string[];
 }) {
   const { t } = useI18n();
   const k = (s: string) => `pub.${prefix}.${s}` as MessageKey;
@@ -245,12 +241,12 @@ function RolePage({
       <Section id={`${prefix}-benefits`} title={t(k('eyebrow'))}>
         <FeatureGrid items={[1, 2, 3, 4].map((n, i) => ({ icon: icons[i], title: k(`b${n}t`), text: k(`b${n}`) }))} />
       </Section>
-      <ImageBand id={band} heading={`pub.band.${prefix}.t` as MessageKey} body={`pub.band.${prefix}` as MessageKey} />
       <Section id={`${prefix}-steps`} title={t(k('stepsTitle'))}>
-        <Steps items={[1, 2, 3, 4].map((n) => ({ text: k(`p${n}`) }))} />
-      </Section>
-      <Section id={`${prefix}-gallery`} title={t(prefix === 'patients' ? 'pub.formsTitle' : 'pub.gallery.title')}>
-        <Gallery ids={gallery} />
+        <StorySection
+          id={`${prefix}-story`}
+          labelKey="pub.story.label"
+          steps={[1, 2, 3, 4].map((n, i) => ({ text: k(`p${n}`), fallback: fallbacks[i] }))}
+        />
       </Section>
       <SimNote />
       <CtaBand title={t('pub.home.ctaTitle')} text={t('pub.home.ctaText')} actions={<AccountCtas role={role} />} />
@@ -263,8 +259,7 @@ export const ForPatientsPage = () => (
     role="patient"
     prefix="patients"
     art="patients"
-    band="scene-delivery"
-    gallery={['cut-syrup', 'cut-tube', 'cut-inhaler']}
+    fallbacks={['cut-syrup', 'cut-tube', 'cut-inhaler', 'cut-bag']}
     icons={[<IconSearch key="a" />, <IconMap key="b" />, <IconTruck key="c" />, <IconDoc key="d" />]}
   />
 );
@@ -273,8 +268,7 @@ export const ForPharmaciesPage = () => (
     role="pharmacy"
     prefix="pharmacies"
     art="pharmacies"
-    band="hero-shelves"
-    gallery={['scene-pharmacist', 'scene-amber-bottles', 'cut-cross']}
+    fallbacks={['cut-cross', 'cut-pillbottle', 'cut-syrup', 'cut-scooter']}
     icons={[<IconStore key="a" />, <IconList key="b" />, <IconClock key="c" />, <IconShield key="d" />]}
   />
 );
@@ -283,8 +277,7 @@ export const ForDoctorsPage = () => (
     role="doctor"
     prefix="doctors"
     art="doctors"
-    band="scene-doctor-desk"
-    gallery={['scene-doctor', 'cut-pen', 'cut-inhaler']}
+    fallbacks={['cut-pen', 'cut-inhaler', 'cut-capsule', 'cut-tablets']}
     icons={[<IconCheck key="a" />, <IconLock key="b" />, <IconDoc key="c" />, <IconList key="d" />]}
   />
 );
@@ -310,7 +303,6 @@ export function AboutPage() {
           <p className="muted">{t('pub.about.notReal')}</p>
         </Section>
       </div>
-      <ImageBand id="hero-abstract" heading="pub.band.about.t" body="pub.band.about" />
       <Section id="about-values" title={t('pub.about.valuesTitle')}>
         <FeatureGrid
           items={[
@@ -320,7 +312,6 @@ export function AboutPage() {
           ]}
         />
       </Section>
-      <Gallery ids={['scene-abstract-mint', 'scene-rainbow', 'hero-capsules-green']} />
       <CtaBand
         title={t('pub.contact.title')}
         text={t('pub.contact.lead')}
@@ -343,7 +334,6 @@ export function FaqPage() {
         <Faq items={FAQ_ALL} />
       </Section>
       <CutOut id="cut-tablets" />
-      <ImageBand id="scene-blister" heading="pub.band.faq.t" body="pub.band.faq" />
       <SimNote />
     </div>
   );

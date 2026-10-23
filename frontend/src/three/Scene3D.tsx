@@ -15,7 +15,7 @@ import { Suspense, lazy, useCallback, useEffect, useRef, useState, type ReactNod
 import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Environment, PerformanceMonitor } from '@react-three/drei';
-import { releaseTextures, setLabelResolution } from './textures';
+import { releaseTextures } from './textures';
 import { frameloopFor } from '../lib/graphics';
 import { setGlassFlat } from '../lib/glassMode';
 
@@ -193,8 +193,6 @@ export function Scene3D({
   const [compiled, setCompiled] = useState(false);
   const onCompiled = useCallback(() => setCompiled(true), []);
   const high = tier === 'high' && !light;
-  // 4096 px labels on High (hero objects), 2048 otherwise.
-  setLabelResolution(high ? 4096 : 2048);
 
   useEffect(() => {
     liveCanvases += 1;

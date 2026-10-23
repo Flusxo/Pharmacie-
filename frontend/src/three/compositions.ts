@@ -30,8 +30,21 @@ export type ItemKind =
   | 'figure-doctor'
   | 'interior'
   | 'route'
+  /** many decorative capsules and tablets drawn with instancing (see PageScene FieldView) */
+  | 'field'
   /** any medicine pack by its form (used by the rendered medicine pictures) */
   | 'product';
+
+export interface FieldInstance {
+  kind: 'capsule' | 'tablet';
+  pos: [number, number, number];
+  rot: [number, number, number];
+  scale: number;
+  colors: [string, string];
+  spin: number;
+  drift: number;
+  float: number;
+}
 
 export interface Item {
   kind: ItemKind;
@@ -55,6 +68,10 @@ export interface Item {
   split?: boolean;
   /** float speed (0 = still) */
   float?: number;
+  /** kind 'field': the instances */
+  field?: FieldInstance[];
+  /** tied to step N of a scroll story: flies in when that step is read, out when another is (see story.ts) */
+  story?: number;
 }
 
 export interface Composition {
@@ -111,32 +128,31 @@ function depth(seed: number, colors: [string, string][]): Item[] {
     s = (s * 16807) % 2147483647;
     return s / 2147483647;
   };
-  return Array.from({ length: 9 }, (_, i) => {
+  const field: FieldInstance[] = Array.from({ length: 9 }, (_, i) => {
     const side = i % 2 ? 1 : -1;
     const pick = r();
     return {
-      kind: pick < 0.55 ? 'capsule' : pick < 0.8 ? 'tablet' : 'blob',
+      kind: pick < 0.7 ? 'capsule' : 'tablet',
       pos: [side * (4.1 + r() * 1.2), -3.2 - i * 1.6 - r(), -1.2 - r() * 2.5],
       rot: [r() * 3, r() * 3, r() * 3],
       scale: 1.6 + r() * 1.2,
       colors: colors[i % colors.length],
-      color: '#a7f3d0',
-      blob: 'pill',
       spin: (r() - 0.5) * 6,
       drift: 1 + r() * 1.5,
       float: 0.8 + r(),
-    } satisfies Item;
+    } satisfies FieldInstance;
   });
+  return [{ kind: 'field', pos: [0, 0, 0], field }];
 }
 
 /** Calm side objects for the app pages: outside the content column, smaller, slow. */
-function calm(seed: number, colors: [string, string][], extra: Item[] = []): Composition {
+function calm(seed: number, colors: [string, string][], extra: Item[] = [], belowOnly = false): Composition {
   let s = seed;
   const r = () => {
     s = (s * 16807) % 2147483647;
     return s / 2147483647;
   };
-  const items: Item[] = Array.from({ length: 10 }, (_, i) => {
+  const all: FieldInstance[] = Array.from({ length: 10 }, (_, i) => {
     const side = i % 2 ? 1 : -1;
     const pick = r();
     return {
@@ -148,9 +164,10 @@ function calm(seed: number, colors: [string, string][], extra: Item[] = []): Com
       spin: (r() - 0.5) * 4,
       drift: 0.6 + r(),
       float: 0.5 + r() * 0.6,
-    } satisfies Item;
+    } satisfies FieldInstance;
   });
-  return { heroX: 0, travel: [0, -8, 0], items: [...extra, ...items] };
+  const field = belowOnly ? all.filter((f) => f.pos[1] < -2) : all;
+  return { heroX: 0, travel: [0, -8, 0], items: [...extra, { kind: 'field', pos: [0, 0, 0], field }] };
 }
 
 export const COMPOSITIONS: Record<CompositionName, Composition> = {
@@ -166,7 +183,7 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       { kind: 'tablet', pos: [1.8, -1.5, 1.1], rot: [1.1, 0.3, 0], scale: 2.3, spin: 3, float: 1.1 },
       { kind: 'tablet', pos: [4.5, -1.2, 0.7], rot: [0.6, 1.2, 0.2], scale: 2.0, spin: -2, float: 0.9 },
       { kind: 'interior', pos: [1.5, -3.4, -8], rot: [0, -0.12, 0] },
-      ...calm(201, [TEAL, GREEN, SKY]).items.filter((it) => it.pos[1] < -2),
+      ...calm(201, [TEAL, GREEN, SKY], [], true).items,
     ],
   },
   'app-search': calm(
@@ -408,6 +425,66 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
     ],
   },
 };
+
+// ---- Scroll stories: one group of objects per step of an explanation, on the right of the text. ----
+const at = (story: number, it: Omit<Item, 'story' | 'pos'> & { pos?: [number, number, number] }): Item => ({
+  pos: [3.0, 0.2, 0],
+  ...it,
+  story,
+});
+const VIOLETC: [string, string] = ['#7C3AED', '#F5F3FF'];
+const SCOOTER: Item = { kind: 'scooter', pos: [2.9, -0.5, 0.3], rot: [0.1, -0.7, 0], scale: 2.3, float: 0.4 };
+const STORIES: Partial<Record<CompositionName, Item[]>> = {
+  home: [
+    at(0, { kind: 'shelf', pos: [3.3, 0.3, -0.9], rot: [0.04, -0.32, 0], scale: 0.9 }),
+    at(0, { kind: 'amber', pos: [1.9, -0.8, 0.9], rot: [0.05, -0.1, 0.05], scale: 1.05, label: APAISA, float: 0.5 }),
+    at(0, { kind: 'box', pos: [4.5, -0.7, 0.6], rot: [0.2, -0.5, 0.1], scale: 1.0, brand: 'Calmora', color: '#065F46', float: 0.8 }),
+    at(1, { kind: 'capsule', pos: [2.2, 0.9, 0.5], rot: [0.4, 0.2, 0.9], scale: 2.9, colors: TEAL, split: true, float: 1 }),
+    at(1, { kind: 'capsule', pos: [3.8, 1.0, 0.2], rot: [0.2, 0.5, -0.7], scale: 2.5, colors: AMBER, float: 1.1 }),
+    at(1, { kind: 'capsule', pos: [3.0, -0.4, 1.0], rot: [1.2, 0.2, 0.3], scale: 2.6, colors: ROSE, float: 0.9 }),
+    at(1, { kind: 'capsule', pos: [4.5, -0.6, 0.3], rot: [0.6, 0.3, 0.2], scale: 2.2, colors: SKY, float: 1.2 }),
+    at(1, { kind: 'capsule', pos: [2.9, 1.7, -0.4], rot: [0.3, 0.1, 0.5], scale: 2.1, colors: VIOLETC, float: 1 }),
+    at(1, { kind: 'tablet', pos: [1.8, -0.8, 0.8], rot: [1.1, 0.3, 0], scale: 2.1, float: 1 }),
+    at(1, { kind: 'tablet', pos: [3.7, -1.3, 0.6], rot: [0.6, 1.2, 0.2], scale: 1.9, float: 0.9 }),
+    at(2, SCOOTER),
+    at(2, { kind: 'bag', pos: [4.5, 0.9, 0.2], rot: [0, -0.4, 0], scale: 1.1, float: 0.9 }),
+    at(2, { kind: 'pin', pos: [1.9, 1.0, 0.4], scale: 1.1, float: 1 }),
+  ],
+  patients: [
+    at(0, { kind: 'phone', pos: [3.0, 0.1, 0], rot: [0.12, -0.45, 0.08], scale: 1.7, float: 0.5 }),
+    at(0, { kind: 'pin', pos: [1.6, 1.3, 0.6], scale: 1.0, float: 1 }),
+    at(1, { kind: 'pin', pos: [2.0, 1.0, 0.5], scale: 1.0, float: 1 }),
+    at(1, { kind: 'pin', pos: [3.5, 1.4, 0], scale: 1.1, float: 1.2 }),
+    at(1, { kind: 'pin', pos: [4.3, 0.2, 0.6], scale: 0.9, color: '#94a3b8', float: 1 }),
+    at(2, { kind: 'clipboard', pos: [3.0, 0.2, 0], rot: [0.08, -0.4, -0.06], scale: 1.6, float: 0.6 }),
+    at(2, { kind: 'capsule', pos: [4.4, -0.8, 0.6], rot: [0.4, 0.2, 0.9], scale: 2.6, colors: GREEN, split: true, float: 1 }),
+    at(3, { kind: 'bag', pos: [3.1, -0.1, 0], rot: [0, -0.4, 0], scale: 1.7, float: 0.6 }),
+    at(3, { kind: 'cross', pos: [4.4, 1.1, 0], scale: 0.55, float: 0.8 }),
+  ],
+  pharmacies: [
+    at(0, { kind: 'shelf', pos: [3.1, 0.2, -0.7], rot: [0.04, -0.32, 0], scale: 1.0 }),
+    at(0, { kind: 'box', pos: [1.6, -1.0, 0.9], rot: [0.2, 0.5, 0.1], scale: 1.0, brand: 'Apaisa', color: '#0369A1', float: 0.9 }),
+    at(1, { kind: 'clipboard', pos: [3.0, 0.2, 0], rot: [0.08, -0.4, -0.06], scale: 1.6, float: 0.6 }),
+    at(1, { kind: 'cross', pos: [4.4, 1.3, 0], scale: 0.55, float: 0.8 }),
+    at(2, { kind: 'box', pos: [3.0, -0.3, 0.3], rot: [0.2, -0.6, 0.05], scale: 1.3, brand: 'Vitalis', color: '#C2410C', float: 0.5 }),
+    at(2, { kind: 'blister', pos: [1.8, 0.8, 0.8], rot: [0.3, 0.5, -0.3], scale: 1.0, label: CALMORA, float: 0.9 }),
+    at(2, { kind: 'amber', pos: [4.5, -0.5, 0.5], rot: [0.05, 0.2, 0.05], scale: 1.0, label: APAISA, float: 0.7 }),
+    at(3, SCOOTER),
+    at(3, { kind: 'bag', pos: [4.5, 0.9, 0.2], rot: [0, -0.4, 0], scale: 1.1, float: 0.9 }),
+  ],
+  doctors: [
+    at(0, { kind: 'clipboard', pos: [2.8, 0.2, 0], rot: [0.08, -0.4, -0.06], scale: 1.6, float: 0.6 }),
+    at(0, { kind: 'stethoscope', pos: [4.3, -0.6, 0.6], rot: [0.3, -0.5, 0.4], scale: 1.5, float: 0.9 }),
+    at(1, { kind: 'envelope', pos: [3.0, 0.3, 0], rot: [0.1, -0.45, 0.08], scale: 1.6, float: 0.8 }),
+    at(1, { kind: 'pen', pos: [4.4, 1.3, -0.3], rot: [0.2, 0.3, -0.9], scale: 1.3, float: 1 }),
+    at(2, { kind: 'pin', pos: [2.0, 1.0, 0.5], scale: 1.1, float: 1 }),
+    at(2, { kind: 'pin', pos: [3.6, 1.3, 0], scale: 1.0, float: 1.2 }),
+    at(2, { kind: 'capsule', pos: [3.0, -0.6, 0.8], rot: [0.4, 0.2, 0.9], scale: 2.8, colors: TEAL, split: true, float: 1 }),
+    at(3, { kind: 'phone', pos: [3.0, 0.1, 0], rot: [0.12, -0.45, 0.08], scale: 1.7, float: 0.5 }),
+    at(3, { kind: 'capsule', pos: [4.4, -0.9, 0.5], rot: [1.2, 0.2, 0.3], scale: 2.4, colors: SKY, float: 1.1 }),
+  ],
+};
+for (const [k, items] of Object.entries(STORIES)) COMPOSITIONS[k as CompositionName].items.push(...(items as Item[]));
 
 // The soft background light per page (it replaces the old cone shapes): strongest where a hero or a form sits.
 const LIGHT: Partial<Record<CompositionName, number>> = {

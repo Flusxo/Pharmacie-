@@ -96,11 +96,11 @@ function ShotScene({ shot }: { shot: Shot }) {
       />
       <directionalLight position={[4, 2.5, -4]} intensity={1.1} color="#e6fff5" />
       <ambientLight intensity={0.25} />
-      <Frame shot={shot} items={items} />
+      {!shot.fixed && <Frame shot={shot} items={items} />}
       <group ref={items}>
         {shot.items.map((it, i) => (
           <group key={i} position={it.pos} rotation={it.rot ?? [0, 0, 0]} scale={it.scale ?? 1}>
-            <Model it={it} split={it.split ? 0.6 : 0} quality="high" />
+            <Model it={it} split={it.split && !shot.fixed ? 0.6 : 0} quality="high" />
           </group>
         ))}
       </group>

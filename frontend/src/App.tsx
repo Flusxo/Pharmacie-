@@ -12,6 +12,7 @@ import { ToastProvider } from './lib/toast';
 import type { Role } from './lib/types';
 import { Layout } from './components/Layout';
 import { WakingBanner } from './components/WakingBanner';
+import { PageFallback } from './components/PageFallback';
 import { RootStage } from './components/three/ThreeVisuals';
 import { LoginPage } from './pages/Login';
 import { NotFoundPage, WaitingPage } from './pages/Misc';
@@ -54,17 +55,6 @@ const ContactPage = lz(() => import('./pages/public/ContactPage'), 'ContactPage'
 // Development only: a stand-in for Stripe's payment page (no Stripe keys needed).
 const FakeStripe = import.meta.env.DEV ? lazy(() => import('./pages/dev/FakeStripe')) : null;
 const RenderStudio = import.meta.env.DEV ? lazy(() => import('./render/RenderStudio')) : null;
-
-/** Shown for a moment while a page's code loads: the page frame is already there. */
-function PageFallback() {
-  return (
-    <div className="page-fallback" role="status" aria-busy="true" data-testid="page-fallback">
-      <span className="sk sk-title" />
-      <span className="sk sk-line" />
-      <span className="sk sk-line short" />
-    </div>
-  );
-}
 
 /** Requires a logged-in user with one of the roles; unverified professionals go to /waiting. */
 function RequireRole({ roles, children }: { roles: Role[]; children: ReactNode }) {

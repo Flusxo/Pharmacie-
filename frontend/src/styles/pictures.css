@@ -107,20 +107,6 @@
   margin: 0;
   color: var(--ink-2);
 }
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  gap: 18px;
-}
-.gallery figure {
-  margin: 0;
-  display: grid;
-  gap: 10px;
-}
-.gallery figcaption {
-  font-weight: 600;
-  color: var(--ink-2);
-}
 .cutout-aside {
   width: min(240px, 40vw);
   justify-self: end;

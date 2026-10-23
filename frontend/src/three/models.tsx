@@ -9,6 +9,8 @@ import * as THREE from 'three';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { RoundedBox } from '@react-three/drei';
 import {
+  bagTexture,
+  crossDecal,
   boxNormal,
   boxTexture,
   foilNormal,
@@ -109,7 +111,7 @@ function makePlastic(color: string, opts: { clearcoat?: number; roughness?: numb
     color,
     // Micro-surface detail (procedural maps): highlights break up like real moulded plastic.
     normalMap: plasticNormal(),
-    normalScale: new THREE.Vector2(0.12, 0.12),
+    normalScale: new THREE.Vector2(0.035, 0.035),
     roughnessMap: roughnessNoise(),
     roughness: opts.roughness ?? 0.32,
     clearcoat: opts.clearcoat ?? 1,
@@ -129,6 +131,11 @@ function foil() {
     normalMap: foilNormal(),
     normalScale: new THREE.Vector2(0.6, 0.6),
   });
+}
+
+/** Printed label: plain sharp paper under a light gloss (no grain, no fuzz). */
+function labelMaterial(map: THREE.Texture) {
+  return new THREE.MeshStandardMaterial({ map, roughness: 0.5, metalness: 0 });
 }
 
 function cardboard(map: THREE.Texture) {
@@ -343,9 +350,10 @@ export function PillBottle({ label, open, onCapClick, burst = 0 }: ProductProps)
       ),
     [],
   );
-  const mat = useMemo(() => plastic('#F6F2EA', { clearcoat: 0.3, roughness: 0.45, sheen: 0.3 }), []);
+  // Smooth moulded plastic: no sheen (it made the bottle look like felt).
+  const mat = useMemo(() => plastic('#F6F2EA', { clearcoat: 0.6, roughness: 0.34 }), []);
   const labelMap = labelTexture({ ...label, kind: 'wrap' });
-  const labelMat = useMemo(() => cardboard(labelMap), [labelMap]);
+  const labelMat = useMemo(() => labelMaterial(labelMap), [labelMap]);
   return (
     <group>
       <mesh geometry={body} material={mat} castShadow receiveShadow />
@@ -1093,14 +1101,44 @@ export function Blob({
 
 /** Paper delivery bag with a green cross. */
 export function DeliveryBag(props: GroupProps) {
-  const paper = useMemo(() => new THREE.MeshStandardMaterial({ color: '#e8d2a6', roughness: 0.85 }), []);
+  const front = useMemo(() => new THREE.MeshStandardMaterial({ map: bagTexture(), roughness: 0.78, metalness: 0 }), []);
+  const paper = useMemo(() => new THREE.MeshStandardMaterial({ color: '#c9a468', roughness: 0.8, metalness: 0 }), []);
+  const fold = useMemo(() => new THREE.MeshStandardMaterial({ color: '#b8935a', roughness: 0.85, metalness: 0 }), []);
+  // two twisted paper handles
+  const handle = useMemo(() => {
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-0.2, 0, 0),
+      new THREE.Vector3(-0.16, 0.2, 0.01),
+      new THREE.Vector3(0, 0.3, 0),
+      new THREE.Vector3(0.16, 0.2, -0.01),
+      new THREE.Vector3(0.2, 0, 0),
+    ]);
+    return new THREE.TubeGeometry(curve, 48, 0.014, 8, false);
+  }, []);
+  const [w, h, d] = [0.8, 0.95, 0.42];
   return (
     <group {...props}>
-      <RoundedBox args={[0.8, 0.9, 0.45]} radius={0.04} smoothness={3} material={paper} castShadow />
-      <mesh material={paper} position={[0, 0.5, 0]}>
-        <torusGeometry args={[0.18, 0.025, 12, 32, Math.PI]} />
+      {/* body: front printed, back and sides plain */}
+      <RoundedBox args={[w, h, d]} radius={0.015} smoothness={3} material={paper} castShadow receiveShadow position={[0, h / 2, 0]} />
+      <mesh position={[0, h / 2, d / 2 + 0.0015]} material={front}>
+        <planeGeometry args={[w - 0.02, h - 0.02]} />
       </mesh>
-      <GreenCross glow={0.5} scale={0.12} position={[0, 0.05, 0.25]} />
+      {/* side gusset creases */}
+      {[-1, 1].map((sx) => (
+        <mesh key={sx} position={[sx * (w / 2 + 0.0015), h / 2, 0]} rotation={[0, (sx * Math.PI) / 2, 0]} material={fold}>
+          <planeGeometry args={[0.02, h - 0.04]} />
+        </mesh>
+      ))}
+      {/* folded-over rim at the top */}
+      <mesh position={[0, h - 0.045, d / 2 + 0.003]} material={fold} castShadow>
+        <boxGeometry args={[w + 0.004, 0.09, 0.006]} />
+      </mesh>
+      <mesh position={[0, h - 0.045, -d / 2 - 0.003]} material={fold}>
+        <boxGeometry args={[w + 0.004, 0.09, 0.006]} />
+      </mesh>
+      {/* handles, front and back */}
+      <mesh geometry={handle} material={paper} position={[0, h, d / 2 - 0.05]} castShadow />
+      <mesh geometry={handle} material={paper} position={[0, h, -d / 2 + 0.05]} castShadow />
     </group>
   );
 }
@@ -1171,20 +1209,101 @@ export function Figure({
 
 /** Delivery scooter with an insulated bag (simulated delivery). */
 export function Scooter() {
-  const body = useMemo(() => plastic('#10B981', { clearcoat: 1, roughness: 0.25 }), []);
-  const bag = useMemo(() => plastic('#F8FAFC', { clearcoat: 0.5, roughness: 0.5 }), []);
-  return (
-    <group scale={0.55}>
-      <RoundedBox args={[1.1, 0.25, 0.4]} radius={0.1} position={[0, 0.45, 0]} material={body} castShadow />
-      <RoundedBox args={[0.3, 0.7, 0.3]} radius={0.1} position={[0.45, 0.75, 0]} rotation={[0, 0, -0.3]} material={body} castShadow />
-      <RoundedBox args={[0.6, 0.55, 0.55]} radius={0.08} position={[-0.35, 0.9, 0]} material={bag} castShadow />
-      <GreenCross position={[-0.35, 0.92, 0.29]} scale={0.12} glow={1.2} />
-      {[-0.45, 0.5].map((x) => (
-        <mesh key={x} position={[x, 0.2, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-          <torusGeometry args={[0.18, 0.07, 12, 24]} />
-          <meshStandardMaterial color="#1f2937" roughness={0.7} />
+  // Painted body in the brand teal (clear coat in full detail), black seat and rubber, brushed metal.
+  const paint = useMemo(() => phys({ color: '#0d9488', roughness: 0.28, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.08 }), []);
+  const white = useMemo(() => phys({ color: '#f4f7f6', roughness: 0.35, clearcoat: 0.6 }), []);
+  const seat = useMemo(() => new THREE.MeshStandardMaterial({ color: '#16202a', roughness: 0.6, metalness: 0 }), []);
+  const rubber = useMemo(() => new THREE.MeshStandardMaterial({ color: '#12171c', roughness: 0.92, metalness: 0 }), []);
+  const metal = useMemo(() => new THREE.MeshStandardMaterial({ color: '#c8d0d6', roughness: 0.28, metalness: 0.9 }), []);
+  const dark = useMemo(() => new THREE.MeshStandardMaterial({ color: '#273341', roughness: 0.5, metalness: 0.2 }), []);
+  const lamp = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#fff7d6', emissive: '#fff1b0', emissiveIntensity: 1.2, roughness: 0.2 }),
+    [],
+  );
+  const tail = useMemo(
+    () => new THREE.MeshStandardMaterial({ color: '#b91c1c', emissive: '#ef4444', emissiveIntensity: 0.8, roughness: 0.3 }),
+    [],
+  );
+  const decal = useMemo(() => new THREE.MeshBasicMaterial({ map: crossDecal(), transparent: true }), []);
+  const wheel = (x: number) => (
+    <group key={x} position={[x, 0.24, 0]}>
+      {/* tyre, rim, hub and five spokes (the axis of the wheel is z) */}
+      <mesh material={rubber} castShadow>
+        <torusGeometry args={[0.2, 0.072, 20, 40]} />
+      </mesh>
+      <mesh material={metal} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.15, 0.15, 0.1, 32]} />
+      </mesh>
+      <mesh material={dark} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.1, 0.1, 0.108, 24]} />
+      </mesh>
+      <mesh material={metal} rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.045, 0.045, 0.125, 16]} />
+      </mesh>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <mesh key={i} material={metal} rotation={[0, 0, (i * Math.PI * 2) / 5]}>
+          <boxGeometry args={[0.2, 0.022, 0.1]} />
         </mesh>
       ))}
+    </group>
+  );
+  return (
+    <group scale={0.62}>
+      {wheel(0.62)}
+      {wheel(-0.58)}
+      {/* floorboard and body */}
+      <RoundedBox args={[0.78, 0.07, 0.36]} radius={0.03} position={[0.02, 0.27, 0]} material={paint} castShadow />
+      <RoundedBox args={[0.46, 0.34, 0.4]} radius={0.1} smoothness={5} position={[-0.42, 0.45, 0]} material={paint} castShadow />
+      {/* seat */}
+      <RoundedBox args={[0.5, 0.09, 0.3]} radius={0.045} smoothness={5} position={[-0.3, 0.68, 0]} material={seat} castShadow />
+      {/* front leg shield and head */}
+      <RoundedBox args={[0.07, 0.62, 0.32]} radius={0.03} position={[0.42, 0.58, 0]} rotation={[0, 0, -0.22]} material={paint} castShadow />
+      <RoundedBox args={[0.2, 0.2, 0.26]} radius={0.06} smoothness={4} position={[0.5, 0.92, 0]} material={white} castShadow />
+      <mesh position={[0.62, 0.9, 0]} material={lamp}>
+        <sphereGeometry args={[0.07, 20, 14]} />
+      </mesh>
+      {/* fork, front fender, handlebar, grips, mirrors */}
+      {[-0.1, 0.1].map((z) => (
+        <mesh key={z} position={[0.58, 0.46, z]} rotation={[0, 0, -0.25]} material={metal}>
+          <cylinderGeometry args={[0.018, 0.018, 0.5, 12]} />
+        </mesh>
+      ))}
+      <mesh position={[0.64, 0.44, 0]} rotation={[0, 0, 0.1]} material={paint} scale={[1, 0.7, 1]}>
+        <torusGeometry args={[0.235, 0.034, 10, 24, Math.PI]} />
+      </mesh>
+      <mesh position={[0.52, 1.03, 0]} rotation={[Math.PI / 2, 0, 0]} material={metal}>
+        <cylinderGeometry args={[0.02, 0.02, 0.5, 12]} />
+      </mesh>
+      {[-0.27, 0.27].map((z) => (
+        <group key={z}>
+          <mesh position={[0.52, 1.03, z]} rotation={[Math.PI / 2, 0, 0]} material={seat}>
+            <cylinderGeometry args={[0.03, 0.03, 0.12, 12]} />
+          </mesh>
+          <mesh position={[0.5, 1.1, z * 0.9]} material={metal}>
+            <cylinderGeometry args={[0.008, 0.008, 0.1, 8]} />
+          </mesh>
+          <mesh position={[0.5, 1.17, z * 0.9]} scale={[1, 0.8, 0.4]} material={dark}>
+            <sphereGeometry args={[0.055, 14, 10]} />
+          </mesh>
+        </group>
+      ))}
+      {/* rear light and delivery box with the green cross */}
+      <mesh position={[-0.66, 0.5, 0]} material={tail}>
+        <boxGeometry args={[0.03, 0.06, 0.16]} />
+      </mesh>
+      <group position={[-0.5, 1.08, 0]}>
+        <RoundedBox args={[0.56, 0.5, 0.5]} radius={0.045} smoothness={4} material={white} castShadow />
+        <RoundedBox args={[0.58, 0.04, 0.52]} radius={0.02} position={[0, 0.23, 0]} material={paint} />
+        {[1, -1].map((side) => (
+          <mesh key={side} position={[0, -0.02, side * 0.2535]} rotation={[0, side === 1 ? 0 : Math.PI, 0]} material={decal}>
+            <planeGeometry args={[0.34, 0.34]} />
+          </mesh>
+        ))}
+      </group>
+      {/* rear rack under the box */}
+      <mesh position={[-0.5, 0.8, 0]} material={metal}>
+        <boxGeometry args={[0.5, 0.025, 0.36]} />
+      </mesh>
     </group>
   );
 }

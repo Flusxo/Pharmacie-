@@ -98,6 +98,8 @@ export interface LabelSpec {
   kind?: 'wrap' | 'panel' | 'carton';
   /** prescription medicine: prints an "Rx" mark */
   rx?: boolean;
+  /** texture size: 4096 for the one hero object (the product viewer on High), 2048 everywhere else */
+  res?: 2048 | 4096;
 }
 
 let labelRes = 2048;
@@ -107,12 +109,13 @@ export function setLabelResolution(px: 2048 | 4096): void {
 }
 
 /** 2048 px (4096 on High) label: name, dosage, green cross, CIP code and a small barcode. Crisp thanks to anisotropic filtering. */
-export function labelTexture(spec: LabelSpec, anisotropy = 8): THREE.Texture {
-  const key = `label:${spec.kind ?? 'wrap'}:${spec.name}:${spec.dosage}:${spec.color}:${spec.cip ?? ''}:${spec.rx ? 'rx' : ''}:${labelFooter()}:${labelRes}`;
+export function labelTexture(spec: LabelSpec, anisotropy = 16): THREE.Texture {
+  const res = spec.res ?? labelRes;
+  const key = `label:${spec.kind ?? 'wrap'}:${spec.name}:${spec.dosage}:${spec.color}:${spec.cip ?? ''}:${spec.rx ? 'rx' : ''}:${labelFooter()}:${res}`;
   const hit = cache.get(key);
   if (hit) return hit;
   const wrap = (spec.kind ?? 'wrap') === 'wrap';
-  const k = labelRes / 2048;
+  const k = res / 2048;
   const [c, ctx] = canvas(2048 * k, (wrap ? 1024 : spec.kind === 'carton' ? 1280 : 2048) * k);
   const W = c.width;
   const H = c.height;
@@ -204,6 +207,61 @@ export function boxTexture(brand: string, color: string, anisotropy = 4): THREE.
   ctx.font = `800 ${s}px Inter Variable, Inter, Arial, sans-serif`;
   ctx.fillText(brand, 256, 330);
   return finish(key, c, { anisotropy });
+}
+
+/**
+ * Kraft paper bag front, 1024 x 1152: smooth warm paper (a barely visible fibre, nothing grainy), a sharp green cross,
+ * the counter. wordmark and a thin printed line. Drawn once, crisp at any distance (mipmaps + anisotropy).
+ */
+export function bagTexture(): THREE.Texture {
+  const key = 'bag';
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const [c, ctx] = canvas(1024, 1152);
+  const g = ctx.createLinearGradient(0, 0, 0, 1152);
+  g.addColorStop(0, '#d2ad74');
+  g.addColorStop(1, '#c49d63');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 1024, 1152);
+  // very light fibre: long faint strokes, low contrast
+  const r = rng(77);
+  ctx.globalAlpha = 0.035;
+  for (let i = 0; i < 380; i++) {
+    ctx.strokeStyle = r() > 0.5 ? '#ffffff' : '#7a5a2a';
+    ctx.lineWidth = 1 + r() * 1.5;
+    const x = r() * 1024;
+    const y = r() * 1152;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + (r() - 0.5) * 160, y + (r() - 0.5) * 24);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  // printed: cross, wordmark, line
+  greenCross(ctx, 512, 520, 330, '#0f9d6e');
+  ctx.fillStyle = '#0b2530';
+  ctx.textAlign = 'center';
+  ctx.font = "800 120px 'Fraunces Variable', Georgia, serif";
+  ctx.fillText('counter.', 512, 840);
+  ctx.fillStyle = '#4c6a70';
+  ctx.font = "600 44px 'Inter Variable', Inter, Arial, sans-serif";
+  ctx.fillText(labelFooter(), 512, 920);
+  return finish(key, c, { anisotropy: 16 });
+}
+
+/** Square decal with the green cross on white (the scooter's delivery box). */
+export function crossDecal(): THREE.Texture {
+  const key = 'cross-decal';
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const [c, ctx] = canvas(512, 512);
+  ctx.clearRect(0, 0, 512, 512);
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.roundRect(40, 40, 432, 432, 70);
+  ctx.fill();
+  greenCross(ctx, 256, 256, 280, '#10B981');
+  return finish(key, c, { anisotropy: 16 });
 }
 
 /** Soft white marble with grey veins (counter top). */

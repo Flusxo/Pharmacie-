@@ -59,6 +59,7 @@ export function chooseTier(pref: GraphicsPref, d: DeviceInfo): Tier {
   if (!d.webgl) return 'off';
   if (pref === 'off') return 'off';
   if (pref === 'low') return 'low';
+  if (pref === 'ultra') return 'high'; // High (4K): the same tier, with the resolution unlocked (see fourK)
   if (pref === 'high' || pref === 'medium') return pref;
   if (d.memoryGb !== undefined && d.memoryGb <= 2) return 'low';
   if (d.softwareGl) return 'low';
@@ -77,6 +78,8 @@ interface GraphicsCtx {
   tier: Tier;
   /** true when a WebGL canvas may be drawn at all */
   canRender3D: boolean;
+  /** "High (4K)" chosen: the render resolution may go up to twice the CSS pixels */
+  fourK: boolean;
   reduced: boolean;
   mobile: boolean;
   auto: boolean;
@@ -157,6 +160,7 @@ export function GraphicsProvider({ children, device }: { children: ReactNode; de
     () => ({
       tier,
       canRender3D: tier === 'high' || tier === 'medium',
+      fourK: graphics === 'ultra' && tier === 'high',
       reduced,
       mobile: info.mobile,
       auto: graphics === 'auto',

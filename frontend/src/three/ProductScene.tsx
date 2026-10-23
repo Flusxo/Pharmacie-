@@ -102,7 +102,7 @@ function Viewer(p: ProductSceneProps) {
           <group position={[0, -0.75, 0]}>
             <ProductModel
               form={p.form}
-              label={{ name: p.name, dosage: p.dosage, color: p.color, light: p.light, cip: p.cip }}
+              label={{ name: p.name, dosage: p.dosage, color: p.color, light: p.light, cip: p.cip, res: p.tier === 'high' ? 4096 : 2048 }}
               quality={p.tier}
               open={openT}
               burst={burst}

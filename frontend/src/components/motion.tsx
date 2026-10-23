@@ -3,11 +3,12 @@
  * animated (plus a short blur on page change); everything is under 0.6 s except ambient loops.
  * Reduced motion: <MotionConfig reducedMotion> in App turns these into simple fades / no motion.
  */
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from 'react';
+import { Suspense, useEffect, useRef, useState, type CSSProperties, type PointerEvent, type ReactNode } from 'react';
 import { AnimatePresence, animate, m as motion, useInView, useReducedMotion as useFmReducedMotion } from 'framer-motion';
 import { useLocation, useOutlet } from 'react-router-dom';
 import { duration, easeOut, spring, stagger } from '../motion';
 import { useReducedMotion } from '../lib/settings';
+import { PageFallback } from './PageFallback';
 
 /**
  * Route content with a page transition (fade + 12 px slide + slight blur) on every route change; the top bar stays fixed.
@@ -30,7 +31,8 @@ export function AnimatedOutlet() {
         transitionEnd: { filter: 'none', transform: 'none' },
       }}
     >
-      {outlet}
+      {/* Only the page area waits for a lazy page: the header and footer stay (no flash, no layout shift). */}
+      <Suspense fallback={<PageFallback />}>{outlet}</Suspense>
     </motion.div>
   );
 }
@@ -64,7 +66,12 @@ export function Reveal({
   );
 }
 
-/** Number that counts to its value when it enters the view (and counts up/down when it changes). */
+/**
+ * Number that counts up to its value when it scrolls into view (and counts up/down when it changes).
+ * It shows the FINAL value from the start (slow JavaScript, no IntersectionObserver, printing: never a stuck 0) and,
+ * when it enters the view, replays a short count-up from 0; a safety timer snaps to the final value if the animation
+ * stalls.
+ */
 export function AnimatedNumber({
   value,
   format = (n: number) => String(Math.round(n)),
@@ -76,7 +83,7 @@ export function AnimatedNumber({
   const inView = useInView(ref, { once: true });
   const reduced = useReducedMotion();
   const shown = useRef(0);
-  const [text, setText] = useState(format(reduced ? value : 0));
+  const [text, setText] = useState(format(value));
   useEffect(() => {
     if (!inView) return;
     if (reduced) {
@@ -84,15 +91,23 @@ export function AnimatedNumber({
       setText(format(value));
       return;
     }
+    // Safety: if frames are late, the final number is shown after 1.2 s whatever the animation did.
+    const snap = setTimeout(() => {
+      shown.current = value;
+      setText(format(value));
+    }, 1200);
     const controls = animate(shown.current, value, {
-      duration: duration.slow,
+      duration: 0.8,
       ease: easeOut,
       onUpdate: (v) => {
         shown.current = v;
         setText(format(v));
       },
     });
-    return () => controls.stop();
+    return () => {
+      clearTimeout(snap);
+      controls.stop();
+    };
   }, [value, inView, reduced, format]);
   return (
     <span ref={ref} className="tabular">

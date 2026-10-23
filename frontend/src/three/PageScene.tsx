@@ -37,9 +37,10 @@ import {
   Tablet,
 } from './models';
 import { setMaterialDetail } from './models';
+import { storyState } from './story';
 import { DeliveryRoute, PharmacyInterior, SoftLight, StageLabels } from './environment';
 import { useI18n } from '../i18n';
-import { COMPOSITIONS, type CompositionName, type Item } from './compositions';
+import { COMPOSITIONS, type CompositionName, type FieldInstance, type Item } from './compositions';
 
 export interface Inputs {
   /** page scroll 0..1 */
@@ -54,7 +55,19 @@ const smooth = (a: number, b: number, v: number) => {
   return t * t * (3 - 2 * t);
 };
 
-export function Model({ it, split, quality, reduced = false }: { it: Item; split: number; quality: 'high' | 'medium'; reduced?: boolean }) {
+export function Model({
+  it: item,
+  split,
+  quality,
+  reduced = false,
+}: {
+  it: Item;
+  split: number;
+  quality: 'high' | 'medium';
+  reduced?: boolean;
+}) {
+  // Many labels on screen: 2048 px each (the 4096 px ones are for the single hero object of the product viewer).
+  const it: Item = item.label ? { ...item, label: { ...item.label, res: 2048 } } : item;
   // Medium: plain standard materials (a handful of shader programs instead of dozens: see models.tsx).
   setMaterialDetail(quality === 'high' ? 'full' : 'lite');
   switch (it.kind) {
@@ -111,12 +124,116 @@ export function Model({ it, split, quality, reduced = false }: { it: Item; split
   }
 }
 
+// Reused every frame: no allocation while the page scrolls.
+const tmpObj = new THREE.Object3D();
+const tmpMat = new THREE.Matrix4();
+const OFF_A = new THREE.Matrix4().makeTranslation(0, 0.17, 0);
+const OFF_B = new THREE.Matrix4().makeTranslation(0, -0.13, 0);
+
+/**
+ * Decorative capsules and tablets of a page, drawn with instancing: ONE draw call for the coloured halves, one for
+ * the white halves and one for the tablets, whatever their number. Same motion as a single item: drift and spin with
+ * the scroll, a slow float, and the phone layout (side items come closer, smaller).
+ */
+function FieldView({
+  instances,
+  heroX,
+  portrait,
+  inputs,
+  reduced,
+}: {
+  instances: FieldInstance[];
+  heroX: number;
+  portrait: boolean;
+  inputs: MutableRefObject<Inputs>;
+  reduced: boolean;
+}) {
+  const caps = useMemo(() => instances.filter((i) => i.kind === 'capsule'), [instances]);
+  const tabs = useMemo(() => instances.filter((i) => i.kind === 'tablet'), [instances]);
+  const partA = useRef<THREE.InstancedMesh>(null);
+  const partB = useRef<THREE.InstancedMesh>(null);
+  const tab = useRef<THREE.InstancedMesh>(null);
+  const geoA = useMemo(() => new THREE.CapsuleGeometry(0.1, 0.24, 8, 20), []);
+  const geoB = useMemo(() => new THREE.CapsuleGeometry(0.104, 0.2, 8, 20), []);
+  const geoT = useMemo(
+    () =>
+      new THREE.LatheGeometry(
+        [
+          [0.001, -0.05],
+          [0.12, -0.05],
+          [0.14, -0.035],
+          [0.15, 0],
+          [0.14, 0.035],
+          [0.12, 0.05],
+          [0.001, 0.05],
+        ].map(([x, y]) => new THREE.Vector2(x, y)),
+        24,
+      ),
+    [],
+  );
+  const matA = useMemo(() => new THREE.MeshStandardMaterial({ roughness: 0.22, metalness: 0 }), []);
+  const matB = useMemo(() => new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 0.26, metalness: 0 }), []);
+  const matT = useMemo(() => new THREE.MeshStandardMaterial({ color: '#fdfdfb', roughness: 0.5, metalness: 0 }), []);
+  // the colour of each coloured half is set once
+  useEffect(() => {
+    const m = partA.current;
+    if (!m) return;
+    const c = new THREE.Color();
+    caps.forEach((cap, i) => m.setColorAt(i, c.set(cap.colors[0])));
+    if (m.instanceColor) m.instanceColor.needsUpdate = true;
+  }, [caps]);
+  const place = (i: FieldInstance, p: number, t: number, k: number) => {
+    let [x, y, z] = i.pos;
+    let sc = i.scale;
+    if (portrait) {
+      if (y > -3) {
+        x = (x - heroX) * 0.42;
+        y = y * 0.62 + 1.3;
+      } else {
+        x = Math.sign(x) * 1.5;
+        z -= 0.5;
+      }
+      sc *= 0.62;
+    }
+    tmpObj.position.set(x, y + i.drift * p + (reduced ? 0 : Math.sin(t * i.float * 0.8 + k) * 0.08), z);
+    tmpObj.rotation.set(i.rot[0], i.rot[1] + i.spin * p, i.rot[2]);
+    tmpObj.scale.setScalar(sc);
+    tmpObj.updateMatrix();
+  };
+  useFrame((state) => {
+    const p = reduced ? 0 : inputs.current.scroll;
+    const t = state.clock.elapsedTime;
+    caps.forEach((c, k) => {
+      place(c, p, t, k);
+      partA.current?.setMatrixAt(k, tmpMat.multiplyMatrices(tmpObj.matrix, OFF_A));
+      partB.current?.setMatrixAt(k, tmpMat.multiplyMatrices(tmpObj.matrix, OFF_B));
+    });
+    tabs.forEach((c, k) => {
+      place(c, p, t, k + 50);
+      tab.current?.setMatrixAt(k, tmpObj.matrix);
+    });
+    for (const m of [partA.current, partB.current, tab.current]) if (m) m.instanceMatrix.needsUpdate = true;
+  });
+  return (
+    <>
+      {caps.length > 0 && (
+        <>
+          <instancedMesh ref={partA} args={[geoA, matA, caps.length]} frustumCulled={false} />
+          <instancedMesh ref={partB} args={[geoB, matB, caps.length]} frustumCulled={false} />
+        </>
+      )}
+      {tabs.length > 0 && <instancedMesh ref={tab} args={[geoT, matT, tabs.length]} frustumCulled={false} />}
+    </>
+  );
+}
+
 /** One item: base pose + scroll-driven spin / drift / split, gentle float. */
 function ItemView({
   it,
   inputs,
   portrait,
   heroX,
+  travel,
   reduced,
   quality,
 }: {
@@ -124,6 +241,7 @@ function ItemView({
   inputs: MutableRefObject<Inputs>;
   portrait: boolean;
   heroX: number;
+  travel: [number, number, number];
   reduced: boolean;
   quality: 'high' | 'medium';
 }) {
@@ -134,15 +252,39 @@ function ItemView({
   const base = useMemo<[number, number, number]>(() => {
     const [x, y, z] = it.pos;
     if (!portrait) return [x, y, z];
+    // A story object sits at the top centre of a phone (the text cards pass below it).
+    if (it.story !== undefined) return [(x - 3.0) * 0.4, y * 0.5 + 1.5, z];
     // Set pieces (room, route) stay centred behind everything.
     if (it.kind === 'interior' || it.kind === 'route') return [x * 0.3, y, z];
     return hero ? [(x - heroX) * 0.42, y * 0.62 + 1.3, z] : [Math.sign(x) * 1.5, y, z - 0.5];
   }, [it.pos, portrait, hero, heroX]);
   const scale = (it.scale ?? 1) * (portrait ? 0.62 : 1);
-  useFrame(() => {
+  const presence = useRef(0);
+  useFrame((state, dt) => {
     const g = ref.current;
     if (!g) return;
     const p = reduced ? 0 : inputs.current.scroll;
+    if (it.story !== undefined) {
+      // Scroll story: this object is tied to one step. It flies in and turns while its step is read, then flies out.
+      const want = storyState.active === it.story ? 1 : 0;
+      presence.current += (want - presence.current) * Math.min(1, dt * (reduced ? 40 : 4.5));
+      const k = presence.current;
+      g.visible = k > 0.01;
+      if (!g.visible) return;
+      const e = 1 - (1 - k) * (1 - k);
+      const away = 1 - k;
+      // It follows the camera down the page, so it stays beside the text being read.
+      g.position.set(base[0] + away * 2.6, base[1] + travel[1] * p - away * 1.2, base[2] + away * 1.6);
+      const r = it.rot ?? [0, 0, 0];
+      g.rotation.set(r[0], r[1] + away * 2.6 + (reduced ? 0 : state.clock.elapsedTime * 0.35), r[2]);
+      g.scale.setScalar(Math.max(0.0001, scale * e));
+      if (it.split) {
+        // halves come apart while it flies in and close as it settles
+        const sp = 1 - Math.round(smooth(0.1, 0.95, k) * 40) / 40;
+        if (sp !== split) setSplit(sp);
+      }
+      return;
+    }
     g.position.set(base[0], base[1] + (it.drift ?? 0) * p, base[2]);
     const r = it.rot ?? [0, 0, 0];
     g.rotation.set(r[0], r[1] + (it.spin ?? 0) * p, r[2]);
@@ -187,9 +329,20 @@ function Layer({
   });
   return (
     <group ref={ref} scale={rest.reduced ? 1 : 0.0001}>
-      {comp.items.map((it, i) => (
-        <ItemView key={i} it={it} heroX={comp.heroX} {...rest} />
-      ))}
+      {comp.items.map((it, i) =>
+        it.kind === 'field' ? (
+          <FieldView
+            key={i}
+            instances={it.field ?? []}
+            heroX={comp.heroX}
+            portrait={rest.portrait}
+            inputs={rest.inputs}
+            reduced={rest.reduced}
+          />
+        ) : (
+          <ItemView key={i} it={it} heroX={comp.heroX} travel={comp.travel} {...rest} />
+        ),
+      )}
     </group>
   );
 }
@@ -260,6 +413,7 @@ function Stage({
 export default function PageScene({
   name,
   tier,
+  fourK = false,
   reduced,
   dark,
   paused = false,
@@ -268,6 +422,8 @@ export default function PageScene({
 }: {
   name: CompositionName;
   tier: 'high' | 'medium';
+  /** "High (4K)": pixel ratio up to 2 */
+  fourK?: boolean;
   reduced: boolean;
   dark: boolean;
   paused?: boolean;
@@ -311,7 +467,9 @@ export default function PageScene({
       adaptive
       // Behind glass panels and fog: 0.8× resolution on Medium is invisible and saves a third of the pixels.
       dprRange={
-        tier === 'high' ? [1, 1.5] : [0.6, typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches ? 0.8 : 1]
+        tier === 'high'
+          ? [1, fourK ? 2 : 1.5]
+          : [0.6, typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches ? 0.8 : 1]
       }
       bloom={{ threshold: 0.97, intensity: 0.25 }}
       reduced={reduced}

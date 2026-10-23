@@ -24,13 +24,13 @@ describe('rendered pictures', () => {
   it('builds a responsive, lazy picture and renders nothing for an unknown id', () => {
     const { container, rerender } = render(
       <SettingsProvider>
-        <Picture id="hero-capsules" alt="Capsules" />
+        <Picture id="cut-syrup" alt="Syrup bottle" />
       </SettingsProvider>,
     );
     const img = container.querySelector('img')!;
     expect(img.getAttribute('loading')).toBe('lazy');
-    expect(img.getAttribute('alt')).toBe('Capsules');
-    expect(container.querySelector('source')!.getAttribute('srcset')).toContain('hero-capsules-3840.avif 3840w');
+    expect(img.getAttribute('alt')).toBe('Syrup bottle');
+    expect(container.querySelector('source')!.getAttribute('srcset')).toContain('cut-syrup-1600.avif 1600w');
     rerender(
       <SettingsProvider>
         <Picture id="does-not-exist" alt="" />

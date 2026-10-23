@@ -47,6 +47,7 @@ describe('graphics tiers', () => {
     expect(ceilingTier({ ...strong, integratedGpu: true })).toBe('medium');
     expect(ceilingTier({ ...strong, mobile: true })).toBe('medium');
     expect(chooseTier('high', { ...strong, mobile: true })).toBe('high'); // explicit choice respected
+    expect(chooseTier('ultra', strong)).toBe('high'); // High (4K) is the High tier with the resolution unlocked
     expect(chooseTier('off', strong)).toBe('off');
     expect(chooseTier('high', noGl)).toBe('off'); // never without WebGL
     expect(chooseTier('auto', { ...strong, softwareGl: true })).toBe('low'); // no real GPU
