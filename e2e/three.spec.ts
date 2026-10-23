@@ -99,7 +99,8 @@ test.describe('3D layer', () => {
     await page.goto('/');
     await expect(stage).toHaveAttribute('data-mode', 'static');
     await expect(stage.locator('canvas')).toHaveCount(0);
-    await expect(page.locator('.pub-hero-visual .hero-art')).toBeVisible();
+    // with the 3D off the pre-rendered still of the hero stays (the page looks the same)
+    await expect(page.getByTestId('hero-still')).toBeVisible();
   });
 
   test('every page has its own scene: sign-up, password recovery and privacy are not the login scene', async ({ page }) => {
@@ -216,7 +217,8 @@ test.describe('3D layer', () => {
     await page.goto('/search?q=Hélicidine');
     await page.getByTestId('medicine-card').first().click();
     const viewer = page.getByTestId('product-visual');
-    await expect(viewer).toHaveAttribute('data-mode', '3d');
+    // The page's code is loaded on demand and the 3D set-up runs on software GL here: allow time.
+    await expect(viewer).toHaveAttribute('data-mode', '3d', { timeout: 60_000 });
     await expect(viewer.locator('canvas')).toHaveCount(1, { timeout: 60_000 });
     await expect(viewer.getByRole('img', { name: /Hélicidine sirop/ }).first()).toBeAttached();
     await page.getByTestId('toggle-photo').click();
