@@ -12,3 +12,6 @@ logs
 *.log
 .dev.log
 .api.log
+
+# Database exports (db/scripts/backup.ts): never committed
+backups/

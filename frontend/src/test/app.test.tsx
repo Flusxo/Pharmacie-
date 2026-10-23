@@ -86,9 +86,9 @@ describe('French formats', () => {
 
 describe('PackImage', () => {
   it('prints name and dosage, with an accessible label', () => {
-    render(<PackImage name="Doliprane 1000 mg" dosage="1000 mg" form="tablet" category="pain" />);
-    const img = screen.getByRole('img', { name: 'Doliprane 1000 mg — 1000 mg' });
-    expect(img.textContent).toContain('Doliprane');
+    render(<PackImage name="Testamol Forte 1000 mg" dosage="1000 mg" form="tablet" category="pain" />);
+    const img = screen.getByRole('img', { name: 'Testamol Forte 1000 mg — 1000 mg' });
+    expect(img.textContent).toContain('Testamol');
     expect(img.textContent).toContain('1000 mg');
   });
   it('falls back to the generated pack when the real image fails', () => {

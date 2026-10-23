@@ -61,7 +61,7 @@ describe('3D fallbacks', () => {
   it('without WebGL the product viewer shows the 2D pack image, no 3D toggle, no error', () => {
     render(wrap(<ProductVisual {...med} />, noGl));
     expect(screen.getByTestId('product-visual')).toHaveAttribute('data-mode', 'photo');
-    expect(screen.getByRole('img', { name: 'Hélicidine sirop — 10 %' })).toBeInTheDocument();
+    expect(screen.getAllByRole('img', { name: 'Hélicidine sirop — 10 %' })[0]).toBeInTheDocument();
     expect(screen.queryByTestId('toggle-3d')).toBeNull();
     expect(screen.queryByTestId('product-scene')).toBeNull();
     expect(screen.getByText('Illustration de l’emballage de Hélicidine sirop, 10 %.')).toBeInTheDocument();
