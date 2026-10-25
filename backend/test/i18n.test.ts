@@ -21,7 +21,10 @@ describe('API messages in French and English', () => {
 
   it('email subjects are translated too', () => {
     const notify = fs.readFileSync(path.join(SRC, 'notify.ts'), 'utf8');
-    const subjects = [...notify.matchAll(/^\s+[a-z_]+: '([^']+)',$/gm)].map((m) => m[1]);
+    // Only the SUBJECTS table: other object literals in the file (the email service request) are not subjects.
+    const start = notify.indexOf('const SUBJECTS');
+    const block = notify.slice(start, notify.indexOf('};', start));
+    const subjects = [...block.matchAll(/^\s+[a-z_]+: '([^']+)',$/gm)].map((m) => m[1]);
     expect(subjects.length).toBeGreaterThan(5);
     for (const s of subjects) expect(FR[s], s).toBeTruthy();
   });

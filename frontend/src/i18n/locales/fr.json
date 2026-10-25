@@ -1085,5 +1085,14 @@
   "pickup.back": "Retour au tableau de bord",
   "pickup.code": "Code de retrait",
   "pickup.check": "Vérifier le code",
-  "activity.pickup": "Retrait confirmé"
+  "activity.pickup": "Retrait confirmé",
+  "follow.start": "Me prévenir quand il revient",
+  "follow.stop": "Ne plus me prévenir",
+  "follow.on": "C’est noté : vous serez prévenu une fois.",
+  "follow.note": "Vous recevrez une notification dès qu’une pharmacie proche l’aura de nouveau en stock.",
+  "follow.onNote": "Vous serez prévenu une seule fois, puis le suivi s’arrête.",
+  "follow.needAddress": "Pour savoir ce qui est proche, ajoutez votre adresse.",
+  "follow.addAddress": "Mon compte",
+  "follow.listTitle": "Médicaments que je suis",
+  "follow.listEmpty": "Aucun pour le moment. Sur la page d’un médicament en rupture, choisissez « Me prévenir quand il revient »."
 }

@@ -1085,5 +1085,14 @@
   "pickup.back": "Back to the dashboard",
   "pickup.code": "Pickup code",
   "pickup.check": "Check the code",
-  "activity.pickup": "Pickup confirmed"
+  "activity.pickup": "Pickup confirmed",
+  "follow.start": "Notify me when it is back",
+  "follow.stop": "Stop notifying me",
+  "follow.on": "Noted: you will be told once.",
+  "follow.note": "You get a notification as soon as a nearby pharmacy has it in stock again.",
+  "follow.onNote": "You will be told once, then the follow ends.",
+  "follow.needAddress": "To know what is nearby, add your address.",
+  "follow.addAddress": "My account",
+  "follow.listTitle": "Medicines I follow",
+  "follow.listEmpty": "None yet. On the page of an out-of-stock medicine, choose “Notify me when it is back”."
 }

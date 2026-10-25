@@ -23,6 +23,12 @@ const schema = z.object({
     .enum(['0', '1', 'true', 'false'])
     .optional()
     .transform((v) => v === '1' || v === 'true'),
+  /**
+   * Optional email service (Resend, https://resend.com). Without both values nobody is emailed: every message stays an
+   * in-app notification and the staff integrations panel says "not configured".
+   */
+  RESEND_API_KEY: z.string().optional(),
+  MAIL_FROM: z.string().optional(),
   /** Login attempts per 15 minutes per network (the e2e suite logs in far more often than a person). */
   LOGIN_RATE_LIMIT: z.coerce.number().int().positive().default(60),
   /** The hosted site's address; several allowed, separated by commas (the first one is used in e-mail links). */

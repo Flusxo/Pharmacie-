@@ -11,6 +11,7 @@ import { RequestSheet } from '../../components/RequestSheet';
 import { LazyMap } from '../../components/map/LazyMap';
 import { LocationControl } from '../../components/LocationControl';
 import { SaveButton } from '../../components/SaveButton';
+import { FollowButton } from '../../components/FollowButton';
 import { useSavedPharmacies } from '../../lib/saved';
 import { CardSkeleton, Empty, ErrorBox, OpenBadge, RxBadge } from '../../components/ui';
 import { AvailabilityText, MedicineCard } from './Search';
@@ -135,6 +136,7 @@ export function MedicineDetailsPage() {
           >
             {t('med.request')}
           </button>
+          {pharmacies !== null && !anyInStock && <FollowButton medicineId={m.id} />}
         </div>
       </div>
 

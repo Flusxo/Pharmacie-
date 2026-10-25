@@ -10,6 +10,7 @@ import { addRoutes } from '../openapi.js';
 import { cancelOrderByPatient, getPatientOrder, listPatientOrders } from '../services/orders.js';
 import { getPayment, getReceipt, startPayment } from '../services/payments.js';
 import { getProfile } from '../services/profile.js';
+import { followMedicine, listFollowed, unfollowMedicine } from '../services/watches.js';
 import {
   cancelRequest,
   choosePharmacy,
@@ -205,7 +206,25 @@ patientRouter.delete('/account', async (req, res) => {
   res.json({ deleted: true });
 });
 
+// "Notify me when it is back in stock"
+patientRouter.get('/watches', async (req, res) => {
+  res.json({ items: await listFollowed(req.user!.id) });
+});
+patientRouter.post('/watches', async (req, res) => {
+  const { medicineId } = z.object({ medicineId: uuid }).parse(req.body);
+  await followMedicine(req.user!.id, medicineId);
+  res.status(201).json({ ok: true });
+});
+patientRouter.delete('/watches/:id', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  await unfollowMedicine(req.user!.id, id);
+  res.status(204).end();
+});
+
 addRoutes([
+  ['get', '/api/patient/watches', 'Patient', 'Medicines I follow for a back-in-stock notice', 'bearer'],
+  ['post', '/api/patient/watches', 'Patient', 'Follow a medicine: one notice when a nearby pharmacy has it again', 'bearer'],
+  ['delete', '/api/patient/watches/:id', 'Patient', 'Stop following a medicine (id = medicine id)', 'bearer'],
   [
     'post',
     '/api/patient/requests',

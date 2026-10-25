@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FollowedList } from '../components/FollowButton';
 import { useNavigate } from 'react-router-dom';
 import { specialityLabel, useI18n } from '../i18n';
 import { ApiError, api, getToken } from '../lib/api';
@@ -127,7 +128,7 @@ export function ProfilePage() {
             <select id="theme" className="input" value={theme} onChange={(e) => setTheme(e.target.value as ThemePref)}>
               <option value="system">{t('profile.themeSystem')}</option>
               <option value="auto">{t('profile.themeAuto')}</option>
-                <option value="light">{t('profile.themeLight')}</option>
+              <option value="light">{t('profile.themeLight')}</option>
               <option value="dark">{t('profile.themeDark')}</option>
             </select>
           </div>
@@ -180,6 +181,8 @@ export function ProfilePage() {
           <span>{t('profile.emailNotifications')}</span>
         </label>
       </section>
+
+      {isPatient && <FollowedList />}
 
       {isPatient && (
         <section className="card stack">

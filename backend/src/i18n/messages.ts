@@ -9,6 +9,9 @@ export const FR: Record<string, string> = {
   'The request body is not valid JSON.': 'Le corps de la requête n’est pas un JSON valide.',
   'The request body is too large.': 'Le corps de la requête est trop volumineux.',
   'This already exists.': 'Cet élément existe déjà.',
+  'A medicine you follow is available again near you. Open it to see which pharmacy has it.':
+    'Un médicament que vous suivez est de nouveau disponible près de chez vous. Ouvrez-le pour voir quelle pharmacie l’a.',
+  'A medicine you follow is available': 'Un médicament que vous suivez est disponible',
   'Team member not found.': 'Membre de l’équipe introuvable.',
   'This pickup code does not match an order of this pharmacy.': 'Ce code de retrait ne correspond à aucune commande de cette pharmacie.',
   'This order is not ready for pickup yet.': 'Cette commande n’est pas encore prête pour le retrait.',

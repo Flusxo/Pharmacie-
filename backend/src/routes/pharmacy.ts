@@ -22,7 +22,7 @@ import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
 import { emailField, idParam, passwordField, uuid } from '../validate.js';
 import { profileBody } from '../pharmacyProfile.js';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 export const pharmacyRouter = Router();
 pharmacyRouter.use(requireRole('pharmacy'));
@@ -431,7 +431,7 @@ const pickupLimiter = rateLimit({
   limit: Number(process.env.PICKUP_RATE_LIMIT ?? 30),
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.user?.actorId ?? req.ip ?? 'x',
+  keyGenerator: (req) => req.user?.actorId ?? ipKeyGenerator(req.ip ?? ''),
   message: { error: 'Too many pickup attempts. Please wait a minute.', code: 'rate_limited' },
 });
 pharmacyRouter.post('/pickup/check', pickupLimiter, async (req, res) => {

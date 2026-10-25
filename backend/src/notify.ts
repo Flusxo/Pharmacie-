@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { ROOT, isTest } from './config.js';
+import { ROOT, config, isTest } from './config.js';
 import { one, pool, type Db } from './db.js';
 import { log, maskEmail } from './logger.js';
 import { tr, type Lang } from './i18n/index.js';
@@ -18,6 +18,7 @@ export type NotificationKind =
   | 'substitution'
   | 'cancel_request'
   | 'medicine_review'
+  | 'stock_alert'
   | 'password_reset';
 
 /** Neutral subjects: never contain medicine names. */
@@ -34,6 +35,7 @@ const SUBJECTS: Record<NotificationKind, string> = {
   substitution: 'Update on your request',
   cancel_request: 'Update on an order',
   medicine_review: 'Update on your medicine proposal',
+  stock_alert: 'A medicine you follow is available',
   password_reset: 'Reset your password',
 };
 
@@ -48,16 +50,35 @@ export const sentMails: SentMail[] = [];
 
 const MAIL_LOG = path.join(ROOT, 'logs', 'mail.log');
 
-/** Mock email service: writes to logs/mail.log in development. TODO(out of scope): real email provider. */
+/** True when a real email service is set up (RESEND_API_KEY and MAIL_FROM). */
+export const mailConfigured = (): boolean => !!config.RESEND_API_KEY && !!config.MAIL_FROM;
+
+/**
+ * Email. With an email service configured, the message is sent through it (a failure is logged and never blocks the
+ * action that caused it). Without one: tests keep mails in memory, development writes logs/mail.log, and production
+ * sends nothing: the in-app notification is the only channel.
+ */
 export function sendMail(to: string, subject: string, body: string): void {
   const mail = { to, subject, body, at: new Date().toISOString() };
   if (isTest) {
     sentMails.push(mail);
     return;
   }
-  fs.mkdirSync(path.dirname(MAIL_LOG), { recursive: true });
-  fs.appendFileSync(MAIL_LOG, JSON.stringify(mail) + '\n');
-  log('info', 'mail_sent', { to: maskEmail(to), subject });
+  if (mailConfigured()) {
+    void fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${config.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: config.MAIL_FROM, to: [to], subject, text: body }),
+    })
+      .then((r) => log(r.ok ? 'info' : 'error', r.ok ? 'mail_sent' : 'mail_failed', { to: maskEmail(to), status: r.status }))
+      .catch((err: Error) => log('error', 'mail_failed', { to: maskEmail(to), err: err.message }));
+    return;
+  }
+  if (config.NODE_ENV === 'development') {
+    fs.mkdirSync(path.dirname(MAIL_LOG), { recursive: true });
+    fs.appendFileSync(MAIL_LOG, JSON.stringify(mail) + '\n');
+    log('info', 'mail_sent', { to: maskEmail(to), subject, via: 'dev_log' });
+  }
 }
 
 /** In-app notification + (if the user allows it) a mock email. */
