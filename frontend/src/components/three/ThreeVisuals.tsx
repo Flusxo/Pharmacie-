@@ -174,6 +174,7 @@ interface ProductVisualProps {
 /** Medicine Details media: 3D product viewer with a "3D / Photo" toggle and a text alternative. */
 export function ProductVisual(m: ProductVisualProps) {
   const { t, lang } = useI18n();
+  const { resolvedTheme } = useSettings();
   const g = useGraphics();
   const fonts = useFontsReady();
   const can3D = useCanvasSlot('product', 2) && fonts;
@@ -219,6 +220,7 @@ export function ProductVisual(m: ProductVisualProps) {
                 cip={m.cip13}
                 color={dark}
                 light={light}
+                night={resolvedTheme === 'dark'}
                 exploded={exploded}
                 resetSignal={reset}
                 onInteract={() => setInteracted(true)}

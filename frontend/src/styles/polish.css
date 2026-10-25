@@ -121,3 +121,49 @@
     display: none;
   }
 }
+
+/* Saved-pharmacy heart. */
+.save-btn {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.7, 0.5, 1),
+    color 0.2s ease-out;
+}
+.save-btn:hover {
+  color: var(--bad, #dc2626);
+}
+.save-btn.on {
+  color: var(--bad, #dc2626);
+  transform: scale(1.12);
+}
+.map-item {
+  position: relative;
+}
+.map-item .save-btn {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+
+/* Merged map pins. */
+.pin-cluster {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 800;
+  border: 3px solid rgb(255 255 255 / 0.85);
+  box-shadow: 0 4px 14px rgb(11 37 48 / 0.3);
+}

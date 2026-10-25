@@ -14,6 +14,7 @@ import { PackImage } from '../../components/PackImage';
 import { ProposeMedicine } from '../../components/pharmacy/ProposeMedicine';
 import { ActivityTab, TeamTab } from '../../components/pharmacy/TeamPanel';
 import { BarcodeScan } from '../../components/pharmacy/BarcodeScan';
+import { OnboardingTour } from '../../components/Tour';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { AnimatedNumber, Pop } from '../../components/motion';
 import { duration, easeOut } from '../../motion';
@@ -807,6 +808,7 @@ export function PharmacyDashboard() {
 
   return (
     <div className="stack" style={{ gap: 20 }}>
+      {role !== 'assistant' && <OnboardingTour role="pharmacy" />}
       <div className="row between">
         <div>
           <h1 style={{ marginBottom: 4 }}>{user?.pharmacy?.name ?? t('ph.title')}</h1>

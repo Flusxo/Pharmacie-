@@ -8,6 +8,8 @@ import type { Medicine, NearbyPharmacy } from '../../lib/types';
 import { LazyMap } from '../../components/map/LazyMap';
 import { LocationControl } from '../../components/LocationControl';
 import { RequestSheet } from '../../components/RequestSheet';
+import { SaveButton } from '../../components/SaveButton';
+import { useSavedPharmacies } from '../../lib/saved';
 import { CardSkeleton, Empty, OpenBadge } from '../../components/ui';
 
 function MedicinePicker({ value, onPick }: { value: Medicine | null; onPick: (m: Medicine | null) => void }) {
@@ -95,8 +97,13 @@ export function PharmacyListMap({
 }) {
   const { t, locale } = useI18n();
   const { place } = usePlace();
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelectedId] = useState<string | null>(null);
+  const [savedOnly, setSavedOnly] = useState(false);
+  const { saved, isSaved } = useSavedPharmacies();
+  const shown = savedOnly ? pharmacies.filter((p) => isSaved(p.id)) : pharmacies;
+  const chosen = pharmacies.find((p) => p.id === selected) ?? null;
   const rows = useRef(new Map<string, HTMLButtonElement>());
+  const setSelected = setSelectedId;
 
   const select = (id: string, fromMap: boolean) => {
     setSelected(id);
@@ -106,6 +113,12 @@ export function PharmacyListMap({
   return (
     <div className="map-layout">
       <div className="card map-list" aria-label={pharmacies.length === 1 ? t('map.listOne') : t('map.list', { n: pharmacies.length })}>
+        {saved.length > 0 && (
+          <label className="check small" style={{ padding: '8px 4px' }}>
+            <input type="checkbox" checked={savedOnly} onChange={(e) => setSavedOnly(e.target.checked)} />
+            <span>{t('saved.only')}</span>
+          </label>
+        )}
         {pharmacies.length === 0 && (
           <Empty>
             <p data-testid="none-in-range">{t('map.noneInRange')}</p>
@@ -116,39 +129,65 @@ export function PharmacyListMap({
             )}
           </Empty>
         )}
-        {pharmacies.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            className={`pharmacy-row ${selected === p.id ? 'selected' : ''}`}
-            aria-current={selected === p.id ? 'true' : undefined}
-            ref={(el) => {
-              if (el) rows.current.set(p.id, el);
-              else rows.current.delete(p.id);
-            }}
-            onClick={() => select(p.id, false)}
-            data-testid="map-list-item"
-          >
-            <span className="stack" style={{ gap: 4 }}>
-              <strong>{p.name}</strong>
-              <span className="muted small">
-                {p.city} · {formatKm(p.distanceKm, locale)}
+        {shown.map((p) => (
+          <div key={p.id} className="map-item">
+            <button
+              type="button"
+              className={`pharmacy-row ${selected === p.id ? 'selected' : ''}`}
+              aria-current={selected === p.id ? 'true' : undefined}
+              ref={(el) => {
+                if (el) rows.current.set(p.id, el);
+                else rows.current.delete(p.id);
+              }}
+              onClick={() => select(p.id, false)}
+              data-testid="map-list-item"
+            >
+              <span className="stack" style={{ gap: 4 }}>
+                <strong>{p.name}</strong>
+                <span className="muted small">
+                  {p.city} · {formatKm(p.distanceKm, locale)}
+                </span>
+                <OpenBadge hours={p.openingHours} onDuty={p.onDuty} />
               </span>
-              <OpenBadge hours={p.openingHours} onDuty={p.onDuty} />
-            </span>
-            {stockMode && (
-              <span className={`badge ${p.inStock ? (p.lowStock ? 'warn' : 'ok') : 'neutral'}`}>
-                {p.inStock ? (p.lowStock ? t('med.lowStock') : t('med.inStock')) : t('med.outOfStock')}
-              </span>
-            )}
-          </button>
+              {stockMode && (
+                <span className={`badge ${p.inStock ? (p.lowStock ? 'warn' : 'ok') : 'neutral'}`}>
+                  {p.inStock ? (p.lowStock ? t('med.lowStock') : t('med.inStock')) : t('med.outOfStock')}
+                </span>
+              )}
+            </button>
+            <SaveButton pharmacyId={p.id} name={p.name} />
+          </div>
         ))}
+        {chosen && (
+          <div className="stack small" style={{ gap: 6, padding: '10px 4px' }} data-testid="route-info">
+            <strong>{t('map.routeTitle', { name: chosen.name })}</strong>
+            <span className="muted">{t('map.routeLine', { km: formatKm(chosen.distanceKm, locale) })}</span>
+            <a
+              className="btn secondary small"
+              style={{ width: 'fit-content' }}
+              href={`https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${place.lat}%2C${place.lon}%3B${chosen.latitude}%2C${chosen.longitude}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t('map.routeOpen')}
+            </a>
+          </div>
+        )}
       </div>
       <LazyMap
         center={place}
         radiusKm={radiusKm}
-        pharmacies={pharmacies}
+        pharmacies={shown}
         selectedId={selected}
+        route={
+          chosen
+            ? [
+                [place.lat, place.lon],
+                [chosen.latitude, chosen.longitude],
+              ]
+            : undefined
+        }
+        fitRoute={false}
         onSelect={(id) => select(id, true)}
         onChoose={onChoose}
         stockMode={stockMode}

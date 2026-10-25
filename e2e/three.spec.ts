@@ -8,6 +8,8 @@ test.describe('3D layer', () => {
     await page.addInitScript(() => {
       if (!localStorage.getItem('counter.graphics')) localStorage.setItem('counter.graphics', 'medium');
       localStorage.setItem('counter.tour', 'done');
+      localStorage.setItem('counter.tour.doctor', 'done');
+      localStorage.setItem('counter.tour.pharmacy', 'done');
     });
     test.setTimeout(240_000);
   });
@@ -169,6 +171,8 @@ test.describe('3D layer', () => {
     await ph.addInitScript(() => {
       localStorage.setItem('counter.graphics', 'medium');
       localStorage.setItem('counter.tour', 'done');
+      localStorage.setItem('counter.tour.doctor', 'done');
+      localStorage.setItem('counter.tour.pharmacy', 'done');
     });
     const p2 = await ph.newPage();
     await loginByToken(p2, 'pharmacie.tournon@pharmacie.test');

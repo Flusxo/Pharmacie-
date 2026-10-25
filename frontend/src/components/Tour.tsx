@@ -10,11 +10,18 @@ import type { MessageKey } from '../i18n';
 import { duration, easeOut } from '../motion';
 
 export const TOUR_KEY = 'counter.tour';
-const STEPS = ['search', 'map', 'requests'] as const;
+export type TourRole = 'patient' | 'doctor' | 'pharmacy';
+const STEPS_BY_ROLE = {
+  patient: ['search', 'map', 'requests'],
+  doctor: ['dLink', 'dRequest', 'dTemplates'],
+  pharmacy: ['pIncoming', 'pStock', 'pSummary'],
+} as const;
+/** The patient flag keeps its original name; each other role has its own (first login of that role). */
+const keyOf = (role: TourRole) => (role === 'patient' ? TOUR_KEY : `${TOUR_KEY}.${role}`);
 
-function readDone(): boolean {
+function readDone(role: TourRole): boolean {
   try {
-    return localStorage.getItem(TOUR_KEY) === 'done';
+    return localStorage.getItem(keyOf(role)) === 'done';
   } catch {
     return true;
   }
@@ -31,20 +38,21 @@ export function resetTour(): void {
 const targetFor = (step: string) =>
   [...document.querySelectorAll<HTMLElement>(`[data-tour="${step}"]`)].find((el) => el.offsetParent !== null) ?? null;
 
-export function OnboardingTour() {
+export function OnboardingTour({ role = 'patient' }: { role?: TourRole }) {
   const { t } = useI18n();
-  const [open, setOpen] = useState(() => !readDone());
+  const STEPS: readonly string[] = STEPS_BY_ROLE[role];
+  const [open, setOpen] = useState(() => !readDone(role));
   const [i, setI] = useState(0);
   const step = STEPS[i];
 
   const finish = useCallback(() => {
     try {
-      localStorage.setItem(TOUR_KEY, 'done');
+      localStorage.setItem(keyOf(role), 'done');
     } catch {
       // Not remembered; harmless.
     }
     setOpen(false);
-  }, []);
+  }, [role]);
 
   useEffect(() => {
     if (!open) return;

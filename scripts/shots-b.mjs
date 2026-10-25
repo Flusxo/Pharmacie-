@@ -19,6 +19,8 @@ for (const [w, h, name] of [
   await ctx.addInitScript((tk) => {
     localStorage.setItem('counter.token', tk);
     localStorage.setItem('counter.tour', 'done');
+    localStorage.setItem('counter.tour.doctor', 'done');
+    localStorage.setItem('counter.tour.pharmacy', 'done');
     localStorage.setItem('counter.graphics', 'off');
   }, token);
   const p = await ctx.newPage();

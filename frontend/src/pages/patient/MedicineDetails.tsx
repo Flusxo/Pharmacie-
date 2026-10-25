@@ -10,6 +10,8 @@ import { ProductVisual } from '../../components/three/ThreeVisuals';
 import { RequestSheet } from '../../components/RequestSheet';
 import { LazyMap } from '../../components/map/LazyMap';
 import { LocationControl } from '../../components/LocationControl';
+import { SaveButton } from '../../components/SaveButton';
+import { useSavedPharmacies } from '../../lib/saved';
 import { CardSkeleton, Empty, ErrorBox, OpenBadge, RxBadge } from '../../components/ui';
 import { AvailabilityText, MedicineCard } from './Search';
 import { medicineText } from '../../lib/medicine';
@@ -22,6 +24,8 @@ export function MedicineDetailsPage() {
   const [pharmacies, setPharmacies] = useState<NearbyPharmacy[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sheet, setSheet] = useState<{ pharmacyId: string | null } | null>(null);
+  const { isSaved, saved } = useSavedPharmacies();
+  const [savedOnly, setSavedOnly] = useState(false);
   const [openOnly, setOpenOnly] = useState(false);
   const [stockOnly, setStockOnly] = useState(false);
   const [maxKm, setMaxKm] = useState(0);
@@ -47,12 +51,19 @@ export function MedicineDetailsPage() {
   const m = data.medicine;
   const anyInStock = (pharmacies ?? []).some((p) => p.inStock);
   const filtered = (pharmacies ?? [])
-    .filter((p) => (!openOnly || openState(p.openingHours, p.onDuty).kind !== 'closed') && (!stockOnly || p.inStock) && (!maxKm || p.distanceKm <= maxKm))
+    .filter(
+      (p) =>
+        (!openOnly || openState(p.openingHours, p.onDuty).kind !== 'closed') &&
+        (!stockOnly || p.inStock) &&
+        (!savedOnly || isSaved(p.id)) &&
+        (!maxKm || p.distanceKm <= maxKm),
+    )
     .sort((a, b) => (sortBy === 'price' ? (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity) : a.distanceKm - b.distanceKm));
-  const filtering = openOnly || stockOnly || maxKm > 0;
+  const filtering = openOnly || stockOnly || savedOnly || maxKm > 0;
   const resetFilters = () => {
     setOpenOnly(false);
     setStockOnly(false);
+    setSavedOnly(false);
     setMaxKm(0);
   };
 
@@ -144,6 +155,11 @@ export function MedicineDetailsPage() {
               <label className="row" style={{ gap: 6 }}>
                 <input type="checkbox" checked={stockOnly} onChange={(e) => setStockOnly(e.target.checked)} /> {t('med.filter.inStock')}
               </label>
+              {saved.length > 0 && (
+                <label className="row" style={{ gap: 6 }}>
+                  <input type="checkbox" checked={savedOnly} onChange={(e) => setSavedOnly(e.target.checked)} /> {t('saved.only')}
+                </label>
+              )}
               <label className="row" style={{ gap: 6 }}>
                 {t('med.filter.distance')}
                 <select value={maxKm} onChange={(e) => setMaxKm(Number(e.target.value))}>
@@ -193,6 +209,7 @@ export function MedicineDetailsPage() {
                     <OpenBadge hours={p.openingHours} onDuty={p.onDuty} />
                   </span>
                 </div>
+                <SaveButton pharmacyId={p.id} name={p.name} />
                 {p.inStock && (
                   <button type="button" className="btn secondary small" onClick={() => setSheet({ pharmacyId: p.id })}>
                     {t('med.chooseThis')}

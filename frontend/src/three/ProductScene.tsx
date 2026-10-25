@@ -21,6 +21,8 @@ export interface ProductSceneProps {
   cip: string;
   color: string;
   light: string;
+  /** The page is in dark mode: the backdrop is a deep tint of the category colour instead of near white. */
+  night?: boolean;
   exploded: boolean;
   resetSignal: number;
   onInteract: () => void;
@@ -29,7 +31,7 @@ export interface ProductSceneProps {
 }
 
 /** Curved backdrop (cyclorama) tinted by the category colour. */
-function Cyclorama({ tint }: { tint: string }) {
+function Cyclorama({ tint, night }: { tint: string; night: boolean }) {
   const geo = useMemo(() => {
     const shape: THREE.Vector2[] = [];
     for (let i = 0; i <= 24; i++) {
@@ -40,7 +42,11 @@ function Cyclorama({ tint }: { tint: string }) {
     const g = new THREE.LatheGeometry(shape, 64, Math.PI * 0.75, Math.PI * 0.5);
     return g;
   }, []);
-  const color = useMemo(() => new THREE.Color(tint).lerp(new THREE.Color('#ffffff'), 0.82), [tint]);
+  const color = useMemo(
+    () =>
+      night ? new THREE.Color(tint).lerp(new THREE.Color('#06201f'), 0.7) : new THREE.Color(tint).lerp(new THREE.Color('#ffffff'), 0.82),
+    [tint, night],
+  );
   return (
     <group position={[0, -0.02, 0]}>
       <mesh geometry={geo} rotation={[0, 0, 0]} position={[0, 0, -0.2]} receiveShadow>
@@ -96,7 +102,7 @@ function Viewer(p: ProductSceneProps) {
   const height = ['pen', 'sachet'].includes(p.form) ? 0.45 : p.form === 'lozenge' || p.exploded ? 0.3 : 0.75;
   return (
     <>
-      <Cyclorama tint={p.color} />
+      <Cyclorama tint={p.color} night={!!p.night} />
       <Float speed={p.reduced || touched ? 0 : 1.4} rotationIntensity={0.1} floatIntensity={0.25} floatingRange={[0, 0.06]}>
         <group position={[0, height, 0]} scale={['pen', 'inhaler'].includes(p.form) ? 0.9 : 1}>
           <group position={[0, -0.75, 0]}>

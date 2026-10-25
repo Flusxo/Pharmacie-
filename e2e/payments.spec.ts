@@ -49,6 +49,8 @@ test.describe('payments (Stripe test mode, simulated Stripe page)', () => {
     await ph.addInitScript(() => {
       localStorage.setItem('counter.graphics', 'off');
       localStorage.setItem('counter.tour', 'done');
+      localStorage.setItem('counter.tour.doctor', 'done');
+      localStorage.setItem('counter.tour.pharmacy', 'done');
     });
     const p2 = await ph.newPage();
     await loginByToken(p2, 'pharmacie.tournon@pharmacie.test');
@@ -68,6 +70,8 @@ test.describe('payments (Stripe test mode, simulated Stripe page)', () => {
     await adm.addInitScript(() => {
       localStorage.setItem('counter.graphics', 'off');
       localStorage.setItem('counter.tour', 'done');
+      localStorage.setItem('counter.tour.doctor', 'done');
+      localStorage.setItem('counter.tour.pharmacy', 'done');
     });
     const p3 = await adm.newPage();
     await loginByToken(p3, 'admin@pharmacie.test');

@@ -10,6 +10,8 @@ export const test = base.extend({
       if (!localStorage.getItem('counter.graphics')) localStorage.setItem('counter.graphics', 'off');
       // The onboarding tour is tested on its own (extras.spec.ts).
       if (!localStorage.getItem('counter.tour')) localStorage.setItem('counter.tour', 'done');
+      localStorage.setItem('counter.tour.doctor', 'done');
+      localStorage.setItem('counter.tour.pharmacy', 'done');
     });
     await use(page);
   },

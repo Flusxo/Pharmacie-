@@ -3,6 +3,7 @@ import { AnimatePresence, m as motion } from 'framer-motion';
 import { duration, easeOut } from '../../motion';
 import { useI18n } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
+import { OnboardingTour } from '../../components/Tour';
 import { useAuth } from '../../lib/auth';
 import { useToast } from '../../lib/toast';
 import { formatDate, formatDateTime } from '../../lib/format';
@@ -100,6 +101,7 @@ export function DoctorDashboard() {
 
   return (
     <div className="stack" style={{ gap: 20 }}>
+      <OnboardingTour role="doctor" />
       <div>
         <h1 style={{ marginBottom: 4 }}>{user?.displayName}</h1>
         <p className="muted small" style={{ margin: 0 }}>

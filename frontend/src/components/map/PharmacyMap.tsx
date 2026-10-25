@@ -8,7 +8,7 @@
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import L from 'leaflet';
-import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet';
+import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { useI18n } from '../../i18n';
 import { formatKm } from '../../lib/format';
 import { useReducedMotion } from '../../lib/settings';
@@ -58,6 +58,8 @@ interface Props {
   stockMode?: boolean;
   extraMarkers?: ExtraMarker[];
   route?: [number, number][];
+  /** Zoom to the whole route when it changes (default). Off when another effect already moves the view. */
+  fitRoute?: boolean;
   height?: number | string;
   showPatient?: boolean;
   zoom?: number;
@@ -122,13 +124,14 @@ export default function PharmacyMap({
   stockMode = false,
   extraMarkers = [],
   route,
+  fitRoute = true,
   height = 420,
   showPatient = true,
   zoom = 12,
   tileUrl = import.meta.env.VITE_MAP_TILE_URL ?? '',
   footer,
 }: Props) {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const reduced = useReducedMotion();
   const tiles = useMemo(() => resolveTileUrl(tileUrl), [tileUrl]);
   const configured = tiles.url !== '';
@@ -220,7 +223,7 @@ export default function PharmacyMap({
           />
         )}
         <FitRadius center={c} radiusKm={radiusKm} />
-        <FitRoute route={route} />
+        <FitRoute route={fitRoute ? route : undefined} />
         <FlyTo target={target} reduced={reduced} />
         {radiusKm !== undefined && (
           <Circle
@@ -241,43 +244,15 @@ export default function PharmacyMap({
           />
         )}
         {route && route.length > 1 && <Polyline positions={route} pathOptions={{ color: '#10B981', weight: 4, opacity: 0.8 }} />}
-        {pharmacies.map((p, i) => {
-          const inStock = stockMode ? !!p.inStock : true;
-          const label = `${p.name}${stockMode ? ` — ${inStock ? t('med.inStock') : t('med.outOfStock')}` : ''}`;
-          return (
-            <Marker
-              key={p.id}
-              position={[p.latitude, p.longitude]}
-              icon={pinIcon(inStock, p.id === selectedId, reduced ? 0 : Math.min(i * 60, 600))}
-              title={label}
-              alt={label}
-              keyboard
-              ref={(m) => {
-                if (m) markers.current.set(p.id, m);
-                else markers.current.delete(p.id);
-              }}
-              eventHandlers={{ click: () => onSelect?.(p.id) }}
-            >
-              <Popup>
-                <div className="stack" style={{ gap: 4, minWidth: 180 }} data-testid="map-popup">
-                  <strong>{p.name}</strong>
-                  <span className="small">{p.address}</span>
-                  {p.distanceKm != null && <span className="small">{formatKm(p.distanceKm, locale)}</span>}
-                  {stockMode && (
-                    <span className={`badge ${inStock ? 'ok' : 'neutral'}`}>
-                      {inStock ? `${t('med.inStock')} · ${p.quantity ?? ''}` : t('med.outOfStock')}
-                    </span>
-                  )}
-                  {onChoose && inStock && (
-                    <button type="button" className="btn small" onClick={() => onChoose(p.id)}>
-                      {t('med.chooseThis')}
-                    </button>
-                  )}
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
+        <PharmacyPins
+          pharmacies={pharmacies}
+          stockMode={stockMode}
+          selectedId={selectedId}
+          onSelect={onSelect}
+          onChoose={onChoose}
+          reduced={reduced}
+          markers={markers}
+        />
         {extraMarkers.map((m) => (
           <Marker
             key={m.id}
@@ -310,6 +285,144 @@ export default function PharmacyMap({
       )}
       {footer}
     </div>
+  );
+}
+
+const clusterIcon = (n: number) =>
+  L.divIcon({
+    className: '',
+    html: `<span class="pin-cluster">${n}</span>`,
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+  });
+
+interface Cluster {
+  items: MapPharmacy[];
+  lat: number;
+  lon: number;
+}
+
+/** Greedy grouping of pins that sit closer than `minPx` on screen at the current zoom. */
+export function clusterPins(items: MapPharmacy[], project: (lat: number, lon: number) => [number, number], minPx = 44): Cluster[] {
+  const pts = items.map((p) => ({ p, xy: project(p.latitude, p.longitude), used: false }));
+  const out: Cluster[] = [];
+  for (const a of pts) {
+    if (a.used) continue;
+    a.used = true;
+    const group = [a];
+    for (const b of pts) {
+      if (b.used) continue;
+      if (Math.hypot(a.xy[0] - b.xy[0], a.xy[1] - b.xy[1]) < minPx) {
+        b.used = true;
+        group.push(b);
+      }
+    }
+    out.push({
+      items: group.map((g) => g.p),
+      lat: group.reduce((x, g) => x + g.p.latitude, 0) / group.length,
+      lon: group.reduce((x, g) => x + g.p.longitude, 0) / group.length,
+    });
+  }
+  return out;
+}
+
+/** The pharmacy pins; pins that would overlap are merged into a numbered circle that zooms in when clicked. */
+function PharmacyPins({
+  pharmacies,
+  stockMode,
+  selectedId,
+  onSelect,
+  onChoose,
+  reduced,
+  markers,
+}: {
+  pharmacies: MapPharmacy[];
+  stockMode: boolean;
+  selectedId?: string | null;
+  onSelect?: (id: string) => void;
+  onChoose?: (id: string) => void;
+  reduced: boolean;
+  markers: React.MutableRefObject<Map<string, L.Marker>>;
+}) {
+  const { t, locale } = useI18n();
+  const map = useMap();
+  const [zoomTick, setZoomTick] = useState(0);
+  useMapEvents({ zoomend: () => setZoomTick((n) => n + 1) });
+
+  const { singles, clusters } = useMemo(() => {
+    // No size (hidden, test DOM) or a handful of pins: nothing to merge. The selected pharmacy is always its own pin.
+    if (pharmacies.length < 5 || map.getSize().x === 0) return { singles: pharmacies, clusters: [] as Cluster[] };
+    const z = map.getZoom();
+    const free = pharmacies.filter((p) => p.id !== selectedId);
+    const groups = clusterPins(free, (lat, lon) => {
+      const pt = map.project([lat, lon], z);
+      return [pt.x, pt.y];
+    });
+    return {
+      singles: [...groups.filter((g) => g.items.length === 1).map((g) => g.items[0]), ...pharmacies.filter((p) => p.id === selectedId)],
+      clusters: groups.filter((g) => g.items.length > 1),
+    };
+    // zoomTick re-runs this after each zoom.
+  }, [pharmacies, selectedId, map, zoomTick]);
+
+  return (
+    <>
+      {clusters.map((c) => (
+        <Marker
+          key={c.items.map((p) => p.id).join('+')}
+          position={[c.lat, c.lon]}
+          icon={clusterIcon(c.items.length)}
+          title={t('map.cluster', { n: c.items.length })}
+          alt={t('map.cluster', { n: c.items.length })}
+          keyboard
+          eventHandlers={{
+            click: () =>
+              map.fitBounds(L.latLngBounds(c.items.map((p) => [p.latitude, p.longitude] as [number, number])), {
+                padding: [60, 60],
+                maxZoom: 16,
+                animate: !reduced,
+              }),
+          }}
+        />
+      ))}
+      {singles.map((p, i) => {
+        const inStock = stockMode ? !!p.inStock : true;
+        const label = `${p.name}${stockMode ? ` — ${inStock ? t('med.inStock') : t('med.outOfStock')}` : ''}`;
+        return (
+          <Marker
+            key={p.id}
+            position={[p.latitude, p.longitude]}
+            icon={pinIcon(inStock, p.id === selectedId, reduced ? 0 : Math.min(i * 60, 600))}
+            title={label}
+            alt={label}
+            keyboard
+            ref={(m) => {
+              if (m) markers.current.set(p.id, m);
+              else markers.current.delete(p.id);
+            }}
+            eventHandlers={{ click: () => onSelect?.(p.id) }}
+          >
+            <Popup>
+              <div className="stack" style={{ gap: 4, minWidth: 180 }} data-testid="map-popup">
+                <strong>{p.name}</strong>
+                <span className="small">{p.address}</span>
+                {p.distanceKm != null && <span className="small">{formatKm(p.distanceKm, locale)}</span>}
+                {stockMode && (
+                  <span className={`badge ${inStock ? 'ok' : 'neutral'}`}>
+                    {inStock ? `${t('med.inStock')} · ${p.quantity ?? ''}` : t('med.outOfStock')}
+                  </span>
+                )}
+                {onChoose && inStock && (
+                  <button type="button" className="btn small" onClick={() => onChoose(p.id)}>
+                    {t('med.chooseThis')}
+                  </button>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
+    </>
   );
 }
 

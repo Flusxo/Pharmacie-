@@ -7,6 +7,8 @@ async function newPage(browser: Browser): Promise<Page> {
   await ctx.addInitScript(() => {
     localStorage.setItem('counter.graphics', 'off');
     localStorage.setItem('counter.tour', 'done');
+    localStorage.setItem('counter.tour.doctor', 'done');
+    localStorage.setItem('counter.tour.pharmacy', 'done');
   });
   return ctx.newPage();
 }

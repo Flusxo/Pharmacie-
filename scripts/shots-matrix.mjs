@@ -60,6 +60,8 @@ for (const lang of ['fr', 'en'].filter((l) => !onlyLang || l === onlyLang)) {
             localStorage.setItem('counter.lang', lg);
             localStorage.setItem('counter.graphics', 'medium');
             localStorage.setItem('counter.tour', 'done');
+            localStorage.setItem('counter.tour.doctor', 'done');
+            localStorage.setItem('counter.tour.pharmacy', 'done');
           },
           [who ? tokens[who] : null, scheme, lang],
         );

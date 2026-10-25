@@ -74,6 +74,8 @@ test.describe('language switch', () => {
     await ctx.addInitScript(() => {
       localStorage.setItem('counter.graphics', 'off');
       localStorage.setItem('counter.tour', 'done');
+      localStorage.setItem('counter.tour.doctor', 'done');
+      localStorage.setItem('counter.tour.pharmacy', 'done');
     });
     const other = await ctx.newPage();
     await loginByToken(other, 'bruno@pharmacie.test');
