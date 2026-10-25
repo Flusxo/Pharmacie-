@@ -8,6 +8,7 @@ import { formatDateTime, formatPrice, formatTime } from '../../lib/format';
 import type { OrderDetails, OrderStatus } from '../../lib/types';
 import { PackImage } from '../../components/PackImage';
 import { PaymentCard } from '../../components/PaymentCard';
+import { QrCode } from '../../components/QrCode';
 import { CardSkeleton, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { IconCheck } from '../../components/Icons';
 import { LazyMap } from '../../components/map/LazyMap';
@@ -226,6 +227,24 @@ export function OrderTrackingPage() {
           <strong>{formatPrice(total, locale)}</strong>
         </div>
       </section>
+
+      {order.pickupCode && (
+        <section className="card stack" aria-labelledby="pickup-h" data-testid="pickup-card">
+          <h2 id="pickup-h">{t('pickup.patientTitle')}</h2>
+          <p className="muted small" style={{ margin: 0 }}>
+            {t('pickup.patientHelp')}
+          </p>
+          <div className="row" style={{ gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+            <QrCode text={`${window.location.origin}/pickup/${order.id}.${order.pickupCode}`} label={t('pickup.qrLabel')} />
+            <strong
+              data-testid="pickup-code-shown"
+              style={{ fontSize: '2rem', letterSpacing: '0.18em', fontFamily: 'var(--font-mono, monospace)' }}
+            >
+              {order.pickupCode}
+            </strong>
+          </div>
+        </section>
+      )}
 
       <PaymentCard orderId={order.id} orderStatus={order.status} total={total} />
 

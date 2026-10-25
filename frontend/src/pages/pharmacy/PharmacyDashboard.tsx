@@ -327,6 +327,11 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
             </span>
           )}
           <StatusBadge status={o.status} />
+          {o.status === 'ready' && (
+            <Link to={`/pickup/${o.id}`} className="btn small" data-testid="pickup-link">
+              {t('pickup.open')}
+            </Link>
+          )}
           <Link to={`/orders/${o.id}/print`} className="btn secondary small" data-testid="print-slip">
             {t('order.print')}
           </Link>

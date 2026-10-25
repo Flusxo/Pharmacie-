@@ -18,6 +18,8 @@ export interface AuthUser {
   memberRole?: 'owner' | 'pharmacist' | 'assistant';
   /** Team members: the pharmacy they work for (the pharmacy router then acts on it, see routes/pharmacy.ts). */
   pharmacyId?: string;
+  /** Pharmacy router only: the person who acts (a team member), while id is the pharmacy. */
+  actorId?: string;
 }
 
 declare module 'express-serve-static-core' {

@@ -53,6 +53,7 @@ const PharmacyDashboard = lz(() => import('./pages/pharmacy/PharmacyDashboard'),
 const DoctorDashboard = lz(() => import('./pages/doctor/DoctorDashboard'), 'DoctorDashboard');
 const AdminDashboard = lz(() => import('./pages/admin/AdminDashboard'), 'AdminDashboard');
 const PharmacyProfilePage = lz(() => import('./pages/public/PharmacyProfile'), 'PharmacyProfilePage');
+const PickupPage = lz(() => import('./pages/pharmacy/PickupPage'), 'PickupPage');
 const DesignSystemPage = lz(() => import('./pages/admin/DesignSystem'), 'DesignSystemPage');
 const ProfilePage = lz(() => import('./pages/Profile'), 'ProfilePage');
 const OrderSlipPage = lz(() => import('./pages/OrderSlip'), 'OrderSlipPage');
@@ -255,6 +256,14 @@ export function AppRoutes() {
             element={
               <RequireRole roles={['staff']}>
                 <AdminDashboard />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/pickup/:ref"
+            element={
+              <RequireRole roles={['pharmacy']}>
+                <PickupPage />
               </RequireRole>
             }
           />

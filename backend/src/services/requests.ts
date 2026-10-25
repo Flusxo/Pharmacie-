@@ -8,6 +8,7 @@ import { RULES } from '../config.js';
 import { one, query, tx } from '../db.js';
 import { HttpError, badRequest, conflict, forbidden, notFound } from '../errors.js';
 import { notify } from '../notify.js';
+import { newPickupCode } from './orders.js';
 
 export interface ItemInput {
   medicineId: string;
@@ -305,8 +306,8 @@ export async function acceptRequest(requestId: string, pharmacyId: string, actor
       );
     }
     const order = await one<{ id: string }>(
-      `INSERT INTO orders (request_id, pharmacy_id, patient_id, status, share_token) VALUES ($1,$2,$3,'accepted',$4) RETURNING id`,
-      [requestId, pharmacyId, r.patient_id, crypto.randomBytes(16).toString('hex')],
+      `INSERT INTO orders (request_id, pharmacy_id, patient_id, status, share_token, pickup_code) VALUES ($1,$2,$3,'accepted',$4,$5) RETURNING id`,
+      [requestId, pharmacyId, r.patient_id, crypto.randomBytes(16).toString('hex'), newPickupCode()],
       c,
     );
     await c.query(`INSERT INTO order_status_history (order_id, status, changed_by) VALUES ($1,'accepted',$2)`, [order!.id, actorId]);

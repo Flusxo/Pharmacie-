@@ -1073,5 +1073,17 @@
   "pp.access.step_free": "Step-free access",
   "pp.access.wide_door": "Wide door",
   "pp.access.hearing_loop": "Hearing loop",
-  "pp.access.parking": "Parking"
+  "pp.access.parking": "Parking",
+  "pickup.title": "Pickup at the counter",
+  "pickup.patientTitle": "Your pickup code",
+  "pickup.patientHelp": "Show this code or QR code at the counter. It stays valid until the order is picked up.",
+  "pickup.qrLabel": "Pickup QR code",
+  "pickup.open": "Pickup",
+  "pickup.for": "Order for",
+  "pickup.confirm": "Confirm pickup",
+  "pickup.done": "Pickup confirmed. The order is handed over.",
+  "pickup.back": "Back to the dashboard",
+  "pickup.code": "Pickup code",
+  "pickup.check": "Check the code",
+  "activity.pickup": "Pickup confirmed"
 }

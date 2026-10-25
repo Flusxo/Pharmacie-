@@ -1,4 +1,5 @@
 /** Order status machine, cancellation, stock return, and read models for patient / pharmacy / share link. */
+import crypto from 'node:crypto';
 import type pg from 'pg';
 import { RULES } from '../config.js';
 import { one, query, tx } from '../db.js';
@@ -10,6 +11,14 @@ export const ORDER_FLOW = ['accepted', 'preparing', 'ready', 'out_for_delivery',
 export type OrderStatus = (typeof ORDER_FLOW)[number] | 'cancelled';
 
 /** Only forward moves, or cancel before delivery. */
+/** Short code the patient shows at the counter: no look-alike characters (0/O, 1/I/L). */
+const PICKUP_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+export function newPickupCode(): string {
+  const bytes = crypto.randomBytes(6);
+  return Array.from(bytes, (b) => PICKUP_ALPHABET[b % PICKUP_ALPHABET.length]).join('');
+}
+const normaliseCode = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
 export const NEXT_STATUS: Record<OrderStatus, OrderStatus[]> = {
   accepted: ['preparing', 'cancelled'],
   preparing: ['ready', 'cancelled'],
@@ -129,6 +138,38 @@ async function updateOrderStatusTx(orderId: string, pharmacyId: string, to: Orde
   });
 }
 
+/**
+ * Pickup at the counter. The pharmacy checks the code the patient shows (or the QR code it was scanned from) and confirms
+ * in one step: the order goes from "ready" straight to "delivered". Errors are deliberately the same for a wrong code,
+ * another pharmacy's order and an order that is not ready.
+ */
+export async function previewPickup(orderId: string, pharmacyId: string, code: string) {
+  const o = await one<{ pickup_code: string | null; status: OrderStatus; name: string; items: unknown }>(
+    `SELECT o.pickup_code, o.status, pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS name, (${ORDER_ITEMS_SQL}) AS items
+       FROM orders o JOIN patients pt ON pt.user_id = o.patient_id
+      WHERE o.id = $1 AND o.pharmacy_id = $2`,
+    [orderId, pharmacyId],
+  );
+  const given = normaliseCode(code);
+  const ok =
+    !!o?.pickup_code && given.length === o.pickup_code.length && crypto.timingSafeEqual(Buffer.from(given), Buffer.from(o.pickup_code));
+  if (!o || !ok) throw new HttpError(400, 'This pickup code does not match an order of this pharmacy.', 'invalid_pickup_code');
+  if (o.status !== 'ready') throw conflict('This order is not ready for pickup yet.', 'not_ready');
+  return { orderId, patientName: o.name, items: o.items };
+}
+
+export async function confirmPickup(orderId: string, pharmacyId: string, code: string, actorId: string) {
+  await previewPickup(orderId, pharmacyId, code);
+  await tx(async (c) => {
+    const o = await lockOrder(c, orderId);
+    if (!o || o.pharmacy_id !== pharmacyId || o.status !== 'ready') throw conflict('This order is not ready for pickup yet.', 'not_ready');
+    await setStatus(c, o, 'delivered', actorId);
+    await c.query('UPDATE orders SET pickup_confirmed_at = now() WHERE id = $1', [orderId]);
+  });
+  await afterStatusChange(orderId, 'delivered');
+  return { status: 'delivered' as const };
+}
+
 /** Patient cancels: directly while "accepted"; afterwards it becomes a request the pharmacy must approve. */
 export async function cancelOrderByPatient(orderId: string, patientId: string) {
   const r = await cancelOrderByPatientTx(orderId, patientId);
@@ -207,7 +248,16 @@ export async function getPatientOrder(orderId: string, patientId: string) {
     [orderId, patientId],
   );
   if (!o) throw notFound('Order not found.');
-  return o;
+  // The code exists from the moment the order is accepted (older orders get theirs the first time they are opened)
+  // and is shown only while the order can still be picked up.
+  const status = (o as { status: OrderStatus }).status;
+  let code = (await one<{ pickup_code: string | null }>('SELECT pickup_code FROM orders WHERE id = $1', [orderId]))?.pickup_code ?? null;
+  if (!code) {
+    code = newPickupCode();
+    await query('UPDATE orders SET pickup_code = $2 WHERE id = $1 AND pickup_code IS NULL', [orderId, code]);
+  }
+  const open = status === 'accepted' || status === 'preparing' || status === 'ready';
+  return { ...o, pickupCode: open ? code : null };
 }
 
 export async function listPatientOrders(patientId: string) {

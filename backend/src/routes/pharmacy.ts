@@ -7,10 +7,12 @@ import { requireRole } from '../middleware/auth.js';
 import { addRoutes } from '../openapi.js';
 import { langOf, tr } from '../i18n/index.js';
 import {
+  confirmPickup,
   decideCancellation,
   getPharmacyOrder,
   listIncoming,
   listPharmacyOrders,
+  previewPickup,
   updateOrderStatus,
   type OrderStatus,
 } from '../services/orders.js';
@@ -20,6 +22,7 @@ import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
 import { emailField, idParam, passwordField, uuid } from '../validate.js';
 import { profileBody } from '../pharmacyProfile.js';
+import rateLimit from 'express-rate-limit';
 
 export const pharmacyRouter = Router();
 pharmacyRouter.use(requireRole('pharmacy'));
@@ -41,12 +44,14 @@ pharmacyRouter.use((req, res, next) => {
   const p = req.path;
   const write = req.method !== 'GET';
   const ownerOnly = p.startsWith('/team') || (write && p === '/settings');
-  const assistantMayWrite = req.method === 'PATCH' && /^\/orders\/[^/]+\/status$/.test(p);
+  const assistantMayWrite =
+    (req.method === 'PATCH' && /^\/orders\/[^/]+\/status$/.test(p)) ||
+    (req.method === 'POST' && (p === '/pickup/check' || /^\/orders\/[^/]+\/pickup$/.test(p)));
   const assistantMayRead = !p.startsWith('/team') && !p.startsWith('/activity');
   if ((role !== 'owner' && ownerOnly) || (role === 'assistant' && (write ? !assistantMayWrite : !assistantMayRead))) {
     throw forbidden();
   }
-  req.user = { ...me, id: pharmacyId };
+  req.user = { ...me, id: pharmacyId, actorId };
   if (write && !p.startsWith('/team')) {
     res.on('finish', () => {
       if (res.statusCode >= 400) return;
@@ -420,6 +425,25 @@ pharmacyRouter.get('/summary', async (req, res) => {
   res.json({ ...s, ...extra });
 });
 
+// Pickup at the counter: look at the order a code belongs to, then confirm. Rate limited: a code is short.
+const pickupLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: Number(process.env.PICKUP_RATE_LIMIT ?? 30),
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.actorId ?? req.ip ?? 'x',
+  message: { error: 'Too many pickup attempts. Please wait a minute.', code: 'rate_limited' },
+});
+pharmacyRouter.post('/pickup/check', pickupLimiter, async (req, res) => {
+  const b = z.object({ orderId: uuid, code: z.string().trim().min(4).max(20) }).parse(req.body);
+  res.json(await previewPickup(b.orderId, req.user!.id, b.code));
+});
+pharmacyRouter.post('/orders/:id/pickup', pickupLimiter, async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const b = z.object({ code: z.string().trim().min(4).max(20) }).parse(req.body);
+  res.json(await confirmPickup(id, req.user!.id, b.code, req.user!.actorId ?? req.user!.id));
+});
+
 /** Profile page details: services, languages spoken, accessibility. */
 pharmacyRouter.patch('/profile', async (req, res) => {
   const b = profileBody.parse(req.body);
@@ -495,6 +519,8 @@ pharmacyRouter.get('/activity', async (req, res) => {
 });
 
 addRoutes([
+  ['post', '/api/pharmacy/pickup/check', 'Pharmacy', 'Check a pickup code (from the patient or its QR code) and see the order', 'bearer'],
+  ['post', '/api/pharmacy/orders/:id/pickup', 'Pharmacy', 'Confirm pickup with the code: ready -> delivered in one step', 'bearer'],
   ['patch', '/api/pharmacy/profile', 'Pharmacy', 'Services, languages spoken and accessibility shown on my profile page', 'bearer'],
   ['get', '/api/pharmacy/team', 'Pharmacy', 'My team (owner only)', 'bearer'],
   ['post', '/api/pharmacy/team', 'Pharmacy', 'Add a pharmacist or an assistant (owner only)', 'bearer'],

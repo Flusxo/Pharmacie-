@@ -1073,5 +1073,17 @@
   "pp.access.step_free": "Accès sans marche",
   "pp.access.wide_door": "Porte large",
   "pp.access.hearing_loop": "Boucle auditive",
-  "pp.access.parking": "Stationnement"
+  "pp.access.parking": "Stationnement",
+  "pickup.title": "Retrait au comptoir",
+  "pickup.patientTitle": "Votre code de retrait",
+  "pickup.patientHelp": "Montrez ce code ou ce QR code au comptoir. Il est valable jusqu’au retrait de la commande.",
+  "pickup.qrLabel": "QR code de retrait",
+  "pickup.open": "Retrait",
+  "pickup.for": "Commande pour",
+  "pickup.confirm": "Confirmer le retrait",
+  "pickup.done": "Retrait confirmé. La commande est remise.",
+  "pickup.back": "Retour au tableau de bord",
+  "pickup.code": "Code de retrait",
+  "pickup.check": "Vérifier le code",
+  "activity.pickup": "Retrait confirmé"
 }
