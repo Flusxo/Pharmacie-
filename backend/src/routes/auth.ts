@@ -4,11 +4,12 @@ import bcrypt from 'bcryptjs';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { PRIMARY_FRONTEND, RULES, config, isTest } from '../config.js';
-import { one, pool, tx, type Db } from '../db.js';
+import { one, pool, query, tx, type Db } from '../db.js';
 import { HttpError, badRequest, conflict } from '../errors.js';
 import { requireAuth, signToken, type Role } from '../middleware/auth.js';
+import type { Request } from 'express';
 import { getProfile } from '../services/profile.js';
-import { emailField, latitude, longitude, passwordField } from '../validate.js';
+import { emailField, idParam, latitude, longitude, passwordField } from '../validate.js';
 import { sendMail } from '../notify.js';
 import { log, maskEmail } from '../logger.js';
 import { langOf, tr, type Lang } from '../i18n/index.js';
@@ -39,6 +40,13 @@ const resetLimiter = rateLimit({
   limit: 10,
   message: { error: 'Too many password reset requests. Please wait a few minutes.' },
 });
+
+/** One row per login, so people can see their devices and sign out of one or all of them. */
+async function startSession(req: Request, userId: string): Promise<string> {
+  const ua = String(req.headers['user-agent'] ?? '').slice(0, 200);
+  const s = await one<{ id: string }>('INSERT INTO user_sessions (user_id, user_agent) VALUES ($1,$2) RETURNING id', [userId, ua]);
+  return s!.id;
+}
 
 async function createUser(email: string, password: string, role: Role, status: 'active' | 'pending', language: Lang, db: Db = pool) {
   const exists = await one('SELECT 1 FROM users WHERE email = $1', [email], db);
@@ -87,7 +95,7 @@ authRouter.post('/register/patient', registerLimiter, async (req, res) => {
     );
     return uid;
   });
-  res.status(201).json({ token: signToken({ id, role: 'patient' }), user: await getProfile(id) });
+  res.status(201).json({ token: signToken({ id, role: 'patient' }, await startSession(req, id)), user: await getProfile(id) });
 });
 
 authRouter.post('/register/doctor', registerLimiter, async (req, res) => {
@@ -115,7 +123,7 @@ authRouter.post('/register/doctor', registerLimiter, async (req, res) => {
     ]);
     return uid;
   });
-  res.status(201).json({ token: signToken({ id, role: 'doctor' }), user: await getProfile(id) });
+  res.status(201).json({ token: signToken({ id, role: 'doctor' }, await startSession(req, id)), user: await getProfile(id) });
 });
 
 authRouter.post('/register/pharmacy', registerLimiter, async (req, res) => {
@@ -162,7 +170,7 @@ authRouter.post('/register/pharmacy', registerLimiter, async (req, res) => {
     );
     return uid;
   });
-  res.status(201).json({ token: signToken({ id, role: 'pharmacy' }), user: await getProfile(id) });
+  res.status(201).json({ token: signToken({ id, role: 'pharmacy' }, await startSession(req, id)), user: await getProfile(id) });
 });
 
 const totpCode = z
@@ -234,7 +242,30 @@ authRouter.post('/login', loginLimiter, async (req, res) => {
     'UPDATE users SET failed_logins = 0, locked_until = NULL, last_login_at = now(), totp_last_step = COALESCE($2, totp_last_step) WHERE id = $1',
     [u.id, totpStep],
   );
-  res.json({ token: signToken({ id: u.id, role: u.role }), user: await getProfile(u.id) });
+  res.json({ token: signToken({ id: u.id, role: u.role }, await startSession(req, u.id)), user: await getProfile(u.id) });
+});
+
+// Sessions: list my devices, sign one out, or sign out everywhere.
+authRouter.get('/sessions', requireAuth, async (req, res) => {
+  const items = await query(
+    `SELECT id, user_agent AS "userAgent", created_at AS "createdAt", last_seen_at AS "lastSeenAt", id = $2 AS current
+       FROM user_sessions WHERE user_id = $1 AND revoked_at IS NULL ORDER BY last_seen_at DESC LIMIT 50`,
+    [req.user!.id, req.user!.sessionId ?? null],
+  );
+  res.json({ items });
+});
+authRouter.delete('/sessions/:id', requireAuth, async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  await pool.query('UPDATE user_sessions SET revoked_at = now() WHERE id = $1 AND user_id = $2 AND revoked_at IS NULL', [id, req.user!.id]);
+  res.status(204).end();
+});
+authRouter.post('/logout', requireAuth, async (req, res) => {
+  if (req.user!.sessionId) await pool.query('UPDATE user_sessions SET revoked_at = now() WHERE id = $1', [req.user!.sessionId]);
+  res.status(204).end();
+});
+authRouter.post('/logout-all', requireAuth, async (req, res) => {
+  await pool.query('UPDATE user_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [req.user!.id]);
+  res.status(204).end();
 });
 
 authRouter.get('/me', requireAuth, async (req, res) => {

@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
-import { one } from '../db.js';
+import { one, pool } from '../db.js';
 import { HttpError, forbidden, unauthorized } from '../errors.js';
 
 export type Role = 'patient' | 'doctor' | 'pharmacy' | 'staff';
@@ -20,6 +20,8 @@ export interface AuthUser {
   pharmacyId?: string;
   /** Pharmacy router only: the person who acts (a team member), while id is the pharmacy. */
   actorId?: string;
+  /** The login this request belongs to (absent for tokens issued before sessions existed). */
+  sessionId?: string;
 }
 
 declare module 'express-serve-static-core' {
@@ -28,8 +30,8 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export function signToken(user: { id: string; role: Role }): string {
-  return jwt.sign({ sub: user.id, role: user.role }, config.JWT_SECRET, {
+export function signToken(user: { id: string; role: Role }, sessionId?: string): string {
+  return jwt.sign({ sub: user.id, role: user.role, ...(sessionId ? { sid: sessionId } : {}) }, config.JWT_SECRET, {
     expiresIn: config.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'],
   });
 }
@@ -39,9 +41,11 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
   const header = req.headers.authorization;
   if (!header?.startsWith('Bearer ')) return next();
   let sub: string;
+  let sid: string | undefined;
   try {
     const payload = jwt.verify(header.slice(7), config.JWT_SECRET) as jwt.JwtPayload;
     sub = String(payload.sub);
+    sid = typeof payload.sid === 'string' ? payload.sid : undefined;
   } catch {
     throw new HttpError(401, 'Your session has expired. Please log in again.', 'session_expired');
   }
@@ -69,8 +73,16 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
     [sub],
   );
   if (!row) throw new HttpError(401, 'Your session has expired. Please log in again.', 'session_expired');
+  if (sid) {
+    // A login that was signed out (or removed) is over, whatever the token's own expiry says.
+    const s = await one<{ id: string }>('SELECT id FROM user_sessions WHERE id = $1 AND user_id = $2 AND revoked_at IS NULL', [sid, sub]);
+    if (!s) throw new HttpError(401, 'Your session has expired. Please log in again.', 'session_expired');
+    // Seen: refreshed at most once a minute.
+    void pool.query("UPDATE user_sessions SET last_seen_at = now() WHERE id = $1 AND last_seen_at < now() - interval '1 minute'", [sid]).catch(() => {});
+  }
   if (row.status === 'suspended') throw new HttpError(401, 'This account is suspended. Contact support.', 'account_suspended');
   req.user = {
+    sessionId: sid,
     id: row.id,
     email: row.email,
     role: row.role,

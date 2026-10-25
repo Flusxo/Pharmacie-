@@ -1094,5 +1094,12 @@
   "follow.needAddress": "Pour savoir ce qui est proche, ajoutez votre adresse.",
   "follow.addAddress": "Mon compte",
   "follow.listTitle": "Médicaments que je suis",
-  "follow.listEmpty": "Aucun pour le moment. Sur la page d’un médicament en rupture, choisissez « Me prévenir quand il revient »."
+  "follow.listEmpty": "Aucun pour le moment. Sur la page d’un médicament en rupture, choisissez « Me prévenir quand il revient ».",
+  "devices.title": "Mes appareils connectés",
+  "devices.help": "Chaque connexion apparaît ici. Déconnectez un appareil que vous ne reconnaissez pas, ou tous d’un coup.",
+  "devices.current": "Cet appareil",
+  "devices.unknown": "Appareil inconnu",
+  "devices.lastSeen": "Dernière activité : {when}",
+  "devices.signOut": "Déconnecter",
+  "devices.signOutAll": "Me déconnecter de tous les appareils"
 }

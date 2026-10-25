@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { DevicesPanel } from '../components/DevicesPanel';
 import { FollowedList } from '../components/FollowButton';
 import { useNavigate } from 'react-router-dom';
 import { specialityLabel, useI18n } from '../i18n';
@@ -181,6 +182,8 @@ export function ProfilePage() {
           <span>{t('profile.emailNotifications')}</span>
         </label>
       </section>
+
+      <DevicesPanel />
 
       {isPatient && <FollowedList />}
 

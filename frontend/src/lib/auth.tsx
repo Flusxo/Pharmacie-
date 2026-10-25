@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { apiUrl } from './apiBase';
 import { api, getToken, setToken, setUnauthorizedHandler } from './api';
 import type { User } from './types';
 import { useI18n, type Lang } from '../i18n';
@@ -22,6 +23,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const applyAccountLanguage = useCallback((u: User) => u.language && setLang(u.language), [setLang]);
 
   const logout = useCallback(() => {
+    // End this login on the server too (best effort: a failure or an already-ended session changes nothing here).
+    const t = getToken();
+    if (t) void fetch(apiUrl('/auth/logout'), { method: 'POST', headers: { Authorization: `Bearer ${t}` } }).catch(() => {});
     setToken(null);
     setUser(null);
   }, []);
