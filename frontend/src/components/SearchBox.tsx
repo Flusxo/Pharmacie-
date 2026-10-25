@@ -13,7 +13,24 @@ interface Suggestion {
   requiresPrescription: boolean;
 }
 
-/** Search with suggestions; fully keyboard operable (combobox pattern). */
+const RECENT_KEY = 'counter.recentSearches';
+const readRecent = (): string[] => {
+  try {
+    const v = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]');
+    return Array.isArray(v) ? v.filter((x) => typeof x === 'string').slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+};
+const writeRecent = (list: string[]) => {
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+  } catch {
+    /* storage blocked: recent searches are a convenience only */
+  }
+};
+
+/** Search with suggestions and the last five searches (kept in this browser only); fully keyboard operable (combobox pattern). */
 export function SearchBox({
   initial = '',
   autoFocus = false,
@@ -30,6 +47,14 @@ export function SearchBox({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const listId = useId();
+  const [recent, setRecent] = useState<string[]>(readRecent);
+  const remember = (value: string) => {
+    const v = value.trim();
+    if (v.length < 2) return;
+    const next = [v, ...recent.filter((r) => r.toLowerCase() !== v.toLowerCase())].slice(0, 5);
+    setRecent(next);
+    writeRecent(next);
+  };
 
   useEffect(() => setQ(initial), [initial]);
 
@@ -55,6 +80,7 @@ export function SearchBox({
 
   const submit = (value: string) => {
     setOpen(false);
+    remember(value);
     if (onSubmit) onSubmit(value);
     else navigate(`/search?q=${encodeURIComponent(value)}`);
   };
@@ -103,6 +129,35 @@ export function SearchBox({
         onKeyDown={onKey}
         data-testid="search-input"
       />
+      {open && q.trim() === '' && recent.length > 0 && (
+        <ul className="suggestions" aria-label={t('search.recent')} data-testid="recent-searches">
+          <li className="muted small" aria-hidden="true">
+            {t('search.recent')}
+          </li>
+          {recent.map((r) => (
+            <li
+              key={r}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setQ(r);
+                submit(r);
+              }}
+            >
+              <span>{r}</span>
+            </li>
+          ))}
+          <li
+            className="muted small"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              setRecent([]);
+              writeRecent([]);
+            }}
+          >
+            {t('search.clearRecent')}
+          </li>
+        </ul>
+      )}
       {open && items.length > 0 && (
         <ul id={listId} role="listbox" className="suggestions">
           {items.map((s, i) => (
@@ -116,6 +171,7 @@ export function SearchBox({
               transition={{ duration: duration.fast, ease: easeOut, delay: i * stagger * 0.6 }}
               onMouseDown={(e) => {
                 e.preventDefault();
+                remember(s.name);
                 navigate(`/medicines/${s.id}`);
               }}
             >

@@ -921,5 +921,7 @@
   "med.filter.sortDistance": "Distance",
   "med.filter.sortPrice": "Prix",
   "med.filter.none": "Aucune pharmacie ne correspond à ces filtres.",
-  "med.filter.reset": "Effacer les filtres"
+  "med.filter.reset": "Effacer les filtres",
+  "search.recent": "Recherches récentes",
+  "search.clearRecent": "Effacer les recherches récentes"
 }

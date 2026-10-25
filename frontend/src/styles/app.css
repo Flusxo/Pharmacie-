@@ -2177,3 +2177,22 @@ table.table {
 .sk.short {
   width: 70%;
 }
+
+/* Loading: a capsule that turns (still with reduced motion). */
+.capsule-spinner {
+  justify-self: center;
+  width: 44px;
+  height: 20px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand) 50%, var(--surface-2, #fff) 50%);
+  border: 2px solid var(--brand);
+  animation: capsule-turn 1.1s linear infinite;
+}
+@keyframes capsule-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+:root[data-reduce-motion='true'] .capsule-spinner {
+  animation: none;
+}
