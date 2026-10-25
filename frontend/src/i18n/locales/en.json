@@ -986,5 +986,17 @@
   "tour.pStockText": "Only a pharmacy with the full stock is proposed to the patient. Update quantities and prices, or import a CSV.",
   "tour.pSummaryTitle": "Follow your day",
   "tour.pSummaryText": "The daily summary shows your answers, the average time and the low stock to reorder.",
-  "map.cluster": "{n} pharmacies here: zoom in"
+  "map.cluster": "{n} pharmacies here: zoom in",
+  "profile.themeAuto": "Automatic by time of day (dark in the evening)",
+  "search.tips": "Check the spelling, or try the name of the substance or part of the name.",
+  "search.popular": "Popular searches:",
+  "cmd.title": "Go to…",
+  "cmd.placeholder": "Go to a page or search a medicine",
+  "cmd.none": "No result.",
+  "cmd.keys": "Arrow keys to choose, Enter to open, Esc to close.",
+  "cmd.page": "Page",
+  "cmd.info": "Information",
+  "cmd.action": "Action",
+  "cmd.medicine": "Medicine",
+  "cmd.open": "Go to… (Ctrl+K)"
 }

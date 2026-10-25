@@ -986,5 +986,17 @@
   "tour.pStockText": "Seule une pharmacie avec le stock complet est proposée au patient. Mettez à jour quantités et prix, ou importez un CSV.",
   "tour.pSummaryTitle": "Suivez votre journée",
   "tour.pSummaryText": "Le résumé du jour montre vos réponses, le temps moyen et les stocks bas à réapprovisionner.",
-  "map.cluster": "{n} pharmacies ici : zoomer"
+  "map.cluster": "{n} pharmacies ici : zoomer",
+  "profile.themeAuto": "Automatique selon l’heure (sombre le soir)",
+  "search.tips": "Vérifiez l’orthographe, essayez le nom de la substance ou une partie du nom.",
+  "search.popular": "Recherches fréquentes :",
+  "cmd.title": "Aller à…",
+  "cmd.placeholder": "Aller à une page ou chercher un médicament",
+  "cmd.none": "Aucun résultat.",
+  "cmd.keys": "Flèches pour choisir, Entrée pour ouvrir, Échap pour fermer.",
+  "cmd.page": "Page",
+  "cmd.info": "Information",
+  "cmd.action": "Action",
+  "cmd.medicine": "Médicament",
+  "cmd.open": "Aller à… (Ctrl+K)"
 }

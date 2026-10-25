@@ -14,6 +14,7 @@ import { Layout } from './components/Layout';
 import { WakingBanner } from './components/WakingBanner';
 import { OfflineBanner } from './components/OfflineBanner';
 import { CursorGlow } from './components/CursorGlow';
+import { CommandPalette } from './components/CommandPalette';
 import { PageFallback } from './components/PageFallback';
 import { RootStage } from './components/three/ThreeVisuals';
 import { LoginPage } from './pages/Login';
@@ -285,6 +286,7 @@ export function App() {
                     <WakingBanner />
                     <OfflineBanner />
                     <CursorGlow />
+                    <CommandPalette />
                     <AppRoutes />
                   </BrowserRouter>
                 </ToastProvider>

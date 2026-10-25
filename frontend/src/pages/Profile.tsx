@@ -126,7 +126,8 @@ export function ProfilePage() {
             <label htmlFor="theme">{t('profile.theme')}</label>
             <select id="theme" className="input" value={theme} onChange={(e) => setTheme(e.target.value as ThemePref)}>
               <option value="system">{t('profile.themeSystem')}</option>
-              <option value="light">{t('profile.themeLight')}</option>
+              <option value="auto">{t('profile.themeAuto')}</option>
+                <option value="light">{t('profile.themeLight')}</option>
               <option value="dark">{t('profile.themeDark')}</option>
             </select>
           </div>

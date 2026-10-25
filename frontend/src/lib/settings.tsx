@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
-export type ThemePref = 'system' | 'light' | 'dark';
+export type ThemePref = 'system' | 'auto' | 'light' | 'dark';
+
+/** "Auto": dark from 19:00 to 07:00 local time, light the rest of the day. */
+export const isNight = (d = new Date()): boolean => d.getHours() >= 19 || d.getHours() < 7;
 export type GraphicsPref = 'auto' | 'ultra' | 'high' | 'medium' | 'low' | 'off';
 interface Settings {
   theme: ThemePref;
@@ -44,7 +47,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return () => mq.removeEventListener('change', fn);
   }, []);
 
-  const resolvedTheme: 'light' | 'dark' = theme === 'system' ? (systemDark ? 'dark' : 'light') : theme;
+  const [night, setNight] = useState(() => isNight());
+  useEffect(() => {
+    if (theme !== 'auto') return;
+    setNight(isNight());
+    const id = setInterval(() => setNight(isNight()), 5 * 60_000);
+    return () => clearInterval(id);
+  }, [theme]);
+  const resolvedTheme: 'light' | 'dark' =
+    theme === 'system' ? (systemDark ? 'dark' : 'light') : theme === 'auto' ? (night ? 'dark' : 'light') : theme;
   useEffect(() => {
     document.documentElement.dataset.theme = resolvedTheme;
   }, [resolvedTheme]);

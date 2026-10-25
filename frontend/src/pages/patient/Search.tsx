@@ -21,6 +21,9 @@ interface SearchResult {
   didYouMean: string | null;
 }
 
+/** Common over-the-counter searches shown on an empty result (examples, not advice). */
+const POPULAR = ['Doliprane', 'Ibuprofène', 'Vitamine D', 'Spasfon', 'Smecta'];
+
 export function AvailabilityText({ n }: { n: number | undefined }) {
   const { t } = useI18n();
   if (!n) return <span className="badge neutral">{t('search.notNearby')}</span>;
@@ -123,6 +126,15 @@ export function SearchPage() {
           {data.items.length === 0 ? (
             <Empty art="cut-tablets">
               <p>{t('search.noResults')}</p>
+              <p className="muted small">{t('search.tips')}</p>
+              <div className="row" style={{ gap: 8, flexWrap: 'wrap', justifyContent: 'center' }} data-testid="popular">
+                <span className="muted small">{t('search.popular')}</span>
+                {POPULAR.map((p) => (
+                  <button key={p} type="button" className="btn secondary small" onClick={() => update({ q: p })}>
+                    {p}
+                  </button>
+                ))}
+              </div>
               {data.didYouMean && (
                 <p>
                   {t('search.didYouMean')}{' '}
