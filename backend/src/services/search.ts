@@ -63,6 +63,7 @@ export async function searchMedicines(p: SearchParams) {
        SELECT m.*, f_norm(m.name) AS n, f_norm(m.active_substance) AS s,
          CASE
            WHEN $1 = '' THEN 1
+           WHEN m.cip13 = $1 THEN 0
            WHEN f_norm(m.name) = $1 OR f_norm(m.active_substance) = $1 THEN 0
            WHEN f_norm(m.name) LIKE $2 || '%' ESCAPE '\\' OR f_norm(m.active_substance) LIKE $2 || '%' ESCAPE '\\'
              OR f_norm(m.name) LIKE '% ' || $2 || '%' ESCAPE '\\' THEN 1

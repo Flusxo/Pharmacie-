@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n';
@@ -27,6 +27,17 @@ export function MedicineDetailsPage() {
   const [sheet, setSheet] = useState<{ pharmacyId: string | null } | null>(null);
   const { isSaved, saved } = useSavedPharmacies();
   const [savedOnly, setSavedOnly] = useState(false);
+  // The sticky "send request" bar on phones shows only while the main button is out of view.
+  const mainButton = useRef<HTMLButtonElement>(null);
+  const [mainVisible, setMainVisible] = useState(true);
+  useEffect(() => {
+    const el = mainButton.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    // The bars at the top and bottom hide what scrolls under them: count the button as gone once it is behind them.
+    const io = new IntersectionObserver(([e]) => setMainVisible(e.isIntersecting), { rootMargin: `-72px 0px -72px 0px` });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [data]);
   const [openOnly, setOpenOnly] = useState(false);
   const [stockOnly, setStockOnly] = useState(false);
   const [maxKm, setMaxKm] = useState(0);
@@ -76,7 +87,12 @@ export function MedicineDetailsPage() {
       <Link to="/search" className="small">
         ← {t('common.back')}
       </Link>
-      <div className="details">
+      <nav className="med-tabs" aria-label={t('med.sections')} data-testid="med-tabs">
+        <a href="#info">{t('med.tabInfo')}</a>
+        <a href="#ph">{t('med.tabNearby')}</a>
+        <a href="#gen">{t('med.tabSimilar')}</a>
+      </nav>
+      <div className="details" id="info">
         <ProductVisual
           name={m.name}
           dosage={m.dosage}
@@ -133,6 +149,7 @@ export function MedicineDetailsPage() {
             disabled={!anyInStock}
             onClick={() => setSheet({ pharmacyId: null })}
             data-testid="request-button"
+            ref={mainButton}
           >
             {t('med.request')}
           </button>
@@ -239,6 +256,13 @@ export function MedicineDetailsPage() {
         )}
       </section>
 
+      {!mainVisible && (
+        <div className="sticky-request" data-testid="sticky-request">
+          <button type="button" className="btn" disabled={!anyInStock} onClick={() => setSheet({ pharmacyId: null })}>
+            {t('med.request')}
+          </button>
+        </div>
+      )}
       <p className="alert info small" role="note" data-testid="med-disclaimer">
         {t('med.disclaimer')}
       </p>

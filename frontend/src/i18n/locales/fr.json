@@ -1111,5 +1111,9 @@
   "integ.storage": "Stockage privé de fichiers (ordonnances, justificatifs)",
   "integ.on": "Configuré",
   "integ.off": "Non configuré",
-  "integ.unbuilt": "Pas encore construit"
+  "integ.unbuilt": "Pas encore construit",
+  "med.sections": "Sections de la page",
+  "med.tabInfo": "Informations",
+  "med.tabNearby": "Stock à proximité",
+  "med.tabSimilar": "Équivalents"
 }

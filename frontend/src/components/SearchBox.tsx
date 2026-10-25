@@ -5,6 +5,7 @@ import { duration, easeOut, stagger } from '../motion';
 import { useI18n } from '../i18n';
 import { api } from '../lib/api';
 import { IconSearch } from './Icons';
+import { BarcodeScan } from './pharmacy/BarcodeScan';
 
 interface Suggestion {
   id: string;
@@ -129,6 +130,7 @@ export function SearchBox({
         onKeyDown={onKey}
         data-testid="search-input"
       />
+      <BarcodeScan onCode={(code) => submit(code)} />
       {open && q.trim() === '' && recent.length > 0 && (
         <ul className="suggestions" aria-label={t('search.recent')} data-testid="recent-searches">
           <li className="muted small" aria-hidden="true">

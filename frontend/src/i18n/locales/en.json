@@ -1111,5 +1111,9 @@
   "integ.storage": "Private file storage (prescriptions, documents)",
   "integ.on": "Configured",
   "integ.off": "Not configured",
-  "integ.unbuilt": "Not built yet"
+  "integ.unbuilt": "Not built yet",
+  "med.sections": "Page sections",
+  "med.tabInfo": "Information",
+  "med.tabNearby": "Nearby stock",
+  "med.tabSimilar": "Similar items"
 }

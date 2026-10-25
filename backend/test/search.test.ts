@@ -38,6 +38,14 @@ describe('medicine search', () => {
     expect(r.items[0].name).toMatch(/^Doliprane/);
   });
 
+  it('finds a medicine by its 13-digit CIP code (what a barcode scan sends)', async () => {
+    const byName = await search('Doliprane');
+    const cip = byName.items[0].cip13 as string;
+    const r = await search(cip);
+    expect(r.items[0].cip13).toBe(cip);
+    expect(r.items[0].name).toMatch(/^Doliprane/);
+  });
+
   it('ranks exact/prefix name matches before substring matches', async () => {
     const r = await search('ventoline');
     expect(r.items[0].name).toMatch(/^Ventoline/);
