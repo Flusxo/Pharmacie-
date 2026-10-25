@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 import { specialityLabel, useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
@@ -223,6 +224,9 @@ export function AdminDashboard() {
         <h1 style={{ marginBottom: 4 }}>{t('adm.title')}</h1>
         <p className="muted small" style={{ margin: 0 }} data-testid="staff-role">
           {t('adm.roleNote', { role })}
+        </p>
+        <p className="small" style={{ margin: '6px 0 0' }}>
+          <Link to="/admin/design">{t('ds.link')}</Link>
         </p>
       </div>
       {stats ? (

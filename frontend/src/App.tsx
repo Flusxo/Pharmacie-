@@ -52,6 +52,7 @@ const MapPage = lz(() => import('./pages/patient/MapPage'), 'MapPage');
 const PharmacyDashboard = lz(() => import('./pages/pharmacy/PharmacyDashboard'), 'PharmacyDashboard');
 const DoctorDashboard = lz(() => import('./pages/doctor/DoctorDashboard'), 'DoctorDashboard');
 const AdminDashboard = lz(() => import('./pages/admin/AdminDashboard'), 'AdminDashboard');
+const DesignSystemPage = lz(() => import('./pages/admin/DesignSystem'), 'DesignSystemPage');
 const ProfilePage = lz(() => import('./pages/Profile'), 'ProfilePage');
 const OrderSlipPage = lz(() => import('./pages/OrderSlip'), 'OrderSlipPage');
 const ReceiptPage = lz(() => import('./pages/Receipt'), 'ReceiptPage');
@@ -252,6 +253,14 @@ export function AppRoutes() {
             element={
               <RequireRole roles={['staff']}>
                 <AdminDashboard />
+              </RequireRole>
+            }
+          />
+          <Route
+            path="/admin/design"
+            element={
+              <RequireRole roles={['staff']}>
+                <DesignSystemPage />
               </RequireRole>
             }
           />
