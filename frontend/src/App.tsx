@@ -13,6 +13,7 @@ import type { Role } from './lib/types';
 import { Layout } from './components/Layout';
 import { WakingBanner } from './components/WakingBanner';
 import { OfflineBanner } from './components/OfflineBanner';
+import { CursorGlow } from './components/CursorGlow';
 import { PageFallback } from './components/PageFallback';
 import { RootStage } from './components/three/ThreeVisuals';
 import { LoginPage } from './pages/Login';
@@ -283,6 +284,7 @@ export function App() {
                     <RootStage />
                     <WakingBanner />
                     <OfflineBanner />
+                    <CursorGlow />
                     <AppRoutes />
                   </BrowserRouter>
                 </ToastProvider>

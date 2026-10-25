@@ -1,0 +1,123 @@
+/* Interaction polish. Motion only on transform/opacity; everything is off with "Reduce animations" and on touch where noted. */
+
+/* Soft glow that follows the mouse (fine pointers only; see components/CursorGlow.tsx). */
+.cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 360px;
+  height: 360px;
+  margin: -180px 0 0 -180px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  background: radial-gradient(circle, color-mix(in srgb, var(--mint, #a7f3d0) 38%, transparent) 0, transparent 65%);
+  transition: opacity var(--dur-slow, 0.4s) ease-out;
+  will-change: transform;
+}
+.cursor-glow.on {
+  opacity: 0.4;
+}
+
+/* Button ripple from the pressed point. */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.3);
+  background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), rgb(255 255 255 / 0.42) 0, transparent 55%);
+}
+.btn:active::after {
+  opacity: 1;
+  transform: scale(1.8);
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.45s ease-out;
+}
+
+/* Springy switch: the thumb overshoots a little when it moves. */
+.check.switch input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 46px;
+  height: 28px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--line-strong, #b6c4c8);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease-out;
+}
+.check.switch input[type='checkbox']::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+  transition: transform 0.35s cubic-bezier(0.34, 1.7, 0.5, 1);
+}
+.check.switch input[type='checkbox']:checked {
+  background: var(--brand);
+}
+.check.switch input[type='checkbox']:checked::before {
+  transform: translateX(18px);
+}
+.check.switch input[type='checkbox']:active::before {
+  width: 26px;
+}
+
+/* A check mark that draws itself (toasts, confirmations). */
+.check-draw {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  vertical-align: -4px;
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.check-draw circle {
+  stroke-dasharray: 63;
+  stroke-dashoffset: 63;
+  animation: check-draw 0.5s ease-out forwards;
+}
+.check-draw path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: check-draw 0.35s 0.35s ease-out forwards;
+}
+@keyframes check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+:root[data-reduce-motion='true'] .cursor-glow,
+:root[data-reduce-motion='true'] .btn::after {
+  display: none;
+}
+:root[data-reduce-motion='true'] .check-draw circle,
+:root[data-reduce-motion='true'] .check-draw path {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+@media (pointer: coarse) {
+  .cursor-glow {
+    display: none;
+  }
+}

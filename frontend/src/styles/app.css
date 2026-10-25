@@ -2196,3 +2196,16 @@ table.table {
 :root[data-reduce-motion='true'] .capsule-spinner {
   animation: none;
 }
+
+/* Phones: the tab row wraps instead of cutting the last tab ("Modèles", "Commandes en cours"). */
+@media (max-width: 640px) {
+  .tabs {
+    flex-wrap: wrap;
+    border-radius: 22px;
+    overflow-x: visible;
+  }
+  .tabs button {
+    flex: 1 1 auto;
+    white-space: normal;
+  }
+}

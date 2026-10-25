@@ -20,6 +20,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div className="toasts" role="status" aria-live="polite">
         {toasts.map((t) => (
           <div key={t.id} className="toast">
+            <svg className="check-draw" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M7 12.5l3.5 3.5L17 9" />
+            </svg>
             {t.text}
           </div>
         ))}
