@@ -5,7 +5,7 @@ import { pool } from '../src/db.js';
 beforeAll(freshDb);
 
 const TOURNON = { lat: 45.0655, lon: 4.83 };
-type Item = { id: string; name: string; activeSubstance: string; category: string; availableAt: number };
+type Item = { id: string; cip13: string; name: string; activeSubstance: string; category: string; availableAt: number };
 const search = async (q: string, extra = '') =>
   (await api().get(`/api/medicines?q=${encodeURIComponent(q)}${extra}`)).body as {
     items: Item[];
@@ -40,7 +40,7 @@ describe('medicine search', () => {
 
   it('finds a medicine by its 13-digit CIP code (what a barcode scan sends)', async () => {
     const byName = await search('Doliprane');
-    const cip = byName.items[0].cip13 as string;
+    const cip = byName.items[0].cip13;
     const r = await search(cip);
     expect(r.items[0].cip13).toBe(cip);
     expect(r.items[0].name).toMatch(/^Doliprane/);
