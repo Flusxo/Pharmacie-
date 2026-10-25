@@ -923,5 +923,8 @@
   "med.filter.none": "No pharmacy matches these filters.",
   "med.filter.reset": "Clear filters",
   "search.recent": "Recent searches",
-  "search.clearRecent": "Clear recent searches"
+  "search.clearRecent": "Clear recent searches",
+  "offline.title": "You are offline.",
+  "offline.body": "Check your connection: data is no longer updating.",
+  "requests.again": "Search for this medicine again"
 }

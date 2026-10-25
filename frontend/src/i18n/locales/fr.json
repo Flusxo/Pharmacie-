@@ -923,5 +923,8 @@
   "med.filter.none": "Aucune pharmacie ne correspond à ces filtres.",
   "med.filter.reset": "Effacer les filtres",
   "search.recent": "Recherches récentes",
-  "search.clearRecent": "Effacer les recherches récentes"
+  "search.clearRecent": "Effacer les recherches récentes",
+  "offline.title": "Vous êtes hors ligne.",
+  "offline.body": "Vérifiez votre connexion : les données ne se mettent plus à jour.",
+  "requests.again": "Chercher à nouveau ce médicament"
 }

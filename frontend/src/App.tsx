@@ -12,6 +12,7 @@ import { ToastProvider } from './lib/toast';
 import type { Role } from './lib/types';
 import { Layout } from './components/Layout';
 import { WakingBanner } from './components/WakingBanner';
+import { OfflineBanner } from './components/OfflineBanner';
 import { PageFallback } from './components/PageFallback';
 import { RootStage } from './components/three/ThreeVisuals';
 import { LoginPage } from './pages/Login';
@@ -281,6 +282,7 @@ export function App() {
                   <BrowserRouter>
                     <RootStage />
                     <WakingBanner />
+                    <OfflineBanner />
                     <AppRoutes />
                   </BrowserRouter>
                 </ToastProvider>

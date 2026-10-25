@@ -26,22 +26,33 @@ export function RequestsPage() {
       {!items && !error && <CardSkeleton />}
       {items?.length === 0 && <Empty art="cut-bag">{t('requests.empty')}</Empty>}
       {items?.map((r) => (
-        <Link
-          key={r.id}
-          to={r.orderId ? `/orders/${r.orderId}` : `/requests/${r.id}`}
-          className="card lift row between"
-          style={{ textDecoration: 'none', color: 'inherit' }}
-        >
-          <span className="stack" style={{ gap: 2 }}>
-            <strong>{r.items.map((i) => `${i.quantity} × ${i.name}`).join(', ')}</strong>
-            <span className="muted small">
-              {formatDateTime(r.createdAt, locale)}
-              {r.pharmacyName ? ` · ${r.pharmacyName}` : ''}
-              {r.source === 'doctor' ? ` · ${t('requests.byDoctor')}` : ''}
+        <div key={r.id} className="stack" style={{ gap: 6 }}>
+          <Link
+            to={r.orderId ? `/orders/${r.orderId}` : `/requests/${r.id}`}
+            className="card lift row between"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <span className="stack" style={{ gap: 2 }}>
+              <strong>{r.items.map((i) => `${i.quantity} × ${i.name}`).join(', ')}</strong>
+              <span className="muted small">
+                {formatDateTime(r.createdAt, locale)}
+                {r.pharmacyName ? ` · ${r.pharmacyName}` : ''}
+                {r.source === 'doctor' ? ` · ${t('requests.byDoctor')}` : ''}
+              </span>
             </span>
-          </span>
-          <StatusBadge status={r.orderStatus ?? r.status} />
-        </Link>
+            <StatusBadge status={r.orderStatus ?? r.status} />
+          </Link>
+          {['delivered', 'cancelled', 'refused', 'expired', 'rejected'].includes(r.orderStatus ?? r.status) && r.items[0] && (
+            <Link
+              to={`/search?q=${encodeURIComponent(r.items[0].name)}`}
+              className="btn ghost small"
+              style={{ width: 'fit-content' }}
+              data-testid="order-again"
+            >
+              {t('requests.again')}
+            </Link>
+          )}
+        </div>
       ))}
     </div>
   );
