@@ -25,6 +25,16 @@ function mulberry32(seed: number): () => number {
   };
 }
 
+// Fake demo details for the pharmacy profile pages.
+const DEMO_SERVICES = [
+  ['vaccination', 'blood_pressure'],
+  ['orthopedics', 'homeopathy'],
+  ['baby_corner', 'night_service'],
+  ['vaccination', 'orthopedics'],
+];
+const DEMO_LANGUAGES = [['fr', 'en'], ['fr'], ['fr', 'es', 'ar'], ['fr', 'en', 'it']];
+const DEMO_ACCESS = [['step_free', 'wide_door'], ['step_free'], ['hearing_loop', 'parking'], ['step_free', 'parking']];
+
 export const email = (key: string) => `${key}@pharmacie.test`;
 
 export const userId = {
@@ -85,8 +95,8 @@ export async function seed(c: pg.ClientBase): Promise<void> {
     const id = userId.pharmacy(ph.key);
     await addUser(id, email(`pharmacie.${ph.key}`), 'pharmacy', ph.verified ? 'active' : 'pending', ph.verified ? 60 * 24 * 90 : 60 * 12);
     await c.query(
-      `INSERT INTO pharmacies (user_id, name, finess, address, city, phone, latitude, longitude, verified, opening_hours, on_duty)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      `INSERT INTO pharmacies (user_id, name, finess, address, city, phone, latitude, longitude, verified, opening_hours, on_duty, services, languages, accessibility)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
       [
         id,
         ph.name,
@@ -99,6 +109,9 @@ export async function seed(c: pg.ClientBase): Promise<void> {
         ph.verified,
         JSON.stringify(openingHours(ph.late)),
         JSON.stringify(ph.onDuty),
+        JSON.stringify(DEMO_SERVICES[PHARMACIES.indexOf(ph) % DEMO_SERVICES.length]),
+        JSON.stringify(DEMO_LANGUAGES[PHARMACIES.indexOf(ph) % DEMO_LANGUAGES.length]),
+        JSON.stringify(DEMO_ACCESS[PHARMACIES.indexOf(ph) % DEMO_ACCESS.length]),
       ],
     );
   }

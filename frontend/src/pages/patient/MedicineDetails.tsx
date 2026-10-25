@@ -59,6 +59,9 @@ export function MedicineDetailsPage() {
         (!maxKm || p.distanceKm <= maxKm),
     )
     .sort((a, b) => (sortBy === 'price' ? (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity) : a.distanceKm - b.distanceKm));
+  // "Cheapest nearby": the lowest price among the pharmacies that have it in stock (needs at least two prices to compare).
+  const priced = (pharmacies ?? []).filter((p) => p.inStock && p.priceEur != null).map((p) => p.priceEur as number);
+  const cheapest = priced.length >= 2 ? Math.min(...priced) : null;
   const filtering = openOnly || stockOnly || savedOnly || maxKm > 0;
   const resetFilters = () => {
     setOpenOnly(false);
@@ -190,7 +193,9 @@ export function MedicineDetailsPage() {
             {filtered.map((p) => (
               <div key={p.id} className="pharmacy-row" data-testid="pharmacy-row">
                 <div className="stack" style={{ gap: 4 }}>
-                  <strong>{p.name}</strong>
+                  <Link to={`/pharmacies/${p.id}`} style={{ fontWeight: 700 }}>
+                    {p.name}
+                  </Link>
                   <span className="badge info" style={{ width: 'fit-content' }}>
                     {t('med.verifiedByStaff')}
                   </span>
@@ -206,6 +211,7 @@ export function MedicineDetailsPage() {
                           : `${t('med.inStock')} · ${p.quantity}`}
                     </span>
                     {p.priceEur != null && <span className="small">{formatPrice(p.priceEur, locale)}</span>}
+                    {cheapest != null && p.inStock && p.priceEur === cheapest && <span className="badge ok">{t('med.cheapest')}</span>}
                     <OpenBadge hours={p.openingHours} onDuty={p.onDuty} />
                   </span>
                 </div>

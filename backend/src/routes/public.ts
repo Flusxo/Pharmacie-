@@ -82,7 +82,8 @@ publicRouter.get('/pharmacies/:id', async (req, res) => {
   const { id } = idParam.parse(req.params);
   const p = await one(`SELECT ${PHARMACY_PUBLIC_COLUMNS} FROM eligible_pharmacies ep WHERE ep.user_id = $1`, [id]);
   if (!p) throw notFound('This pharmacy is not available.');
-  res.json({ pharmacy: p });
+  const extra = await one('SELECT services, languages, accessibility, verified FROM pharmacies WHERE user_id = $1', [id]);
+  res.json({ pharmacy: { ...p, ...extra } });
 });
 
 addRoutes([

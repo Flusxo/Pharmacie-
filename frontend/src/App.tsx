@@ -52,6 +52,7 @@ const MapPage = lz(() => import('./pages/patient/MapPage'), 'MapPage');
 const PharmacyDashboard = lz(() => import('./pages/pharmacy/PharmacyDashboard'), 'PharmacyDashboard');
 const DoctorDashboard = lz(() => import('./pages/doctor/DoctorDashboard'), 'DoctorDashboard');
 const AdminDashboard = lz(() => import('./pages/admin/AdminDashboard'), 'AdminDashboard');
+const PharmacyProfilePage = lz(() => import('./pages/public/PharmacyProfile'), 'PharmacyProfilePage');
 const DesignSystemPage = lz(() => import('./pages/admin/DesignSystem'), 'DesignSystemPage');
 const ProfilePage = lz(() => import('./pages/Profile'), 'ProfilePage');
 const OrderSlipPage = lz(() => import('./pages/OrderSlip'), 'OrderSlipPage');
@@ -120,6 +121,7 @@ export function AppRoutes() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/legal" element={<LegalNoticePage />} />
+          <Route path="/pharmacies/:id" element={<PharmacyProfilePage />} />
           <Route
             path="/login"
             element={

@@ -10,6 +10,7 @@ export const FR: Record<string, string> = {
   'The request body is too large.': 'Le corps de la requête est trop volumineux.',
   'This already exists.': 'Cet élément existe déjà.',
   'Team member not found.': 'Membre de l’équipe introuvable.',
+  'Send paused or breakMinutes.': 'Envoyez « paused » ou « breakMinutes ».',
   'Invalid identifier format.': 'Format d’identifiant invalide.',
   'This change would break a data rule (for example, stock below zero).':
     'Cette modification enfreindrait une règle de données (par exemple, un stock négatif).',

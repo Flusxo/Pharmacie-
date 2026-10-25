@@ -55,7 +55,7 @@ export async function getProfile(userId: string, db: Db = pool): Promise<Record<
     );
     const p = await one<{ name: string; verified: boolean }>(
       `SELECT name, finess, address, city, phone, latitude, longitude, verified, paused, rejection_reason AS "rejectionReason",
-              opening_hours AS "openingHours", on_duty AS "onDuty"
+              opening_hours AS "openingHours", on_duty AS "onDuty", services, languages, accessibility, paused_until AS "pausedUntil"
          FROM pharmacies WHERE user_id = $1`,
       [member?.pharmacyId ?? userId],
       db,

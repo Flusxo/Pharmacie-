@@ -15,6 +15,7 @@ import { ProposeMedicine } from '../../components/pharmacy/ProposeMedicine';
 import { ActivityTab, TeamTab } from '../../components/pharmacy/TeamPanel';
 import { BarcodeScan } from '../../components/pharmacy/BarcodeScan';
 import { OnboardingTour } from '../../components/Tour';
+import { ProfileTab } from '../../components/pharmacy/ProfileTab';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { AnimatedNumber, Pop } from '../../components/motion';
 import { duration, easeOut } from '../../motion';
@@ -106,7 +107,7 @@ export const NEXT_STATUS: Record<OrderStatus, OrderStatus[]> = {
   cancelled: [],
 };
 
-type Tab = 'incoming' | 'orders' | 'inventory' | 'summary' | 'activity' | 'team';
+type Tab = 'incoming' | 'orders' | 'inventory' | 'summary' | 'activity' | 'profile' | 'team';
 const ORDER_STEPS: OrderStatus[] = ['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'];
 
 function useRun() {
@@ -780,7 +781,7 @@ interface Summary {
 }
 
 export function PharmacyDashboard() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { user, refresh } = useAuth();
   const { error, run } = useRun();
   const role = user?.memberRole ?? 'owner';
@@ -789,8 +790,8 @@ export function PharmacyDashboard() {
     role === 'assistant'
       ? ['orders', 'summary']
       : role === 'pharmacist'
-        ? ['incoming', 'orders', 'inventory', 'summary', 'activity']
-        : ['incoming', 'orders', 'inventory', 'summary', 'activity', 'team'];
+        ? ['incoming', 'orders', 'inventory', 'summary', 'activity', 'profile']
+        : ['incoming', 'orders', 'inventory', 'summary', 'activity', 'profile', 'team'];
   const [summary, setSummary] = useState<Summary | null>(null);
   const loadSummary = useCallback(
     () =>
@@ -830,7 +831,33 @@ export function PharmacyDashboard() {
           </label>
         )}
       </div>
-      {paused && <div className="alert warn">{t('ph.pausedOn')}</div>}
+      {role !== 'assistant' && !paused && (
+        <label className="row small" style={{ gap: 8 }}>
+          {t('ph.break')}
+          <select
+            className="input"
+            style={{ width: 'auto' }}
+            value=""
+            onChange={(e) => {
+              const minutes = Number(e.target.value);
+              if (minutes) void run(() => api('/pharmacy/settings', { method: 'PATCH', body: { breakMinutes: minutes } }).then(refresh));
+            }}
+            data-testid="break-select"
+          >
+            <option value="">{t('ph.breakChoose')}</option>
+            {[15, 30, 60, 120].map((m) => (
+              <option key={m} value={m}>
+                {t('ph.minutes', { n: m })}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {paused && (
+        <div className="alert warn">
+          {user?.pharmacy?.pausedUntil ? t('ph.breakUntil', { time: formatTime(user.pharmacy.pausedUntil, locale) }) : t('ph.pausedOn')}
+        </div>
+      )}
       {error && <ErrorBox message={error} />}
       <Tabs<Tab>
         label={t('ph.title')}
@@ -866,6 +893,7 @@ export function PharmacyDashboard() {
           { key: 'inventory' as Tab, label: t('ph.tabInventory') },
           { key: 'summary' as Tab, label: t('ph.tabSummary') },
           { key: 'activity' as Tab, label: t('ph.tabActivity') },
+          { key: 'profile' as Tab, label: t('ph.tabProfile') },
           { key: 'team' as Tab, label: t('ph.tabTeam') },
         ].filter((x) => allowedTabs.includes(x.key as Tab))}
       />
@@ -873,6 +901,7 @@ export function PharmacyDashboard() {
       {tab === 'orders' && <OrdersTab />}
       {tab === 'inventory' && <InventoryTab onChange={() => void loadSummary()} />}
       {tab === 'activity' && <ActivityTab />}
+      {tab === 'profile' && <ProfileTab />}
       {tab === 'team' && <TeamTab />}
       {tab === 'summary' &&
         (summary ? (

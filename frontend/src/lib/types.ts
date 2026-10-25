@@ -24,6 +24,10 @@ export interface User {
   };
   doctor?: { firstName: string; lastName: string; rpps: string; speciality: string; verified: boolean; rejectionReason: string | null };
   pharmacy?: {
+    pausedUntil?: string | null;
+    services?: string[];
+    languages?: string[];
+    accessibility?: string[];
     name: string;
     finess: string;
     address: string;

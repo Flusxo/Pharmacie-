@@ -19,6 +19,7 @@ import { listOwnSubmissions, similarMedicines, submissionBody, submitMedicine, t
 import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
 import { emailField, idParam, passwordField, uuid } from '../validate.js';
+import { profileBody } from '../pharmacyProfile.js';
 
 export const pharmacyRouter = Router();
 pharmacyRouter.use(requireRole('pharmacy'));
@@ -381,8 +382,19 @@ pharmacyRouter.post('/medicines/check', async (req, res) => {
 
 /** "Mark all out of stock" switch: a paused pharmacy is never proposed and cannot accept. */
 pharmacyRouter.patch('/settings', async (req, res) => {
-  const { paused } = z.object({ paused: z.boolean() }).parse(req.body);
-  await pool.query('UPDATE pharmacies SET paused = $2 WHERE user_id = $1', [req.user!.id, paused]);
+  // paused: the manual switch. breakMinutes: pause now and come back by itself after that many minutes (0 = switch off).
+  const b = z
+    .object({ paused: z.boolean().optional(), breakMinutes: z.number().int().min(0).max(240).optional() })
+    .refine((v) => v.paused !== undefined || v.breakMinutes !== undefined, { message: 'Send paused or breakMinutes.' })
+    .parse(req.body);
+  if (b.breakMinutes !== undefined && b.breakMinutes > 0) {
+    await pool.query("UPDATE pharmacies SET paused = true, paused_until = now() + ($2 || ' minutes')::interval WHERE user_id = $1", [
+      req.user!.id,
+      String(b.breakMinutes),
+    ]);
+  } else {
+    await pool.query('UPDATE pharmacies SET paused = $2, paused_until = NULL WHERE user_id = $1', [req.user!.id, b.paused ?? false]);
+  }
   res.json({ user: await getProfile(req.user!.id) });
 });
 
@@ -406,6 +418,18 @@ pharmacyRouter.get('/summary', async (req, res) => {
     [req.user!.id],
   );
   res.json({ ...s, ...extra });
+});
+
+/** Profile page details: services, languages spoken, accessibility. */
+pharmacyRouter.patch('/profile', async (req, res) => {
+  const b = profileBody.parse(req.body);
+  await pool.query('UPDATE pharmacies SET services = $2, languages = $3, accessibility = $4 WHERE user_id = $1', [
+    req.user!.id,
+    JSON.stringify(b.services),
+    JSON.stringify(b.languages),
+    JSON.stringify(b.accessibility),
+  ]);
+  res.json({ user: await getProfile(req.user!.id) });
 });
 
 // Team (owner only) and activity log (owner and pharmacist)
@@ -471,6 +495,7 @@ pharmacyRouter.get('/activity', async (req, res) => {
 });
 
 addRoutes([
+  ['patch', '/api/pharmacy/profile', 'Pharmacy', 'Services, languages spoken and accessibility shown on my profile page', 'bearer'],
   ['get', '/api/pharmacy/team', 'Pharmacy', 'My team (owner only)', 'bearer'],
   ['post', '/api/pharmacy/team', 'Pharmacy', 'Add a pharmacist or an assistant (owner only)', 'bearer'],
   ['delete', '/api/pharmacy/team/:id', 'Pharmacy', 'Remove a team member (owner only)', 'bearer'],

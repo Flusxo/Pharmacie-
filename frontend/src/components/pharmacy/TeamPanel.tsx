@@ -152,6 +152,7 @@ const ACTIONS: Record<string, MessageKey> = {
   'DELETE /inventory/:medicineId': 'activity.stockRemove',
   'POST /inventory/csv': 'activity.csv',
   'PATCH /settings': 'activity.settings',
+  'PATCH /profile': 'activity.profile',
   'POST /medicines': 'activity.propose',
   'POST /team': 'activity.teamAdd',
   'DELETE /team/:id': 'activity.teamRemove',
