@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { api, auth, freshDb, login, PASSWORD } from './helpers.js';
 import { medicineId } from '../../db/src/index.js';
+import { pool } from '../src/db.js';
 
 beforeAll(freshDb);
 
@@ -93,12 +94,17 @@ describe('patient data', () => {
     const exp = await api().get('/api/patient/export').set(auth(t));
     expect(exp.status).toBe(200);
     expect(exp.body.profile.email).toBe('leaving@example.test');
+    expect(Array.isArray(exp.body.followedMedicines)).toBe(true);
+    await pool.query('INSERT INTO stock_watches (patient_id, medicine_id) SELECT $1, id FROM medicines LIMIT 1', [reg.body.user.id]);
     const bad = await api().delete('/api/patient/account').set(auth(t)).send({ password: 'wrong' });
     expect(bad.status).toBe(400);
     const del = await api().delete('/api/patient/account').set(auth(t)).send({ password: 'LongEnough123' });
     expect(del.body).toEqual({ deleted: true });
     expect((await api().post('/api/auth/login').send({ email: 'leaving@example.test', password: 'LongEnough123' })).status).toBe(401);
     expect((await api().get('/api/auth/me').set(auth(t))).status).toBe(401);
+    // Everything personal is gone: follows removed, every login ended.
+    expect((await pool.query('SELECT 1 FROM stock_watches WHERE patient_id = $1', [reg.body.user.id])).rowCount).toBe(0);
+    expect((await pool.query('SELECT 1 FROM user_sessions WHERE user_id = $1 AND revoked_at IS NULL', [reg.body.user.id])).rowCount).toBe(0);
   });
 
   it('refuses deletion while an order is in progress', async () => {

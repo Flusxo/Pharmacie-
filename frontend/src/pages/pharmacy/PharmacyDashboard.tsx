@@ -16,6 +16,7 @@ import { ActivityTab, TeamTab } from '../../components/pharmacy/TeamPanel';
 import { BarcodeScan } from '../../components/pharmacy/BarcodeScan';
 import { OnboardingTour } from '../../components/Tour';
 import { ProfileTab } from '../../components/pharmacy/ProfileTab';
+import { TodayBoard } from '../../components/pharmacy/TodayBoard';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { AnimatedNumber, Pop } from '../../components/motion';
 import { duration, easeOut } from '../../motion';
@@ -107,7 +108,7 @@ export const NEXT_STATUS: Record<OrderStatus, OrderStatus[]> = {
   cancelled: [],
 };
 
-type Tab = 'incoming' | 'orders' | 'inventory' | 'summary' | 'activity' | 'profile' | 'team';
+type Tab = 'incoming' | 'orders' | 'today' | 'inventory' | 'summary' | 'activity' | 'profile' | 'team';
 const ORDER_STEPS: OrderStatus[] = ['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'];
 
 function useRun() {
@@ -793,10 +794,10 @@ export function PharmacyDashboard() {
   const [tab, setTab] = useState<Tab>(role === 'assistant' ? 'orders' : 'incoming');
   const allowedTabs: Tab[] =
     role === 'assistant'
-      ? ['orders', 'summary']
+      ? ['orders', 'today', 'summary']
       : role === 'pharmacist'
-        ? ['incoming', 'orders', 'inventory', 'summary', 'activity', 'profile']
-        : ['incoming', 'orders', 'inventory', 'summary', 'activity', 'profile', 'team'];
+        ? ['incoming', 'orders', 'today', 'inventory', 'summary', 'activity', 'profile']
+        : ['incoming', 'orders', 'today', 'inventory', 'summary', 'activity', 'profile', 'team'];
   const [summary, setSummary] = useState<Summary | null>(null);
   const loadSummary = useCallback(
     () =>
@@ -811,6 +812,15 @@ export function PharmacyDashboard() {
     return () => clearInterval(id);
   }, [loadSummary]);
   const paused = !!user?.pharmacy?.paused;
+  // Other panels (the board) can ask to open a tab.
+  useEffect(() => {
+    const go = (e: Event) => {
+      const to = (e as CustomEvent<Tab>).detail;
+      if (allowedTabs.includes(to)) setTab(to);
+    };
+    window.addEventListener('counter:tab', go);
+    return () => window.removeEventListener('counter:tab', go);
+  });
 
   return (
     <div className="stack" style={{ gap: 20 }}>
@@ -895,6 +905,7 @@ export function PharmacyDashboard() {
               </>
             ),
           },
+          { key: 'today' as Tab, label: t('ph.tabToday') },
           { key: 'inventory' as Tab, label: t('ph.tabInventory') },
           { key: 'summary' as Tab, label: t('ph.tabSummary') },
           { key: 'activity' as Tab, label: t('ph.tabActivity') },
@@ -904,6 +915,7 @@ export function PharmacyDashboard() {
       />
       {tab === 'incoming' && <IncomingTab onChange={() => void loadSummary()} />}
       {tab === 'orders' && <OrdersTab />}
+      {tab === 'today' && <TodayBoard incoming={summary?.pending ?? 0} />}
       {tab === 'inventory' && <InventoryTab onChange={() => void loadSummary()} />}
       {tab === 'activity' && <ActivityTab />}
       {tab === 'profile' && <ProfileTab />}
@@ -931,6 +943,28 @@ export function PharmacyDashboard() {
   );
 }
 
+/** The reorder list as a CSV file: what to order to get back to twice the low-stock threshold. */
+function exportReorder(rows: StockRow[]): void {
+  const lines = ['cip13,name,dosage,in_stock,threshold,suggested_order'].concat(
+    rows.map((r) =>
+      [
+        r.cip13,
+        `"${r.name.replace(/"/g, '""')}"`,
+        `"${r.dosage.replace(/"/g, '""')}"`,
+        r.quantity,
+        r.lowStockThreshold,
+        Math.max(1, r.lowStockThreshold * 2 - r.quantity),
+      ].join(','),
+    ),
+  );
+  const url = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'reorder-list.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 /** The medicines at or under their low-stock threshold, most urgent first. */
 function LowStockList() {
   const { t } = useI18n();
@@ -943,7 +977,14 @@ function LowStockList() {
   if (!rows?.length) return null;
   return (
     <section className="card stack" aria-labelledby="low-list" data-testid="low-stock-list">
-      <h2 id="low-list">{t('ph.lowList')}</h2>
+      <div className="row between">
+        <h2 id="low-list" style={{ margin: 0 }}>
+          {t('ph.lowList')}
+        </h2>
+        <button type="button" className="btn secondary small" onClick={() => exportReorder(rows)} data-testid="reorder-export">
+          {t('ph.reorderExport')}
+        </button>
+      </div>
       <ul className="stack" style={{ gap: 6, listStyle: 'none', padding: 0, margin: 0 }}>
         {rows.map((r) => (
           <li key={r.medicineId} className="row between">

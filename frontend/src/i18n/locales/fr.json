@@ -1115,5 +1115,18 @@
   "med.sections": "Sections de la page",
   "med.tabInfo": "Informations",
   "med.tabNearby": "Stock à proximité",
-  "med.tabSimilar": "Équivalents"
+  "med.tabSimilar": "Équivalents",
+  "ph.tabToday": "Aujourd’hui",
+  "ph.reorderExport": "Exporter la liste à recommander (CSV)",
+  "board.help": "Glissez une carte vers la colonne suivante, ou utilisez son bouton. Seul le pas suivant est possible.",
+  "board.waiting": "Demandes en attente",
+  "board.waitingHelp": "Répondez-y dans les délais.",
+  "board.openRequests": "Ouvrir les demandes",
+  "board.toPrepare": "À préparer",
+  "board.preparing": "En préparation",
+  "board.ready": "Prêtes au comptoir",
+  "board.empty": "Rien ici.",
+  "board.startPreparing": "Commencer la préparation",
+  "board.markReady": "Marquer prête",
+  "board.confirmRx": "Cette commande contient un médicament sur ordonnance. Avez-vous vérifié l’ordonnance ?"
 }

@@ -166,6 +166,7 @@ patientRouter.get('/export', async (req, res) => {
          FROM doctor_patients dp JOIN doctors d ON d.user_id = dp.doctor_id WHERE dp.patient_id = $1`,
       [id],
     ),
+    followedMedicines: await listFollowed(id),
     notifications: await query('SELECT kind, body, read_at AS "readAt", created_at AS "createdAt" FROM notifications WHERE user_id = $1', [
       id,
     ]),
@@ -193,6 +194,8 @@ patientRouter.delete('/account', async (req, res) => {
     );
     await c.query('DELETE FROM doctor_patients WHERE patient_id = $1', [id]);
     await c.query('DELETE FROM notifications WHERE user_id = $1', [id]);
+    await c.query('DELETE FROM stock_watches WHERE patient_id = $1', [id]);
+    await c.query('UPDATE user_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [id]);
     await c.query(
       `UPDATE patients SET first_name = 'Deleted', last_name = 'user', birth_date = NULL, phone = NULL, address = NULL, latitude = NULL, longitude = NULL WHERE user_id = $1`,
       [id],

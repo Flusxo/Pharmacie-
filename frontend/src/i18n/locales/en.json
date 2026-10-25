@@ -1115,5 +1115,18 @@
   "med.sections": "Page sections",
   "med.tabInfo": "Information",
   "med.tabNearby": "Nearby stock",
-  "med.tabSimilar": "Similar items"
+  "med.tabSimilar": "Similar items",
+  "ph.tabToday": "Today",
+  "ph.reorderExport": "Export the reorder list (CSV)",
+  "board.help": "Drag a card to the next column, or use its button. Only the next step is possible.",
+  "board.waiting": "Waiting requests",
+  "board.waitingHelp": "Answer them within the time shown.",
+  "board.openRequests": "Open the requests",
+  "board.toPrepare": "To prepare",
+  "board.preparing": "Preparing",
+  "board.ready": "Ready at the counter",
+  "board.empty": "Nothing here.",
+  "board.startPreparing": "Start preparing",
+  "board.markReady": "Mark ready",
+  "board.confirmRx": "This order has a prescription medicine. Did you check the prescription?"
 }
