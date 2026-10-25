@@ -12,6 +12,8 @@ import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../compo
 import { ShelfVisual, useCan3D } from '../../components/three/ThreeVisuals';
 import { PackImage } from '../../components/PackImage';
 import { ProposeMedicine } from '../../components/pharmacy/ProposeMedicine';
+import { ActivityTab, TeamTab } from '../../components/pharmacy/TeamPanel';
+import { BarcodeScan } from '../../components/pharmacy/BarcodeScan';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { AnimatedNumber, Pop } from '../../components/motion';
 import { duration, easeOut } from '../../motion';
@@ -103,7 +105,7 @@ export const NEXT_STATUS: Record<OrderStatus, OrderStatus[]> = {
   cancelled: [],
 };
 
-type Tab = 'incoming' | 'orders' | 'inventory' | 'summary';
+type Tab = 'incoming' | 'orders' | 'inventory' | 'summary' | 'activity' | 'team';
 const ORDER_STEPS: OrderStatus[] = ['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'];
 
 function useRun() {
@@ -600,6 +602,7 @@ function InventoryTab({ onChange }: { onChange: () => void }) {
           <span className="sr-only">{t('dash.search')}</span>
           <input className="input" placeholder={t('dash.search')} value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
+        <BarcodeScan onCode={setQ} />
         <label className="check">
           <input type="checkbox" checked={lowOnly} onChange={(e) => setLowOnly(e.target.checked)} />
           <span>{t('ph.lowOnly')}</span>
@@ -779,7 +782,14 @@ export function PharmacyDashboard() {
   const { t } = useI18n();
   const { user, refresh } = useAuth();
   const { error, run } = useRun();
-  const [tab, setTab] = useState<Tab>('incoming');
+  const role = user?.memberRole ?? 'owner';
+  const [tab, setTab] = useState<Tab>(role === 'assistant' ? 'orders' : 'incoming');
+  const allowedTabs: Tab[] =
+    role === 'assistant'
+      ? ['orders', 'summary']
+      : role === 'pharmacist'
+        ? ['incoming', 'orders', 'inventory', 'summary', 'activity']
+        : ['incoming', 'orders', 'inventory', 'summary', 'activity', 'team'];
   const [summary, setSummary] = useState<Summary | null>(null);
   const loadSummary = useCallback(
     () =>
@@ -804,17 +814,19 @@ export function PharmacyDashboard() {
             {t('ph.title')}
           </p>
         </div>
-        <label className="check switch">
-          <input
-            type="checkbox"
-            checked={paused}
-            onChange={(e) =>
-              void run(() => api('/pharmacy/settings', { method: 'PATCH', body: { paused: e.target.checked } }).then(refresh))
-            }
-            data-testid="pause-switch"
-          />
-          <span>{t('ph.paused')}</span>
-        </label>
+        {role === 'owner' && (
+          <label className="check switch">
+            <input
+              type="checkbox"
+              checked={paused}
+              onChange={(e) =>
+                void run(() => api('/pharmacy/settings', { method: 'PATCH', body: { paused: e.target.checked } }).then(refresh))
+              }
+              data-testid="pause-switch"
+            />
+            <span>{t('ph.paused')}</span>
+          </label>
+        )}
       </div>
       {paused && <div className="alert warn">{t('ph.pausedOn')}</div>}
       {error && <ErrorBox message={error} />}
@@ -824,7 +836,7 @@ export function PharmacyDashboard() {
         onChange={setTab}
         tabs={[
           {
-            key: 'incoming',
+            key: 'incoming' as Tab,
             label: (
               <>
                 {t('ph.tabIncoming')}
@@ -837,7 +849,7 @@ export function PharmacyDashboard() {
             ),
           },
           {
-            key: 'orders',
+            key: 'orders' as Tab,
             label: (
               <>
                 {t('ph.tabOrders')}
@@ -849,13 +861,17 @@ export function PharmacyDashboard() {
               </>
             ),
           },
-          { key: 'inventory', label: t('ph.tabInventory') },
-          { key: 'summary', label: t('ph.tabSummary') },
-        ]}
+          { key: 'inventory' as Tab, label: t('ph.tabInventory') },
+          { key: 'summary' as Tab, label: t('ph.tabSummary') },
+          { key: 'activity' as Tab, label: t('ph.tabActivity') },
+          { key: 'team' as Tab, label: t('ph.tabTeam') },
+        ].filter((x) => allowedTabs.includes(x.key as Tab))}
       />
       {tab === 'incoming' && <IncomingTab onChange={() => void loadSummary()} />}
       {tab === 'orders' && <OrdersTab />}
       {tab === 'inventory' && <InventoryTab onChange={() => void loadSummary()} />}
+      {tab === 'activity' && <ActivityTab />}
+      {tab === 'team' && <TeamTab />}
       {tab === 'summary' &&
         (summary ? (
           <div className="grid cols-4">
@@ -874,6 +890,34 @@ export function PharmacyDashboard() {
         ) : (
           <CardSkeleton />
         ))}
+      {tab === 'summary' && summary && summary.lowStock > 0 && <LowStockList />}
     </div>
+  );
+}
+
+/** The medicines at or under their low-stock threshold, most urgent first. */
+function LowStockList() {
+  const { t } = useI18n();
+  const [rows, setRows] = useState<StockRow[] | null>(null);
+  useEffect(() => {
+    api<{ items: StockRow[] }>('/pharmacy/inventory', { query: { low: '1' } })
+      .then((r) => setRows([...r.items].sort((a, b) => a.quantity - b.quantity)))
+      .catch(() => setRows([]));
+  }, []);
+  if (!rows?.length) return null;
+  return (
+    <section className="card stack" aria-labelledby="low-list" data-testid="low-stock-list">
+      <h2 id="low-list">{t('ph.lowList')}</h2>
+      <ul className="stack" style={{ gap: 6, listStyle: 'none', padding: 0, margin: 0 }}>
+        {rows.map((r) => (
+          <li key={r.medicineId} className="row between">
+            <span>
+              {r.name} <span className="muted small">{r.dosage}</span>
+            </span>
+            <span className="badge warn">{t('ph.lowLeft', { n: r.quantity, min: r.lowStockThreshold })}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

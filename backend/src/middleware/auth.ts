@@ -14,6 +14,10 @@ export interface AuthUser {
   status: 'pending' | 'active' | 'suspended';
   staffRole: StaffRole | null;
   verified: boolean;
+  /** Pharmacy accounts: 'owner' for the pharmacy's own account, else the team role. */
+  memberRole?: 'owner' | 'pharmacist' | 'assistant';
+  /** Team members: the pharmacy they work for (the pharmacy router then acts on it, see routes/pharmacy.ts). */
+  pharmacyId?: string;
 }
 
 declare module 'express-serve-static-core' {
@@ -47,12 +51,18 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
     staff_role: StaffRole | null;
     doctor_verified: boolean | null;
     pharmacy_verified: boolean | null;
+    member_role: 'pharmacist' | 'assistant' | null;
+    member_pharmacy: string | null;
+    member_pharmacy_verified: boolean | null;
   }>(
-    `SELECT u.id, u.email, u.role, u.status, s.staff_role, d.verified AS doctor_verified, p.verified AS pharmacy_verified
+    `SELECT u.id, u.email, u.role, u.status, s.staff_role, d.verified AS doctor_verified, p.verified AS pharmacy_verified,
+          pm.member_role, pm.pharmacy_id AS member_pharmacy, mp.verified AS member_pharmacy_verified
        FROM users u
        LEFT JOIN staff s ON s.user_id = u.id
        LEFT JOIN doctors d ON d.user_id = u.id
        LEFT JOIN pharmacies p ON p.user_id = u.id
+       LEFT JOIN pharmacy_members pm ON pm.user_id = u.id
+       LEFT JOIN pharmacies mp ON mp.user_id = pm.pharmacy_id
       WHERE u.id = $1 AND u.deleted_at IS NULL`,
     [sub],
   );
@@ -64,7 +74,10 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
     role: row.role,
     status: row.status,
     staffRole: row.staff_role,
-    verified: row.role === 'doctor' ? !!row.doctor_verified : row.role === 'pharmacy' ? !!row.pharmacy_verified : true,
+    verified: row.role === 'doctor' ? !!row.doctor_verified : row.role === 'pharmacy' ? !!(row.member_pharmacy ? row.member_pharmacy_verified : row.pharmacy_verified) : true,
+    ...(row.role === 'pharmacy'
+      ? { memberRole: row.member_role ?? ('owner' as const), pharmacyId: row.member_pharmacy ?? undefined }
+      : {}),
   };
   next();
 }

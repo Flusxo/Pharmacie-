@@ -10,6 +10,9 @@ export interface User {
   displayName: string;
   emailNotifications: boolean;
   totpEnabled?: boolean;
+  /** Pharmacy accounts: owner, or a team member's role. */
+  memberRole?: 'owner' | 'pharmacist' | 'assistant';
+  memberName?: string | null;
   language?: 'fr' | 'en';
   patient?: {
     firstName: string;

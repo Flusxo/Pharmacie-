@@ -1,4 +1,4 @@
-// Screenshots of 10 pages at 1440, 768 and 390 px, light and dark, French and English, on the running dev server
+// Screenshots of every main page at 1440, 768 and 390 px, light and dark, French and English, on the running dev server
 // (npm run dev), GPU through ANGLE, graphics Medium. Reports clipped/overflowing pages. JPEG to keep the repository light.
 // usage: node scripts/shots-matrix.mjs [lang] [scheme]   -> docs/screenshots/matrix/<lang>-<scheme>/<width>-<page>.jpg
 import { chromium } from '@playwright/test';
@@ -12,13 +12,24 @@ const pages = [
   [null, 'home', '/'],
   [null, 'how', '/how-it-works'],
   [null, 'patients', '/patients'],
+  [null, 'pharmacies', '/pharmacies'],
+  [null, 'doctors', '/doctors'],
+  [null, 'about', '/about'],
+  [null, 'contact', '/contact'],
+  [null, 'faq', '/faq'],
+  [null, 'privacy', '/privacy'],
+  [null, 'legal', '/legal'],
+  [null, 'notfound', '/nope-404'],
   [null, 'login', '/login'],
   [null, 'register', '/register'],
   ['alice@pharmacie.test', 'search', '/search?q=doli'],
   ['alice@pharmacie.test', 'medicine', '/search?q=Doliprane', 'medicine-card'],
   ['alice@pharmacie.test', 'map', '/map'],
+  ['alice@pharmacie.test', 'requests', '/requests'],
+  ['alice@pharmacie.test', 'profile', '/profile'],
   ['pharmacie.tournon@pharmacie.test', 'pharmacy', '/pharmacy'],
   ['admin@pharmacie.test', 'admin', '/admin'],
+  ['dr.martin@pharmacie.test', 'doctor', '/doctor'],
 ];
 const browser = await chromium.launch({ args: [`--use-angle=${gl}`, '--enable-gpu', '--ignore-gpu-blocklist'] });
 const tokens = {};

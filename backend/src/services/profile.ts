@@ -48,14 +48,19 @@ export async function getProfile(userId: string, db: Db = pool): Promise<Record<
     return { ...base, verified: !!d?.verified, displayName: d ? `Dr ${d.firstName} ${d.lastName}` : '', doctor: d };
   }
   if (u.role === 'pharmacy') {
+    const member = await one<{ pharmacyId: string; memberRole: string; displayName: string }>(
+      'SELECT pharmacy_id AS "pharmacyId", member_role AS "memberRole", display_name AS "displayName" FROM pharmacy_members WHERE user_id = $1',
+      [userId],
+      db,
+    );
     const p = await one<{ name: string; verified: boolean }>(
       `SELECT name, finess, address, city, phone, latitude, longitude, verified, paused, rejection_reason AS "rejectionReason",
               opening_hours AS "openingHours", on_duty AS "onDuty"
          FROM pharmacies WHERE user_id = $1`,
-      [userId],
+      [member?.pharmacyId ?? userId],
       db,
     );
-    return { ...base, verified: !!p?.verified, displayName: p?.name ?? '', pharmacy: p };
+    return { ...base, verified: !!p?.verified, displayName: p?.name ?? '', pharmacy: p, memberRole: member?.memberRole ?? 'owner', memberName: member?.displayName ?? null };
   }
   const s = await one<{ fullName: string; staffRole: string }>(
     `SELECT full_name AS "fullName", staff_role AS "staffRole" FROM staff WHERE user_id = $1`,

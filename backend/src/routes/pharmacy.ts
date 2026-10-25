@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { one, pool, query, tx } from '../db.js';
-import { badRequest, notFound } from '../errors.js';
+import bcrypt from 'bcryptjs';
+import { badRequest, conflict, forbidden, notFound } from '../errors.js';
 import { requireRole } from '../middleware/auth.js';
 import { addRoutes } from '../openapi.js';
 import { langOf, tr } from '../i18n/index.js';
@@ -17,10 +18,56 @@ import { getPayment } from '../services/payments.js';
 import { listOwnSubmissions, similarMedicines, submissionBody, submitMedicine, type SubmissionInput } from '../services/submissions.js';
 import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
-import { idParam, uuid } from '../validate.js';
+import { emailField, idParam, passwordField, uuid } from '../validate.js';
 
 export const pharmacyRouter = Router();
 pharmacyRouter.use(requireRole('pharmacy'));
+
+/**
+ * Team accounts. A pharmacist or an assistant is a user linked to the pharmacy; from here on every handler acts on the
+ * pharmacy (req.user.id = the pharmacy) while the member's own id goes to the activity log.
+ *  - owner: everything, plus the team.
+ *  - pharmacist: everything except the team and the pause switch.
+ *  - assistant: reads, and moves orders forward. No answers to requests, no stock changes.
+ */
+const LOG_SQL =
+  'INSERT INTO pharmacy_activity (pharmacy_id, actor_user_id, actor_name, actor_role, action, target) VALUES ($1,$2,$3,$4,$5,$6)';
+pharmacyRouter.use((req, res, next) => {
+  const me = req.user!;
+  const role = me.memberRole ?? 'owner';
+  const actorId = me.id;
+  const pharmacyId = me.pharmacyId ?? me.id;
+  const p = req.path;
+  const write = req.method !== 'GET';
+  const ownerOnly = p.startsWith('/team') || (write && p === '/settings');
+  const assistantMayWrite = req.method === 'PATCH' && /^\/orders\/[^/]+\/status$/.test(p);
+  const assistantMayRead = !p.startsWith('/team') && !p.startsWith('/activity');
+  if ((role !== 'owner' && ownerOnly) || (role === 'assistant' && (write ? !assistantMayWrite : !assistantMayRead))) {
+    throw forbidden();
+  }
+  req.user = { ...me, id: pharmacyId };
+  if (write && !p.startsWith('/team')) {
+    res.on('finish', () => {
+      if (res.statusCode >= 400) return;
+      void (async () => {
+        const who = await one<{ name: string }>(
+          'SELECT coalesce((SELECT display_name FROM pharmacy_members WHERE user_id = $1), (SELECT name FROM pharmacies WHERE user_id = $1)) AS name',
+          [actorId],
+        );
+        const params = req.params as Record<string, string | undefined>;
+        await pool.query(LOG_SQL, [
+          pharmacyId,
+          actorId,
+          who?.name ?? '',
+          role,
+          req.method + ' ' + String(req.route?.path ?? p),
+          params.id ?? params.medicineId ?? null,
+        ]);
+      })().catch(() => {});
+    });
+  }
+  next();
+});
 
 // Requests and orders
 pharmacyRouter.get('/incoming', async (req, res) => {
@@ -361,7 +408,73 @@ pharmacyRouter.get('/summary', async (req, res) => {
   res.json({ ...s, ...extra });
 });
 
+// Team (owner only) and activity log (owner and pharmacist)
+pharmacyRouter.get('/team', async (req, res) => {
+  const items = await query(
+    `SELECT m.user_id AS id, u.email, m.display_name AS "displayName", m.member_role AS role, m.created_at AS "createdAt"
+       FROM pharmacy_members m JOIN users u ON u.id = m.user_id
+      WHERE m.pharmacy_id = $1 AND u.deleted_at IS NULL ORDER BY m.created_at`,
+    [req.user!.id],
+  );
+  res.json({ items });
+});
+
+pharmacyRouter.post('/team', async (req, res) => {
+  const b = z
+    .object({
+      email: emailField,
+      displayName: z.string().trim().min(2).max(60),
+      password: passwordField,
+      role: z.enum(['pharmacist', 'assistant']),
+    })
+    .parse(req.body);
+  const hash = await bcrypt.hash(b.password, 10);
+  const id = await tx(async (c) => {
+    if (await one('SELECT 1 FROM users WHERE email = $1', [b.email], c)) {
+      throw conflict('An account with this email already exists.');
+    }
+    const u = await one<{ id: string }>(
+      "INSERT INTO users (email, password_hash, role, status) VALUES ($1,$2,'pharmacy','active') RETURNING id",
+      [b.email, hash],
+      c,
+    );
+    await c.query('INSERT INTO pharmacy_members (user_id, pharmacy_id, member_role, display_name) VALUES ($1,$2,$3,$4)', [
+      u!.id,
+      req.user!.id,
+      b.role,
+      b.displayName,
+    ]);
+    await c.query(LOG_SQL, [req.user!.id, req.user!.id, '', 'owner', 'POST /team', u!.id]);
+    return u!.id;
+  });
+  res.status(201).json({ id });
+});
+
+pharmacyRouter.delete('/team/:id', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const done = await pool.query(
+    'UPDATE users SET deleted_at = now() WHERE id = $1 AND id IN (SELECT user_id FROM pharmacy_members WHERE pharmacy_id = $2) AND deleted_at IS NULL',
+    [id, req.user!.id],
+  );
+  if (!done.rowCount) throw notFound('Team member not found.');
+  await pool.query(LOG_SQL, [req.user!.id, req.user!.id, '', 'owner', 'DELETE /team/:id', id]);
+  res.status(204).end();
+});
+
+pharmacyRouter.get('/activity', async (req, res) => {
+  const items = await query(
+    `SELECT id, actor_name AS "actorName", actor_role AS "actorRole", action, target, created_at AS "createdAt"
+       FROM pharmacy_activity WHERE pharmacy_id = $1 ORDER BY id DESC LIMIT 100`,
+    [req.user!.id],
+  );
+  res.json({ items });
+});
+
 addRoutes([
+  ['get', '/api/pharmacy/team', 'Pharmacy', 'My team (owner only)', 'bearer'],
+  ['post', '/api/pharmacy/team', 'Pharmacy', 'Add a pharmacist or an assistant (owner only)', 'bearer'],
+  ['delete', '/api/pharmacy/team/:id', 'Pharmacy', 'Remove a team member (owner only)', 'bearer'],
+  ['get', '/api/pharmacy/activity', 'Pharmacy', 'Activity log of the pharmacy', 'bearer'],
   ['get', '/api/pharmacy/incoming', 'Pharmacy', 'Requests waiting for my answer (patient shown as "First L.")', 'bearer'],
   ['post', '/api/pharmacy/requests/:id/accept', 'Pharmacy', 'Accept (one transaction; exactly one winner)', 'bearer'],
   ['post', '/api/pharmacy/requests/:id/refuse', 'Pharmacy', 'Refuse (request returns to the patient)', 'bearer'],
