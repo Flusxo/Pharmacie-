@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { PASSWORD, loginWithDemo } from './helpers';
 
 test('pharmacy team: the owner adds an assistant who sees only orders and the summary; the change is in the activity log', async ({ page, browser }) => {
-  await loginWithDemo(page, 'Vienne', 'Pharmacie');
+  await loginWithDemo(page, 'Étoile', 'Pharmacie');
   await expect(page).toHaveURL(/\/pharmacy$/);
   await page.getByRole('tab', { name: 'Équipe' }).click();
   const form = page.getByTestId('team-form');
