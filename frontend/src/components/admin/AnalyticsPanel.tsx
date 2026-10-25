@@ -108,6 +108,28 @@ function DayChart({ data, label }: { data: Analytics['perDay']; label: string })
   );
 }
 
+/** The aggregated numbers as a CSV file (the same figures as the page: no personal data, small groups folded). */
+function exportCsv(data: Analytics): void {
+  const q = (v: string | number | null) => (v === null ? '' : typeof v === 'number' ? String(v) : `"${v.replace(/"/g, '""')}"`);
+  const lines: string[] = ['section,label,value'];
+  for (const [k, v] of Object.entries(data.kpis)) lines.push(['kpi', q(k), q(v as number | null)].join(','));
+  for (const d of data.perDay)
+    lines.push(['requests_per_day', q(d.day), q(d.requests)].join(','), ['delivered_per_day', q(d.day), q(d.delivered)].join(','));
+  for (const [name, rows] of [
+    ['orders_by_status', data.ordersByStatus],
+    ['requests_by_status', data.requestsByStatus],
+    ['top_medicines', data.topMedicines],
+    ['by_category', data.byCategory],
+  ] as const)
+    for (const r of rows) lines.push([name, q(r.label), q(r.count)].join(','));
+  const url = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `counter-analytics-${data.days}d.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function AnalyticsPanel() {
   const { t, locale } = useI18n();
   const [days, setDays] = useState(30);
@@ -145,6 +167,17 @@ export function AnalyticsPanel() {
           ))}
         </select>
       </div>
+      {data && (
+        <button
+          type="button"
+          className="btn secondary small"
+          style={{ width: 'fit-content' }}
+          onClick={() => exportCsv(data)}
+          data-testid="analytics-csv"
+        >
+          {t('adm.analytics.csv')}
+        </button>
+      )}
       {error && <ErrorBox message={error} />}
       {!data && !error && <CardSkeleton lines={4} />}
       {data && (

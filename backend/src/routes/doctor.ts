@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { one, pool, query } from '../db.js';
-import { notFound } from '../errors.js';
+import { conflict, notFound } from '../errors.js';
 import { maskEmail } from '../logger.js';
 import { requireRole } from '../middleware/auth.js';
 import { notify } from '../notify.js';
@@ -57,6 +57,30 @@ doctorRouter.post('/links', async (req, res) => {
   }
   // Same answer whether or not the email exists (no account enumeration).
   res.status(202).json({ message: LINK_MESSAGE });
+});
+
+/** Reminder for a link the patient has not confirmed yet: one a day, and only to the patient who was asked. */
+doctorRouter.post('/links/:patientId/remind', async (req, res) => {
+  const { patientId } = z.object({ patientId: uuid }).parse(req.params);
+  const link = await one<{ confirmed: boolean }>('SELECT confirmed FROM doctor_patients WHERE doctor_id = $1 AND patient_id = $2', [
+    req.user!.id,
+    patientId,
+  ]);
+  if (!link) throw notFound('No link with this patient.');
+  if (link.confirmed) throw conflict('This patient has already confirmed the link.');
+  const recent = await one(
+    "SELECT 1 FROM notifications WHERE user_id = $1 AND kind = 'doctor_link' AND created_at > now() - interval '24 hours' LIMIT 1",
+    [patientId],
+  );
+  if (recent) throw conflict('A reminder was already sent in the last 24 hours.', 'reminder_too_soon');
+  const d = await one<{ last_name: string }>('SELECT last_name FROM doctors WHERE user_id = $1', [req.user!.id]);
+  await notify(
+    patientId,
+    'doctor_link',
+    `Reminder: Dr ${d?.last_name} is waiting for your confirmation. Confirm only if you know this doctor.`,
+    '/profile',
+  );
+  res.json({ reminded: true });
 });
 
 doctorRouter.delete('/links/:patientId', async (req, res) => {
@@ -122,6 +146,7 @@ doctorRouter.delete('/templates/:id', async (req, res) => {
 addRoutes([
   ['get', '/api/doctor/patients', 'Doctor', 'Linked patients (details only when confirmed; never the address)', 'bearer'],
   ['post', '/api/doctor/links', 'Doctor', 'Ask a patient (by email) to link; same answer whether or not the email exists', 'bearer'],
+  ['post', '/api/doctor/links/:patientId/remind', 'Doctor', 'Remind a patient to confirm the link (once a day)', 'bearer'],
   ['delete', '/api/doctor/links/:patientId', 'Doctor', 'Remove a link', 'bearer'],
   ['post', '/api/doctor/requests', 'Doctor', 'Create a request for a confirmed patient (patient then chooses the pharmacy)', 'bearer'],
   ['get', '/api/doctor/requests', 'Doctor', 'Requests I created', 'bearer'],

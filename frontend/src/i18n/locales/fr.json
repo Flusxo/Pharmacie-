@@ -1128,5 +1128,8 @@
   "board.empty": "Rien ici.",
   "board.startPreparing": "Commencer la préparation",
   "board.markReady": "Marquer prête",
-  "board.confirmRx": "Cette commande contient un médicament sur ordonnance. Avez-vous vérifié l’ordonnance ?"
+  "board.confirmRx": "Cette commande contient un médicament sur ordonnance. Avez-vous vérifié l’ordonnance ?",
+  "doc.remind": "Envoyer un rappel",
+  "doc.reminded": "Rappel envoyé au patient.",
+  "adm.analytics.csv": "Télécharger ces chiffres (CSV)"
 }

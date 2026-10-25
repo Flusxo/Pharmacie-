@@ -69,6 +69,9 @@ test.describe('pharmacy proposals and admin analytics', () => {
     await page.getByRole('tab', { name: 'Statistiques' }).click();
     const panel = page.getByTestId('analytics');
     await expect(panel).toContainText('Données agrégées uniquement');
+    const dl = page.waitForEvent('download');
+    await page.getByTestId('analytics-csv').click();
+    expect((await dl).suggestedFilename()).toMatch(/^counter-analytics-d+d.csv$/);
     await expect(panel.getByRole('img', { name: /Demandes par jour/ })).toBeVisible();
     await panel.getByLabel('Période').selectOption('7');
     await expect(panel.getByRole('img', { name: /Demandes par jour/ })).toBeVisible();

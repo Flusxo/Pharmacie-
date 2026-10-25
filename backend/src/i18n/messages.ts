@@ -12,6 +12,8 @@ export const FR: Record<string, string> = {
   'A medicine you follow is available again near you. Open it to see which pharmacy has it.':
     'Un médicament que vous suivez est de nouveau disponible près de chez vous. Ouvrez-le pour voir quelle pharmacie l’a.',
   'A medicine you follow is available': 'Un médicament que vous suivez est disponible',
+  'This patient has already confirmed the link.': 'Ce patient a déjà confirmé le lien.',
+  'A reminder was already sent in the last 24 hours.': 'Un rappel a déjà été envoyé ces dernières 24 heures.',
   'Team member not found.': 'Membre de l’équipe introuvable.',
   'This pickup code does not match an order of this pharmacy.': 'Ce code de retrait ne correspond à aucune commande de cette pharmacie.',
   'This order is not ready for pickup yet.': 'Cette commande n’est pas encore prête pour le retrait.',
@@ -117,6 +119,8 @@ export const FR: Record<string, string> = {
   'Thank you. Our team will look at your report.': 'Merci. Notre équipe va examiner votre signalement.',
   'No link with this patient.': 'Aucun lien avec ce patient.',
   'Template not found.': 'Modèle introuvable.',
+  'Reminder: Dr {d_last_name} is waiting for your confirmation. Confirm only if you know this doctor.':
+    'Rappel : le Dr {d_last_name} attend votre confirmation. Ne confirmez que si vous connaissez ce médecin.',
   'Dr {d_last_name} would like to link to your account. Confirm only if you know this doctor.':
     'Le Dr {d_last_name} souhaite être lié à votre compte. Confirmez uniquement si vous connaissez ce médecin.',
   'No link request from this doctor.': 'Aucune demande de lien de ce médecin.',

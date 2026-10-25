@@ -1128,5 +1128,8 @@
   "board.empty": "Nothing here.",
   "board.startPreparing": "Start preparing",
   "board.markReady": "Mark ready",
-  "board.confirmRx": "This order has a prescription medicine. Did you check the prescription?"
+  "board.confirmRx": "This order has a prescription medicine. Did you check the prescription?",
+  "doc.remind": "Send a reminder",
+  "doc.reminded": "Reminder sent to the patient.",
+  "adm.analytics.csv": "Download these numbers (CSV)"
 }

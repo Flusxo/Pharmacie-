@@ -201,6 +201,16 @@ export function DoctorDashboard() {
                         <span className={`badge ${p.confirmed ? 'ok' : 'warn'}`}>
                           {p.confirmed ? t('doc.confirmed') : t('doc.pending')}
                         </span>
+                        {!p.confirmed && (
+                          <button
+                            type="button"
+                            className="btn secondary small"
+                            onClick={() => void run(() => api(`/doctor/links/${p.id}/remind`, { method: 'POST' }), t('doc.reminded'))}
+                            data-testid="remind"
+                          >
+                            {t('doc.remind')}
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="btn ghost small"
