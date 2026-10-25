@@ -339,7 +339,7 @@ export function FaqPage() {
   );
 }
 
-function LegalPage({ kind }: { kind: 'privacy' | 'terms' }) {
+function LegalPage({ kind }: { kind: 'privacy' | 'terms' | 'legal' }) {
   const { t } = useI18n();
   const k = (s: string) => `pub.${kind}.${s}` as MessageKey;
   return (
@@ -350,7 +350,7 @@ function LegalPage({ kind }: { kind: 'privacy' | 'terms' }) {
         <p className="alert info" role="note">
           {t('pub.legal.banner')}
         </p>
-        {[1, 2, 3, 4, 5].map((n) => (
+        {Array.from({ length: kind === 'privacy' ? 6 : kind === 'legal' ? 4 : 5 }, (_, i) => i + 1).map((n) => (
           <section key={n} aria-labelledby={`${kind}-h${n}`}>
             <h2 id={`${kind}-h${n}`}>{t(k(`h${n}`))}</h2>
             <p>{t(k(`p${n}`))}</p>
@@ -363,3 +363,4 @@ function LegalPage({ kind }: { kind: 'privacy' | 'terms' }) {
 }
 export const PrivacyPage = () => <LegalPage kind="privacy" />;
 export const TermsPage = () => <LegalPage kind="terms" />;
+export const LegalNoticePage = () => <LegalPage kind="legal" />;

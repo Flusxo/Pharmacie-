@@ -27,6 +27,7 @@ import {
   PrivacyPage,
   PublicHome,
   TermsPage,
+  LegalNoticePage,
 } from './pages/public/PublicPages';
 
 // Route-level code splitting: a visitor downloads the landing page and the login; every other page loads on demand.
@@ -112,6 +113,7 @@ export function AppRoutes() {
           <Route path="/faq" element={<FaqPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
+          <Route path="/legal" element={<LegalNoticePage />} />
           <Route
             path="/login"
             element={

@@ -4,7 +4,7 @@ import { useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
 import { usePlace } from '../../lib/location';
-import { formatKm, formatPrice } from '../../lib/format';
+import { formatKm, formatPrice, openState } from '../../lib/format';
 import type { Medicine, NearbyPharmacy } from '../../lib/types';
 import { ProductVisual } from '../../components/three/ThreeVisuals';
 import { RequestSheet } from '../../components/RequestSheet';
@@ -22,6 +22,10 @@ export function MedicineDetailsPage() {
   const [pharmacies, setPharmacies] = useState<NearbyPharmacy[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sheet, setSheet] = useState<{ pharmacyId: string | null } | null>(null);
+  const [openOnly, setOpenOnly] = useState(false);
+  const [stockOnly, setStockOnly] = useState(false);
+  const [maxKm, setMaxKm] = useState(0);
+  const [sortBy, setSortBy] = useState<'distance' | 'price'>('distance');
 
   useEffect(() => {
     setData(null);
@@ -42,6 +46,15 @@ export function MedicineDetailsPage() {
   if (!data) return <CardSkeleton lines={6} />;
   const m = data.medicine;
   const anyInStock = (pharmacies ?? []).some((p) => p.inStock);
+  const filtered = (pharmacies ?? [])
+    .filter((p) => (!openOnly || openState(p.openingHours, p.onDuty).kind !== 'closed') && (!stockOnly || p.inStock) && (!maxKm || p.distanceKm <= maxKm))
+    .sort((a, b) => (sortBy === 'price' ? (a.priceEur ?? Infinity) - (b.priceEur ?? Infinity) : a.distanceKm - b.distanceKm));
+  const filtering = openOnly || stockOnly || maxKm > 0;
+  const resetFilters = () => {
+    setOpenOnly(false);
+    setStockOnly(false);
+    setMaxKm(0);
+  };
 
   return (
     <div className="stack" style={{ gap: 28 }}>
@@ -123,10 +136,48 @@ export function MedicineDetailsPage() {
           <Empty>{t('med.noPharmacies')}</Empty>
         ) : (
           <div>
-            {pharmacies.map((p) => (
+            <fieldset className="row pharmacy-filters" style={{ gap: 12, border: 0, padding: 0, margin: '0 0 8px' }}>
+              <legend className="sr-only">{t('med.filters')}</legend>
+              <label className="row" style={{ gap: 6 }}>
+                <input type="checkbox" checked={openOnly} onChange={(e) => setOpenOnly(e.target.checked)} /> {t('med.filter.openNow')}
+              </label>
+              <label className="row" style={{ gap: 6 }}>
+                <input type="checkbox" checked={stockOnly} onChange={(e) => setStockOnly(e.target.checked)} /> {t('med.filter.inStock')}
+              </label>
+              <label className="row" style={{ gap: 6 }}>
+                {t('med.filter.distance')}
+                <select value={maxKm} onChange={(e) => setMaxKm(Number(e.target.value))}>
+                  <option value={0}>{t('med.filter.anyDistance')}</option>
+                  {[2, 5, 10, 20].map((k) => (
+                    <option key={k} value={k}>
+                      ≤ {k} km
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="row" style={{ gap: 6 }}>
+                {t('med.filter.sort')}
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'distance' | 'price')}>
+                  <option value="distance">{t('med.filter.sortDistance')}</option>
+                  <option value="price">{t('med.filter.sortPrice')}</option>
+                </select>
+              </label>
+            </fieldset>
+            {filtered.length === 0 && (
+              <Empty>
+                {t('med.filter.none')}{' '}
+                <button type="button" className="btn ghost small" onClick={resetFilters}>
+                  {t('med.filter.reset')}
+                </button>
+              </Empty>
+            )}
+            {filtered.map((p) => (
               <div key={p.id} className="pharmacy-row" data-testid="pharmacy-row">
                 <div className="stack" style={{ gap: 4 }}>
                   <strong>{p.name}</strong>
+                  <span className="badge info" style={{ width: 'fit-content' }}>
+                    {t('med.verifiedByStaff')}
+                  </span>
                   <span className="muted small">
                     {p.address} · {formatKm(p.distanceKm, locale)}
                   </span>
@@ -155,13 +206,17 @@ export function MedicineDetailsPage() {
           <LazyMap
             center={place}
             radiusKm={30}
-            pharmacies={pharmacies}
+            pharmacies={filtering ? filtered : pharmacies}
             stockMode
             onChoose={(pid) => setSheet({ pharmacyId: pid })}
             height={380}
           />
         )}
       </section>
+
+      <p className="alert info small" role="note" data-testid="med-disclaimer">
+        {t('med.disclaimer')}
+      </p>
 
       <section aria-labelledby="gen">
         <h2 id="gen">{t('med.generics')}</h2>

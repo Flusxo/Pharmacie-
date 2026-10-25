@@ -146,6 +146,7 @@ export function PublicFooter() {
           ...PUBLIC_NAV.slice(4),
           { to: '/privacy', key: 'pub.privacy.title' },
           { to: '/terms', key: 'pub.terms.title' },
+          { to: '/legal', key: 'pub.legal.title' },
         ])}
         <div className="stack small" style={{ gap: 8 }} data-testid="footer-contact">
           <strong>{t('pub.footer.contactTitle')}</strong>

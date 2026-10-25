@@ -521,7 +521,7 @@ export function compositionFor(path: string): CompositionName {
   if (at('/contact')) return 'contact';
   if (at('/faq')) return 'faq';
   if (at('/privacy')) return 'privacy';
-  if (at('/terms')) return 'terms';
+  if (at('/terms') || at('/legal')) return 'terms';
   if (at('/register')) return 'register';
   if (at('/forgot-password') || at('/reset-password')) return 'recover';
   return 'auth';

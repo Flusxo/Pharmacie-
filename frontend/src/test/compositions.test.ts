@@ -15,6 +15,7 @@ describe('3D: a scene on every page', () => {
     ['/faq', 'faq'],
     ['/privacy', 'privacy'],
     ['/terms', 'terms'],
+    ['/legal', 'terms'],
     ['/login', 'auth'],
     ['/register', 'register'],
     ['/forgot-password', 'recover'],

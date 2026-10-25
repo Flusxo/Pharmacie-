@@ -238,6 +238,7 @@ export function Layout() {
         <footer className="footer">
           <Link to="/terms">{t('footer.terms')}</Link>
           <Link to="/privacy">{t('footer.privacy')}</Link>
+          <Link to="/legal">{t('pub.legal.title')}</Link>
         </footer>
         {nav.length > 0 && (
           <nav className="tabbar" aria-label={t('nav.tabs')}>
