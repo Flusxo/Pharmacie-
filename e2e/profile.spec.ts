@@ -1,7 +1,9 @@
 import { expect, test } from './fixtures';
 import { loginWithDemo } from './helpers';
 
-test('pharmacy profile: patients open it from the list (hours, services, languages, accessibility) and a cheapest badge marks the lowest price', async ({ page }) => {
+test('pharmacy profile: patients open it from the list (hours, services, languages, accessibility) and a cheapest badge marks the lowest price', async ({
+  page,
+}) => {
   await loginWithDemo(page, 'Alice — Tournon');
   await page.getByTestId('search-input').fill('Doliprane');
   await page.getByTestId('search-input').press('Enter');
@@ -21,7 +23,7 @@ test('pharmacy profile: patients open it from the list (hours, services, languag
 });
 
 test('a pharmacy edits its profile and takes a break that pauses it', async ({ page }) => {
-  await loginWithDemo(page, 'Romans', 'Pharmacie');
+  await loginWithDemo(page, 'Lyon 1', 'Pharmacie');
   await expect(page).toHaveURL(/\/pharmacy$/);
   await page.getByRole('tab', { name: 'Fiche' }).click();
   const form = page.getByTestId('profile-form');

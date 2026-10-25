@@ -288,6 +288,9 @@ export default function PharmacyMap({
   );
 }
 
+/** A handful of pins stay separate; merging starts when there are enough to crowd the map. */
+const MIN_PINS_TO_CLUSTER = 8;
+
 const clusterIcon = (n: number) =>
   L.divIcon({
     className: '',
@@ -351,7 +354,7 @@ function PharmacyPins({
 
   const { singles, clusters } = useMemo(() => {
     // No size (hidden, test DOM) or a handful of pins: nothing to merge. The selected pharmacy is always its own pin.
-    if (pharmacies.length < 5 || map.getSize().x === 0) return { singles: pharmacies, clusters: [] as Cluster[] };
+    if (pharmacies.length < MIN_PINS_TO_CLUSTER || map.getSize().x === 0) return { singles: pharmacies, clusters: [] as Cluster[] };
     const z = map.getZoom();
     const free = pharmacies.filter((p) => p.id !== selectedId);
     const groups = clusterPins(free, (lat, lon) => {

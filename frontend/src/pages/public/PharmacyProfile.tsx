@@ -70,7 +70,7 @@ export function PharmacyProfilePage() {
       <Link to={user ? '/map' : '/pharmacies'} className="small">
         ← {t('common.back')}
       </Link>
-      <header className="row between" style={{ alignItems: 'flex-start' }}>
+      <header className="card row between" style={{ alignItems: 'flex-start' }}>
         <div className="stack" style={{ gap: 6 }}>
           <h1 style={{ margin: 0 }}>{p.name}</h1>
           <span className="row" style={{ gap: 8, flexWrap: 'wrap' }}>

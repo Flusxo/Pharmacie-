@@ -1,0 +1,254 @@
+[
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "pharmacy-profile",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "consent-banner",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "style-guide",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "analytics-integrations",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "board-today",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "pharmacy-profile-tab",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "team-tab",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "account-devices",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "palette",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "map-route",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "empty-search",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 1440,
+  "screen": "order-pickup-code",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "pharmacy-profile",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "consent-banner",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "style-guide",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "analytics-integrations",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "board-today",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "pharmacy-profile-tab",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "team-tab",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "account-devices",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "palette",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "map-route",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "empty-search",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 768,
+  "screen": "order-pickup-code",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "pharmacy-profile",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "consent-banner",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "style-guide",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "analytics-integrations",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "board-today",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "pharmacy-profile-tab",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "team-tab",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "account-devices",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "palette",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "map-route",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "empty-search",
+  "overflow": 0
+ },
+ {
+  "lang": "fr",
+  "scheme": "dark",
+  "width": 390,
+  "screen": "order-pickup-code",
+  "overflow": 0
+ }
+]
