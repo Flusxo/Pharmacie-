@@ -11,6 +11,7 @@ async function prepare(page: Page, theme: 'light' | 'dark' = 'light') {
     localStorage.setItem('counter.tour', 'done');
     localStorage.setItem('counter.tour.doctor', 'done');
     localStorage.setItem('counter.tour.pharmacy', 'done');
+    localStorage.setItem('counter.consent', 'essential');
   }, theme);
 }
 async function login(page: Page) {

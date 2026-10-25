@@ -76,6 +76,7 @@ test.describe('language switch', () => {
       localStorage.setItem('counter.tour', 'done');
       localStorage.setItem('counter.tour.doctor', 'done');
       localStorage.setItem('counter.tour.pharmacy', 'done');
+      localStorage.setItem('counter.consent', 'essential');
     });
     const other = await ctx.newPage();
     await loginByToken(other, 'bruno@pharmacie.test');

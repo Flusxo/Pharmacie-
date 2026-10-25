@@ -998,5 +998,12 @@
   "cmd.info": "Information",
   "cmd.action": "Action",
   "cmd.medicine": "Médicament",
-  "cmd.open": "Aller à… (Ctrl+K)"
+  "cmd.open": "Aller à… (Ctrl+K)",
+  "consent.title": "Stockage dans votre navigateur",
+  "consent.text": "counter. n’utilise ni publicité ni suivi. Seuls votre connexion et vos préférences (langue, thème, qualité 3D) sont gardées sur cet appareil.",
+  "consent.more": "En savoir plus",
+  "consent.ok": "Compris",
+  "meta.home": "Médicaments en stock près de chez vous",
+  "meta.default": "counter. — pharmacies près de chez vous",
+  "meta.description": "Trouvez votre médicament en stock dans une pharmacie proche, choisissez librement et suivez votre demande. Prototype, données de démonstration."
 }

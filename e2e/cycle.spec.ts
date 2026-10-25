@@ -9,6 +9,7 @@ async function newPage(browser: Browser): Promise<Page> {
     localStorage.setItem('counter.tour', 'done');
     localStorage.setItem('counter.tour.doctor', 'done');
     localStorage.setItem('counter.tour.pharmacy', 'done');
+    localStorage.setItem('counter.consent', 'essential');
   });
   return ctx.newPage();
 }

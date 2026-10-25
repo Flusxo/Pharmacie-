@@ -47,6 +47,7 @@ for (const [who, name, path, click] of pages.filter(([, n]) => !only || n === on
         localStorage.setItem('counter.tour', 'done');
         localStorage.setItem('counter.tour.doctor', 'done');
         localStorage.setItem('counter.tour.pharmacy', 'done');
+        localStorage.setItem('counter.consent', 'essential');
         if (gfx) localStorage.setItem('counter.graphics', gfx);
       } catch {
         /* storage blocked */

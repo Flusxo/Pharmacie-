@@ -209,3 +209,23 @@
 .palette-foot {
   margin: 0;
 }
+
+/* Storage notice. */
+.consent {
+  position: fixed;
+  z-index: 90;
+  left: 16px;
+  bottom: 16px;
+  max-width: 520px;
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+}
+@media (max-width: 767px) {
+  .consent {
+    right: 16px;
+    bottom: calc(var(--tabbar-h, 64px) + env(safe-area-inset-bottom) + 12px);
+    max-width: none;
+  }
+}

@@ -998,5 +998,12 @@
   "cmd.info": "Information",
   "cmd.action": "Action",
   "cmd.medicine": "Medicine",
-  "cmd.open": "Go to… (Ctrl+K)"
+  "cmd.open": "Go to… (Ctrl+K)",
+  "consent.title": "Storage in your browser",
+  "consent.text": "counter. uses no advertising and no tracking. Only your login and your preferences (language, theme, 3D quality) are kept on this device.",
+  "consent.more": "Learn more",
+  "consent.ok": "Got it",
+  "meta.home": "Medicines in stock near you",
+  "meta.default": "counter. — pharmacies near you",
+  "meta.description": "Find your medicine in stock at a nearby pharmacy, choose freely and follow your request. Prototype, demo data."
 }

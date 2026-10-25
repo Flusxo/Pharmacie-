@@ -21,6 +21,7 @@ for (const [w, h, name] of [
     localStorage.setItem('counter.tour', 'done');
     localStorage.setItem('counter.tour.doctor', 'done');
     localStorage.setItem('counter.tour.pharmacy', 'done');
+    localStorage.setItem('counter.consent', 'essential');
     localStorage.setItem('counter.graphics', 'off');
   }, token);
   const p = await ctx.newPage();

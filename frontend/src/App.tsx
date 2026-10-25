@@ -15,6 +15,8 @@ import { WakingBanner } from './components/WakingBanner';
 import { OfflineBanner } from './components/OfflineBanner';
 import { CursorGlow } from './components/CursorGlow';
 import { CommandPalette } from './components/CommandPalette';
+import { ConsentBanner } from './components/ConsentBanner';
+import { PageMeta } from './components/PageMeta';
 import { PageFallback } from './components/PageFallback';
 import { RootStage } from './components/three/ThreeVisuals';
 import { LoginPage } from './pages/Login';
@@ -287,6 +289,8 @@ export function App() {
                     <OfflineBanner />
                     <CursorGlow />
                     <CommandPalette />
+                    <PageMeta />
+                    <ConsentBanner />
                     <AppRoutes />
                   </BrowserRouter>
                 </ToastProvider>

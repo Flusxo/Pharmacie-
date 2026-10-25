@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /home
+Disallow: /search
+Disallow: /map
+Disallow: /requests
+Disallow: /orders
+Disallow: /profile
+Disallow: /pharmacy
+Disallow: /doctor
+Disallow: /admin
+Disallow: /track
+Disallow: /dev
+Disallow: /render
+
+Sitemap: https://pharmacie-58e.pages.dev/sitemap.xml

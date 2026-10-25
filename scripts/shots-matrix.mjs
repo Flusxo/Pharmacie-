@@ -62,6 +62,7 @@ for (const lang of ['fr', 'en'].filter((l) => !onlyLang || l === onlyLang)) {
             localStorage.setItem('counter.tour', 'done');
             localStorage.setItem('counter.tour.doctor', 'done');
             localStorage.setItem('counter.tour.pharmacy', 'done');
+            localStorage.setItem('counter.consent', 'essential');
           },
           [who ? tokens[who] : null, scheme, lang],
         );

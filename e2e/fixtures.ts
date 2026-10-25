@@ -12,6 +12,7 @@ export const test = base.extend({
       if (!localStorage.getItem('counter.tour')) localStorage.setItem('counter.tour', 'done');
       localStorage.setItem('counter.tour.doctor', 'done');
       localStorage.setItem('counter.tour.pharmacy', 'done');
+      localStorage.setItem('counter.consent', 'essential');
     });
     await use(page);
   },
