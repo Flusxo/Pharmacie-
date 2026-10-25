@@ -62,7 +62,11 @@ export function PharmacyProfilePage() {
   if (!p) return <CardSkeleton lines={6} />;
   const dayName = (i: number) => new Date(2024, 0, 1 + i).toLocaleDateString(locale, { weekday: 'long' });
   return (
-    <div className="pub-page stack" style={{ gap: 20, maxWidth: 820, margin: '0 auto', padding: '24px 16px' }} data-testid="pharmacy-profile">
+    <div
+      className="pub-page stack"
+      style={{ gap: 20, maxWidth: 820, margin: '0 auto', padding: '24px 16px' }}
+      data-testid="pharmacy-profile"
+    >
       <Link to={user ? '/map' : '/pharmacies'} className="small">
         ← {t('common.back')}
       </Link>
@@ -90,7 +94,7 @@ export function PharmacyProfilePage() {
       </section>
       <section className="card stack" aria-labelledby="pp-hours">
         <h2 id="pp-hours">{t('pp.hours')}</h2>
-        <table className="table">
+        <table className="table hours-table">
           <tbody>
             {DAYS.map((d, i) => (
               <tr key={d}>

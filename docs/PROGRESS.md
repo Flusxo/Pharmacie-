@@ -4,6 +4,21 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Status (2026-10-23) — what works, what is simulated, what is not verified
 
+### Update 2026-10-25 (third round, payments untouched)
+
+Done and pushed (migrations 009 and 010 applied to Neon after a backup each; only tables and columns were added):
+- Saved pharmacies, route line and directions link, clustered pins, first-login tips for doctors and pharmacies, dark product-viewer backdrop.
+- Performance budget (`npm run budget`, CI workflow, Lighthouse gate), command palette (Ctrl+K), automatic theme by time of day, empty search with popular searches and tips, storage notice, per-page titles, share image, sitemap and robots, staff style guide.
+- Pharmacy profile pages, "cheapest nearby" badge, breaks that end by themselves, pickup code with QR and one-tap confirmation, "notify me when it is back in stock" (optional email), sessions ("my devices", sign out everywhere), staff panel of optional services, error-alert webhook, DEPLOY.md for every optional account (email, alerts, uptime, storage choices, staging, backup and recovery).
+- Barcode / CIP13 search for patients, medicine page section links and a sticky request bar on phones, pharmacy "Today" board, reorder-list CSV, doctor reminder for unconfirmed links, analytics CSV, prefetch of the next page on hover.
+- Screenshots of the new screens: `docs/screenshots/new` (1440, 768, 390 px, light and dark, fr and en; `node scripts/shots-new.mjs`).
+
+Needs you (nothing is built until you choose):
+1. **Private file storage** for prescription photos and verification documents: pick one (Cloudflare R2, Supabase Storage, Backblaze B2, or Neon for a few small files; options in DEPLOY.md). Then: upload with type and size checks, access only for the chosen pharmacy, automatic deletion, access-control tests, and the staff verification documents.
+2. Keys for email (Resend), the error-alert webhook, and Stripe test keys (payments are still untouched).
+
+Not built yet (priority order): (1) messages on an order and reviews with a staff moderation inbox; (2) family profiles; (3) delivery or pickup time slots; (4) refill reminders; (5) staff feature switches and a weekly summary; (6) web push (needs a service worker, deliberately absent); (7) "who looked at my data" log for patients; (8) expiry alerts (no expiry data in the stock); (9) KTX2 / Draco compression does not apply (the models are generated in code, there are no model files); (10) the how-it-works page keeps its 5-step diagram; (11) 3D category tiles and a camera move between pages.
+
 ### Update 2026-10-25 (second round, payments untouched)
 
 Done and pushed: **screenshot matrix** of 22 pages at 1440 / 768 / 390, light and dark, fr and en (`docs/screenshots/matrix`, `node scripts/shots-matrix.mjs`): no horizontal overflow in any of the 264 pictures; the only clipping found (tab rows cut off on phones) is fixed (tabs wrap under 640 px). **Pharmacy team accounts** (migration 009, applied to Neon after a backup, nothing else changed): the owner adds a pharmacist or an assistant who logs in with their own email; roles are enforced on the server (owner: all + team; pharmacist: all except team and pause; assistant: read + move orders forward); per-pharmacy **activity log** (who, when, what; no medicine names); **low-stock list** in the daily summary; **barcode scan** in the stock search (camera, only where the browser has BarcodeDetector; typing the CIP13 works everywhere). Doctor request templates already existed (tab "Modèles"). **Interaction polish**: soft cursor glow (mouse only), button ripple, springy switches, drawn check mark in toasts, all off with "Reduce animations".

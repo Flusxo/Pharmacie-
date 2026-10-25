@@ -318,3 +318,19 @@
 .board-card[draggable='true'] {
   cursor: grab;
 }
+
+/* Opening hours: on a phone the day sits above its hours instead of squeezing them. */
+@media (max-width: 520px) {
+  .hours-table tr {
+    display: grid;
+    gap: 2px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hours-table th,
+  .hours-table td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+}

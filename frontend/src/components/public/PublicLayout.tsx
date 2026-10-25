@@ -4,6 +4,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { prefetchProps } from '../../lib/prefetch';
 import { useI18n } from '../../i18n';
 import { homeFor, useAuth } from '../../lib/auth';
 import { AnimatedOutlet } from '../motion';
@@ -72,7 +73,7 @@ export function PublicHeader() {
       </Link>
       <nav className="pub-nav" aria-label={t('pub.nav.label')}>
         {PUBLIC_NAV.map((n) => (
-          <NavLink key={n.to} to={n.to}>
+          <NavLink key={n.to} to={n.to} {...prefetchProps(n.to)}>
             {t(n.key)}
           </NavLink>
         ))}
@@ -99,7 +100,7 @@ export function PublicHeader() {
         <div id="pub-menu" className="pub-menu" role="dialog" aria-modal="false" aria-label={t('pub.nav.label')}>
           <nav className="stack" aria-label={t('pub.nav.label')}>
             {PUBLIC_NAV.map((n) => (
-              <NavLink key={n.to} to={n.to}>
+              <NavLink key={n.to} to={n.to} {...prefetchProps(n.to)}>
                 {t(n.key)}
               </NavLink>
             ))}

@@ -135,6 +135,14 @@ The API is an Express app under `/api`. The full list (80 routes, with who may c
 - **Measure it yourself** (production build, this machine's GPU): `npm run build`, `node scripts/serve-prod.mjs`, then `node scripts/perf-median.mjs mytag laptop` or `phone` (phone = CPU 4x slower and slow 4G, emulated). Results and method: `docs/PERF.md`.
 - **Medicine pictures and heroes** are rendered from our own 3D models: `npm run render` (with `npm run dev` running); `-- --meds` for the medicines.
 
+## More for patients, pharmacies and staff (2026-10-25)
+
+- **Patients:** pharmacy profile pages (hours, services, languages, accessibility), filters (open now, in stock, distance, saved, sort by price), a "cheapest nearby" badge, saved pharmacies, a straight-line route and a directions link on the map, clustered pins, "notify me when it is back in stock", a pickup code and QR code on every accepted order, recent searches, barcode scan (browsers that support it), a command palette (Ctrl+K), "my devices" with sign-out everywhere.
+- **Pharmacies:** team accounts (owner, pharmacist, assistant) with an activity log, a "Today" board (drag or button, valid steps only), pickup confirmation by QR link or code, breaks that end by themselves, a profile page editor, a low-stock list with a CSV reorder export.
+- **Staff:** a style guide page (`/admin/design`), an "Optional services" panel (what is configured), a CSV download of the aggregated analytics.
+- **Optional services** (email, error alerts, uptime, storage choices, staging, backup and recovery): see **DEPLOY.md**. Without keys each one shows "not configured" and everything else works.
+- **Speed budget:** `npm run budget` and `.github/workflows/ci.yml` fail the build when the bundles grow (docs/PERF.md).
+
 ## Pharmacies add medicines, staff review, analytics
 
 - A pharmacy can propose a medicine that is not in the catalogue (Stock tab → "Medicine not in the list? Propose it"): same-code and look-alike detection first, an audit-log entry, and it stays invisible to patients until a moderator or admin approves it (Staff → Proposals). The stock CSV also accepts new medicines (extra columns, see the hint on the page).

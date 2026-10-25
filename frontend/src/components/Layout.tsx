@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { prefetchProps } from '../lib/prefetch';
 import { AnimatedOutlet } from './motion';
 import { useI18n } from '../i18n';
 import { useAuth, useChangeLanguage } from '../lib/auth';
@@ -209,7 +210,7 @@ export function Layout() {
           </Link>
           <nav className="topnav" aria-label={t('nav.main')}>
             {nav.map((n) => (
-              <NavLink key={n.to} to={n.to} data-tour={n.tour}>
+              <NavLink key={n.to} to={n.to} data-tour={n.tour} {...prefetchProps(n.to)}>
                 {n.label}
               </NavLink>
             ))}
@@ -243,7 +244,7 @@ export function Layout() {
         {nav.length > 0 && (
           <nav className="tabbar" aria-label={t('nav.tabs')}>
             {nav.map((n) => (
-              <NavLink key={n.to} to={n.to} data-tour={n.tour}>
+              <NavLink key={n.to} to={n.to} data-tour={n.tour} {...prefetchProps(n.to)}>
                 {n.icon}
                 <span>{n.short ?? n.label}</span>
               </NavLink>

@@ -34,7 +34,7 @@ export function DesignSystemPage() {
 
       <section className="card stack" aria-labelledby="ds-colors">
         <h2 id="ds-colors">{t('ds.colors')}</h2>
-        <div className="grid cols-4">
+        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}>
           {COLORS.map((n) => (
             <div key={n} className="stack" style={{ gap: 6 }}>
               <span style={{ height: 56, borderRadius: 'var(--radius-sm)', background: `var(--${n})`, border: '1px solid var(--line)' }} />
