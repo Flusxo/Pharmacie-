@@ -4,6 +4,13 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Status (2026-10-23) — what works, what is simulated, what is not verified
 
+### Update 2026-10-25 (polish round, payments untouched)
+
+Done and pushed: phone glass (`-webkit-` prefix, 12 px blur kept on Low for phones, menu and tour card in the shared glass list, WebKit check in `docs/screenshots/glass-mobile`); `/legal` Legal notice page and a "How we protect your data" section on the privacy page; medical disclaimer and "Verified by staff" badge on the medicine page; pharmacy list filters (open now, in stock, distance, sort by distance or price); recent searches (this browser only); turning-capsule loading state; "Add to Home Screen" (manifest and PNG icons, no service worker, so nothing can be served stale); offline banner; "Search for this medicine again" on finished requests. Already done earlier and re-checked, not redone: medicine pictures (139 renders for the 50 demo medicines), carton / spray / dropper models, glass panels, lighter palette, no gallery or frames, pharmacies adding medicines, analytics, perf numbers (docs/PERF.md).
+
+Not reached this round (priority order): (1) payments, left alone on request; (2) screenshots of every page at 1440 / 768 / 390, light and dark, fr and en (the previous matrix in `docs/screenshots/matrix` predates the new pages); (3) pharmacy-side tools of Part D (daily summary, barcode search, staff roles with activity log, doctor templates); (4) interaction polish (camera moving between pages, cursor glow, ripple, drawn checkmarks); (5) saved pharmacies, a route on the map, per-role first-login tips; (6) the how-it-works page keeps its 5-step diagram.
+
+
 **Hosted**: backend https://pharmacie-mb83.onrender.com (Render, Frankfurt), site https://pharmacie-58e.pages.dev (Cloudflare Pages), database Neon (migrations 001-008 applied, each after a read-only backup in `backups/`, never reset). Steps for the owner: `DEPLOY.md`.
 
 **Done and tested** (unit 145 backend + 90 frontend; e2e 59 including the payment flow, the design checks and the persistent canvas):
