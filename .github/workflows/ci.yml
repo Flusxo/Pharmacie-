@@ -1,0 +1,42 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - name: Performance budget (bundle sizes)
+        run: npm run budget
+      - run: npm test
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Serve the production build
+        run: node scripts/serve-prod.mjs &
+      - name: Lighthouse (mobile) on the home page
+        run: |
+          sleep 5
+          npx -y lighthouse@12 http://localhost:4173/ --only-categories=performance --form-factor=mobile \
+            --output=json --output-path=lh-home.json --chrome-flags="--headless=new --no-sandbox" --quiet
+          node scripts/lighthouse-check.mjs lh-home.json mobile

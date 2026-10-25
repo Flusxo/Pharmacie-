@@ -99,3 +99,9 @@ node scripts/perf-report.mjs mytag     # markdown table against the "before" fil
 node scripts/programs.mjs ""           # shader programs, draw calls, triangles of a page
 node scripts/cpu-profile.mjs "" 12     # where the main-thread time goes (THROTTLE=4 for a slow CPU)
 ```
+
+## Performance budget (CI)
+
+`.github/workflows/ci.yml` runs on every push: lint, build, **`npm run budget`** (`scripts/budget.mjs`: gzip limits for the first load, 260 KB, and for the lazy chunks: 3D models 265 KB, post-processing 115 KB, map 55 KB, any other chunk 60 KB, stylesheet 18 KB), unit tests, and a Lighthouse mobile run of the home page checked by `scripts/lighthouse-check.mjs` (score at least 0.25, layout shift at most 0.1, LCP at most 7 s). The limits sit about 12 % above the sizes measured on 2026-10-25 (first load 230 KB, models 238 KB, post-processing 103 KB, map 47 KB), so growth fails the build.
+
+Honest limits: the Lighthouse gate is a regression catcher, not a quality claim (a headless run on this laptop scored 0.31 and the committed run 0.49: the score swings with the machine). The CI workflow itself has not been run on GitHub yet; the budget script and the Lighthouse command were run locally and pass.

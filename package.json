@@ -34,6 +34,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "budget": "node scripts/budget.mjs",
     "test": "npm run test -w backend && npm run test -w frontend",
     "dev": "node scripts/dev.mjs",
     "e2e": "tsx scripts/e2e.ts",
