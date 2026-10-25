@@ -1101,5 +1101,15 @@
   "devices.unknown": "Appareil inconnu",
   "devices.lastSeen": "Dernière activité : {when}",
   "devices.signOut": "Déconnecter",
-  "devices.signOutAll": "Me déconnecter de tous les appareils"
+  "devices.signOutAll": "Me déconnecter de tous les appareils",
+  "integ.title": "Services optionnels",
+  "integ.help": "Ce qui est branché sur ce site. Sans compte ni clé, la fonction affiche « non configuré » et le reste fonctionne. Les étapes sont dans DEPLOY.md.",
+  "integ.email": "E-mails (Resend)",
+  "integ.errorAlerts": "Alertes d’erreur (webhook)",
+  "integ.payments": "Paiements (Stripe, mode test)",
+  "integ.push": "Notifications push",
+  "integ.storage": "Stockage privé de fichiers (ordonnances, justificatifs)",
+  "integ.on": "Configuré",
+  "integ.off": "Non configuré",
+  "integ.unbuilt": "Pas encore construit"
 }

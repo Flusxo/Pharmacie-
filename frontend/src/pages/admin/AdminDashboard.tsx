@@ -13,6 +13,7 @@ import { AnimatedNumber } from '../../components/motion';
 import { duration, easeOut, stagger } from '../../motion';
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { AnalyticsPanel } from '../../components/admin/AnalyticsPanel';
+import { IntegrationsPanel } from '../../components/admin/IntegrationsPanel';
 import { MedicineReviews } from '../../components/admin/MedicineReviews';
 
 type Tab =
@@ -333,7 +334,12 @@ export function AdminDashboard() {
         ))}
 
       {tab === 'reviews' && <MedicineReviews canModerate={canModerate} onChanged={refreshAll} />}
-      {tab === 'analytics' && <AnalyticsPanel />}
+      {tab === 'analytics' && (
+        <>
+          <AnalyticsPanel />
+          <IntegrationsPanel />
+        </>
+      )}
 
       {tab === 'users' && (
         <div className="stack">

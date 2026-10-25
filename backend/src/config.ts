@@ -27,6 +27,8 @@ const schema = z.object({
    * Optional email service (Resend, https://resend.com). Without both values nobody is emailed: every message stays an
    * in-app notification and the staff integrations panel says "not configured".
    */
+  /** Optional error alert: a webhook URL that takes {"text": "..."} (Discord, Slack, ...). */
+  ERROR_WEBHOOK_URL: z.string().url().optional(),
   RESEND_API_KEY: z.string().optional(),
   MAIL_FROM: z.string().optional(),
   /** Login attempts per 15 minutes per network (the e2e suite logs in far more often than a person). */

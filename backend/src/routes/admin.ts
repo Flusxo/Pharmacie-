@@ -11,10 +11,12 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import type pg from 'pg';
-import { RULES } from '../config.js';
+import { RULES, config } from '../config.js';
 import { one, query, tx, type Db } from '../db.js';
 import { badRequest, conflict, forbidden, notFound } from '../errors.js';
 import { requireStaff } from '../middleware/auth.js';
+import { errorAlertsConfigured } from '../monitoring.js';
+import { mailConfigured } from '../notify.js';
 import { notify } from '../notify.js';
 import { addRoutes } from '../openapi.js';
 import { MEDICINE_COLUMNS } from '../services/search.js';
@@ -33,6 +35,17 @@ async function audit(db: Db, actorId: string, action: string, target: string, re
 }
 
 // ---------- Read ----------
+
+/** Which optional services are set up. Booleans only: no key, no address, nothing secret. */
+adminRouter.get('/integrations', (_req, res) => {
+  res.json({
+    email: { configured: mailConfigured() },
+    errorAlerts: { configured: errorAlertsConfigured() },
+    payments: { configured: !!config.STRIPE_SECRET_KEY && !!config.STRIPE_WEBHOOK_SECRET, mode: 'test' },
+    push: { built: false },
+    storage: { built: false },
+  });
+});
 
 adminRouter.get('/stats', async (_req, res) => {
   const s = await one(

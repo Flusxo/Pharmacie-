@@ -1101,5 +1101,15 @@
   "devices.unknown": "Unknown device",
   "devices.lastSeen": "Last active: {when}",
   "devices.signOut": "Sign out",
-  "devices.signOutAll": "Sign me out of every device"
+  "devices.signOutAll": "Sign me out of every device",
+  "integ.title": "Optional services",
+  "integ.help": "What is connected to this site. Without an account or key, the feature shows “not configured” and everything else works. Steps are in DEPLOY.md.",
+  "integ.email": "Email (Resend)",
+  "integ.errorAlerts": "Error alerts (webhook)",
+  "integ.payments": "Payments (Stripe, test mode)",
+  "integ.push": "Push notifications",
+  "integ.storage": "Private file storage (prescriptions, documents)",
+  "integ.on": "Configured",
+  "integ.off": "Not configured",
+  "integ.unbuilt": "Not built yet"
 }

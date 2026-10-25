@@ -113,6 +113,61 @@ Without keys everything works and the order page says **"Payments not configured
 7. **Test the webhook locally with the Stripe CLI** (optional, for development): `stripe login`, then `stripe listen --forward-to localhost:4000/api/webhooks/stripe` (keep it running), put the `whsec_...` it prints in `.env` as `STRIPE_WEBHOOK_SECRET`, restart `npm run dev`, pay once through the app: the terminal shows each event and our answer (`200`). To replay an event: `stripe events resend <evt_id>` (it is ignored the second time: webhooks are idempotent).
 8. **Try it.** Log in as a patient, send a request, accept it as the pharmacy, open the order as the patient and press **Pay (test)**. On Stripe's page use card `4242 4242 4242 4242` (any future date, any CVC) to succeed, or `4000 0000 0000 0002` to see a declined card. The amount is held; mark the order **Ready** as the pharmacy to capture it; cancel the order to see it released or refunded.
 
+## Optional services (each one is off until you add its keys)
+
+Nothing below is needed to run the site. Without a key, the matching feature shows "not configured" (staff: **Statistiques**, "Optional services") and everything else keeps working. Never put a key in the code or in git: keys go only in the Render "Environment" page (backend) as secrets.
+
+### Email (Resend, free plan)
+
+Without it, nobody is emailed: every message stays an in-app notification (verification, status changes, password reset, stock alerts).
+
+1. Create an account at https://resend.com (free).
+2. "Domains" > "Add domain": enter a domain you own and add the DNS records Resend shows. Wait until it says "Verified". (Without your own domain, Resend only lets you send to your own email: fine for a test.)
+3. "API Keys" > "Create API key" (sending access). Copy it once (it starts with `re_`).
+4. On Render > your service > Environment, add: `RESEND_API_KEY` = the key, and `MAIL_FROM` = for example `counter. <no-reply@your-domain.com>`. Render redeploys.
+5. Check: the staff panel shows "Email: Configured". Make a patient request and look at the inbox (or the Resend "Emails" page). Subjects never contain a medicine name; each email follows the account's language.
+
+### Error alerts (optional, free)
+
+1. In Discord (Server settings > Integrations > Webhooks > New webhook) or Slack (an "Incoming Webhook" app), create a webhook and copy its URL.
+2. On Render, add `ERROR_WEBHOOK_URL` = that URL. The backend posts one short line for an unexpected server error (path and request id only, never a body, email or medicine), at most once a minute.
+
+### Uptime alert (optional, free)
+
+1. Create a free account at https://uptimerobot.com.
+2. "Add New Monitor": type HTTP(s), URL `https://pharmacie-mb83.onrender.com/api/health`, interval 5 minutes, add your email as the alert contact. As a bonus this request keeps the free Render service awake during the day (it still sleeps if you stop it; a paid plan removes sleep).
+
+### Private file storage for prescriptions and verification documents (NOT built yet: your choice first)
+
+Prescription photos and staff verification documents are health or identity data, so they need private storage with short-lived links and automatic deletion. This is **not implemented**: choose where the files live first. Free or free-tier options:
+
+| Option | Free allowance | Notes |
+| --- | --- | --- |
+| Cloudflare R2 | 10 GB, no download fees | Same company as the site; S3-compatible; private bucket + signed links; needs a (free) card on file |
+| Supabase Storage | 1 GB | Private buckets and signed URLs; also offers a database |
+| Backblaze B2 | 10 GB | S3-compatible, private by default |
+| Neon (the database itself) | counts toward the 0.5 GB database | Possible for a few small files only; simplest, but fills the database fast |
+
+None of them is certified for health data (HDS): for a prototype use fake documents only. Tell me which one to build; I will then add the upload (type and size checks on the server), access only for the chosen pharmacy, automatic deletion after a set time, and access-control tests.
+
+### Push notifications (NOT built yet)
+
+Web push needs a service worker, a subscription per device and VAPID keys. The site deliberately has no service worker today (so a new build can never be served stale). It is shown as "Not built yet" in the staff panel. If you want it, ask: the keys are free (generated locally with `npx web-push generate-vapid-keys`).
+
+## Staging (a safe copy to try changes)
+
+1. Neon: create a second project (or a branch of the project) named `counter-staging`; copy its connection string.
+2. Render: "New +" > Web Service from the same repo, name it `pharmacie-staging`, same build and start commands, and environment variables with the **staging** `DATABASE_URL`, its own `JWT_SECRET`, and `FRONTEND_URL` = the staging site address. Run `npm run db:reset` once from your PC with the staging `DATABASE_URL` in a separate `.env` copy (never the production one).
+3. Cloudflare Pages: a second project (or use a branch preview) with `VITE_API_URL` = the staging backend address.
+4. Try changes there first; merge to `main` only when it works.
+
+## Database backup and recovery
+
+- **Backup before every migration:** `npx tsx db/scripts/backup.ts` writes a read-only JSON export of every table to `backups/<date>/` (git-ignored, never committed). It also lists pending migrations. After a migration, `npx tsx db/scripts/verify-after-migrate.ts` compares row counts with the last backup: only `schema_migrations` should differ.
+- **Neon's own history:** the free plan keeps a short restore window (check "Backup & Restore" in the Neon console); use "Restore" to rewind the project to a time before a mistake. Migrations here only add tables and columns, so a rewind is rarely needed.
+- **Recovery from the JSON export:** every file in `backups/<date>/` is one table as a JSON array. To restore one table, create it with the migrations (`npm run db:migrate` on an empty database), then insert the rows (a small script reading the JSON and running INSERT ... ON CONFLICT DO NOTHING). Rehearse this once on the staging database, not on production.
+- **Never** run `npm run db:reset` against the production `DATABASE_URL`: it drops everything.
+
 ## Local development is unchanged
 
 Without `VITE_API_URL` the website calls the relative `/api` path and the Vite proxy forwards it to `localhost:4000`: `npm run dev` works as before.

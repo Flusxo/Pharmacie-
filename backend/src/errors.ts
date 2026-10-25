@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { log } from './logger.js';
+import { reportServerError } from './monitoring.js';
 import { fieldName, issueMessage, langOf } from './i18n/index.js';
 
 export class HttpError extends Error {
@@ -68,5 +69,6 @@ export function errorHandler(err: unknown, req: Request, res: Response, _next: N
     return;
   }
   log('error', 'unhandled_error', { requestId, path: req.path, err: e.message, code: e.code });
+  reportServerError({ requestId, path: req.path, code: e.code });
   res.status(500).json({ error: 'Something went wrong on our side. Please try again.', requestId });
 }
