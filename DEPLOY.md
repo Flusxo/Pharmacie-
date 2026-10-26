@@ -137,18 +137,15 @@ Without it, nobody is emailed: every message stays an in-app notification (verif
 1. Create a free account at https://uptimerobot.com.
 2. "Add New Monitor": type HTTP(s), URL `https://pharmacie-mb83.onrender.com/api/health`, interval 5 minutes, add your email as the alert contact. As a bonus this request keeps the free Render service awake during the day (it still sleeps if you stop it; a paid plan removes sleep).
 
-### Private file storage for prescriptions and verification documents (NOT built yet: your choice first)
+### Private files: prescriptions and verification documents (built, stored in Neon)
 
-Prescription photos and staff verification documents are health or identity data, so they need private storage with short-lived links and automatic deletion. This is **not implemented**: choose where the files live first. Free or free-tier options:
+You chose Neon (the database itself) for private files, so there is **no new account and no key**. What it does:
 
-| Option | Free allowance | Notes |
-| --- | --- | --- |
-| Cloudflare R2 | 10 GB, no download fees | Same company as the site; S3-compatible; private bucket + signed links; needs a (free) card on file |
-| Supabase Storage | 1 GB | Private buckets and signed URLs; also offers a database |
-| Backblaze B2 | 10 GB | S3-compatible, private by default |
-| Neon (the database itself) | counts toward the 0.5 GB database | Possible for a few small files only; simplest, but fills the database fast |
-
-None of them is certified for health data (HDS): for a prototype use fake documents only. Tell me which one to build; I will then add the upload (type and size checks on the server), access only for the chosen pharmacy, automatic deletion after a set time, and access-control tests.
+- A patient can attach up to 3 photos or PDFs to a request; a doctor or pharmacy applicant can send up to 5 documents for verification. JPEG, PNG, WebP or PDF only, 2 MB each. The server checks the real content of the file (not the name or the declared type).
+- Access: a prescription opens only for the patient and for the pharmacy that patient chose (team members act as their pharmacy). Doctors, other pharmacies and staff cannot open it. A verification document opens only for the applicant and staff, and every opening by staff is written to the audit log. Downloads are never cached and never run as a page.
+- Deletion is automatic: a prescription is removed 48 hours after its request or order ends, and 30 days after upload at the latest; a verification document after 30 days; everything goes with an account deletion. A job runs every 10 minutes.
+- Limits to know: the free Neon database holds 0.5 GB, so about 250 files of 2 MB at the most at one time; the backup script saves only the file list (names, sizes, dates), never the contents, so prescriptions are not copied into `backups/`; Neon's own restore does include them; this is not a certified health-data host (HDS): use fake documents only.
+- If you outgrow this, the code that reads and writes files is one file (`backend/src/services/files.ts`); moving to Cloudflare R2, Supabase or Backblaze means replacing its insert and read functions.
 
 ### Push notifications (NOT built yet)
 

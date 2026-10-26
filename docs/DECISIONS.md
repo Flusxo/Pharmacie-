@@ -180,3 +180,9 @@ Each entry: what was chosen and why.
 - The Low tier no longer flattens glass on phones (coarse pointer or width < 768 px): they keep the 12 px blur and lose it only when the measured frame rate stays low (`fps` reason). Off still flattens everywhere.
 - `_headers`: `/` and `/index.html` are `no-cache` (revalidated); hashed assets stay immutable. No service worker exists.
 - Checked with Playwright WebKit (`scripts/webkit-glass.mjs`, screenshots in `docs/screenshots/glass-mobile`). Not checked: real iPhone hardware.
+
+## 2026-10-26 — Private files, messages, reviews, slots
+- **Files in Neon (owner's choice).** Table `private_files` (bytea), 2 MB per file, magic-byte check (JPEG, PNG, WebP, PDF), name cleaned, never served from a public link: `GET /api/files/:id` checks access in one function (`readFile`). A person without access gets "not found". Staff do not read prescriptions; staff read verification documents and each opening is audited. Deletion: expiry job every 10 min (48 h after the request or order ends, 30 days at most, with the account).
+- **Reviews are visible at once** and moderated after the fact (report or staff list), not held back: a pharmacy cannot be unfairly hidden by a queue, and staff can hide any review with a reason. Authors are never named.
+- **Slots:** 30-minute steps, computed on the server from the opening hours in Europe/Paris (an on-duty day is open all day), from 30 minutes ahead to 48 hours; the chosen time must be one the server offers. Delivery stays labelled "Simulated".
+- **Messages** are text only, 500 characters, 100 per order, 10 a minute per person; the other side gets a neutral notification without the text; a message removed by moderation is shown as removed to both sides.

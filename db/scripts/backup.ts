@@ -43,7 +43,9 @@ try {
   const manifest: Record<string, unknown> = { createdAt: new Date().toISOString(), applied, pending, rows: {} as Record<string, number> };
   let bytes = 0;
   for (const t of tables) {
-    const r = await client.query(`SELECT * FROM "${t}"`);
+    // Private files (prescriptions, verification documents) are never copied into a backup folder: metadata only.
+    const cols = t === 'private_files' ? 'id, purpose, owner_user_id, request_id, filename, content_type, size_bytes, created_at, expires_at' : '*';
+    const r = await client.query(`SELECT ${cols} FROM "${t}"`);
     const file = path.join(dir, `${t}.json`);
     fs.writeFileSync(file, JSON.stringify(r.rows));
     bytes += fs.statSync(file).size;

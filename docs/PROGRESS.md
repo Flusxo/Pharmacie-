@@ -4,6 +4,17 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Status (2026-10-23) — what works, what is simulated, what is not verified
 
+### Update 2026-10-26 (fourth round, payments untouched)
+
+Done and pushed (migrations 011 and 012 applied to Neon after a backup; only tables and columns added):
+- **Private files in Neon** (your choice): prescription upload on a request (JPEG, PNG, WebP, PDF, 2 MB, 3 per request, content checked on the server, only the chosen pharmacy opens it, automatic deletion, access tests), and verification documents for doctor and pharmacy applicants with a staff checklist (registry number, name, readable) that must be complete before approving, every staff opening in the audit log.
+- **Messages on an order** (text only, 500 characters, 10 a minute, reportable, no medical advice notice), **reviews** of delivered orders (once, anonymous, public on the pharmacy page, the pharmacy can report), **moderation** in the staff reports tab (the reported text, hide or show with a reason, audit logged) plus a list of the latest reviews, and **time slots** (30 minutes inside the opening hours, next 48 hours, pickup or simulated delivery, shown on the pharmacy's order cards and Today board).
+- Screenshots of these screens: docs/screenshots/new-b (1440, 768, 390 px, light and dark, fr and en), made on an isolated test database with `SHOTS=1 npm run e2e -- e2e/new-screens.spec.ts`.
+
+Checks: build, lint, 171 backend and 94 frontend unit tests and the speed budget pass. The last full e2e run had 77 passed, 1 skipped (the on-demand screenshots) and 2 failed: the role-tips test and the 3D reduced-motion test. Both pass when run alone (the 3D one in 18 s; in the long run it hit its 4-minute limit at the end, when software WebGL is slowest), so they are load-dependent, not broken; the cause of the tips test under load was not found.
+
+Not built yet (priority order): (1) family profiles; (2) refill reminders; (3) staff feature switches and a weekly summary; (4) web push (needs a service worker, deliberately absent); (5) a "who looked at my data" log for patients; (6) expiry alerts (no expiry data in the stock); (7) the how-it-works page keeps its 5-step diagram; (8) 3D category tiles and a camera move between pages; (9) reviews have no reply from the pharmacy; messages have no attachments or read receipts.
+
 ### Update 2026-10-25 (third round, payments untouched)
 
 Done and pushed (migrations 009 and 010 applied to Neon after a backup each; only tables and columns were added):
