@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useFeatures } from '../lib/features';
 import { useI18n } from '../i18n';
 import { ApiError, api } from '../lib/api';
 import { formatDateTime } from '../lib/format';
@@ -32,6 +33,7 @@ export function OrderMessages({
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(!collapsed);
+  const features = useFeatures();
   const base = `/${side}/orders/${orderId}/messages`;
 
   const load = useCallback(
@@ -97,7 +99,12 @@ export function OrderMessages({
           </li>
         ))}
       </ul>
-      <form className="row" style={{ gap: 8 }} onSubmit={send}>
+      {!features.messages && (
+        <p className="alert warn small" role="status" style={{ margin: 0 }} data-testid="messages-off">
+          {t('feat.messagesOff')}
+        </p>
+      )}
+      <form className="row" style={{ gap: 8, display: features.messages ? undefined : 'none' }} onSubmit={send}>
         <label className="field" style={{ flex: 1 }}>
           <span className="sr-only">{t('msg.label')}</span>
           <input

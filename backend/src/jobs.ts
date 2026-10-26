@@ -4,6 +4,7 @@ import { runExpiryJob } from './services/lifecycle.js';
 import { runStockWatchJob } from './services/watches.js';
 import { runFileCleanupJob } from './services/files.js';
 import { runRefillJob } from './services/refills.js';
+import { runWeeklySummaryJob } from './services/weekly.js';
 
 /** Scheduled jobs: pharmacy response window (30 min) and request expiry (24 h). Runs every 60 s. */
 export function startJobs(): void {
@@ -34,6 +35,12 @@ export function startJobs(): void {
       .catch((err: Error) => log('error', 'refill_job_failed', { err: err.message }));
   void refills();
   setInterval(() => void refills(), 15 * 60_000).unref();
+  const weekly = () =>
+    runWeeklySummaryJob()
+      .then((r) => r.sent && log('info', 'weekly_summary_sent', r))
+      .catch((err: Error) => log('error', 'weekly_summary_failed', { err: err.message }));
+  void weekly();
+  setInterval(() => void weekly(), 30 * 60_000).unref();
   void cleanup();
   setInterval(() => void cleanup(), 10 * 60_000).unref();
   tick();

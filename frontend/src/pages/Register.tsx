@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { useFeatures } from '../lib/features';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { ApiError, api } from '../lib/api';
@@ -74,6 +75,7 @@ function AddressField({ value, onPick, required }: { value: BanResult | null; on
 
 export function RegisterPage() {
   const { t } = useI18n();
+  const features = useFeatures();
   const [params] = useSearchParams();
   const initial = params.get('role');
   const [role, setRole] = useState<Role>(initial === 'doctor' || initial === 'pharmacy' ? initial : 'patient');
@@ -88,6 +90,10 @@ export function RegisterPage() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!features.signups) {
+      setError(t('feat.signupsOff'));
+      return;
+    }
     if (role === 'pharmacy' && !addr) {
       setError(t('register.addressRequired'));
       return;
@@ -153,6 +159,11 @@ export function RegisterPage() {
         ))}
       </div>
       {role !== 'patient' && <div className="alert info">{t('register.proNotice')}</div>}
+      {!features.signups && (
+        <p className="alert warn" role="status" data-testid="signups-closed">
+          {t('feat.signupsOff')}
+        </p>
+      )}
       <form className="stack" onSubmit={submit} noValidate>
         {role === 'pharmacy' ? (
           <>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useFeatures } from '../lib/features';
 import { useI18n } from '../i18n';
 import { ApiError, api } from '../lib/api';
 import { useToast } from '../lib/toast';
@@ -19,6 +20,7 @@ const timeOf = (iso: string, locale: string) =>
 export function SlotPicker({ orderId, status }: { orderId: string; status: string }) {
   const { t, locale } = useI18n();
   const toast = useToast();
+  const features = useFeatures();
   const [offer, setOffer] = useState<Offer | null>(null);
   const [day, setDay] = useState('');
   const [start, setStart] = useState('');
@@ -46,7 +48,7 @@ export function SlotPicker({ orderId, status }: { orderId: string; status: strin
     if (first && !days.has(day)) setDay(first);
   }, [days, day]);
 
-  if (!open || !offer) return null;
+  if (!open || !offer || !features.slots) return null;
   const save = async () => {
     setError(null);
     try {

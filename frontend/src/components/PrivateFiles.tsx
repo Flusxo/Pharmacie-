@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useFeatures } from '../lib/features';
 import { useI18n } from '../i18n';
 import { ApiError, api, getToken } from '../lib/api';
 import { apiUrl } from '../lib/apiBase';
@@ -83,6 +84,7 @@ export function FileManager({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  const features = useFeatures();
 
   const load = useCallback(
     () =>
@@ -149,7 +151,12 @@ export function FileManager({
           </span>
         </div>
       ))}
-      {!readOnly && uploadPath && (
+      {!readOnly && uploadPath && !features.uploads && (
+        <p className="alert warn small" style={{ margin: 0 }}>
+          {t('feat.uploadsOff')}
+        </p>
+      )}
+      {!readOnly && uploadPath && features.uploads && (
         <>
           <input ref={input} type="file" accept={TYPES.join(',')} onChange={(e) => void onPick(e)} hidden data-testid="file-input" />
           <button

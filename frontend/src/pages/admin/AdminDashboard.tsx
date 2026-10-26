@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { FeatureSwitches } from '../../components/admin/FeatureSwitches';
+import { WeeklySummary } from '../../components/admin/WeeklySummary';
 import { Link } from 'react-router-dom';
 import { specialityLabel, useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n';
@@ -362,7 +364,9 @@ export function AdminDashboard() {
       {tab === 'reviews' && <MedicineReviews canModerate={canModerate} onChanged={refreshAll} />}
       {tab === 'analytics' && (
         <>
+          <WeeklySummary />
           <AnalyticsPanel />
+          <FeatureSwitches canChange={role === 'admin'} />
           <IntegrationsPanel />
         </>
       )}

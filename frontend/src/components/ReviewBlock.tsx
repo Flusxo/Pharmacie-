@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useFeatures } from '../lib/features';
 import { useI18n } from '../i18n';
 import { ApiError, api } from '../lib/api';
 import { formatDate } from '../lib/format';
@@ -31,6 +32,7 @@ export function ReviewForm({ orderId }: { orderId: string }) {
   const { t } = useI18n();
   const toast = useToast();
   const [done, setDone] = useState<{ rating: number; comment: string | null; status: string } | null | undefined>(undefined);
+  const features = useFeatures();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +41,7 @@ export function ReviewForm({ orderId }: { orderId: string }) {
       .then((r) => setDone(r.review))
       .catch(() => setDone(null));
   }, [orderId]);
-  if (done === undefined) return null;
+  if (done === undefined || (!done && !features.reviews)) return null;
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);

@@ -25,6 +25,7 @@ import { profileBody } from '../pharmacyProfile.js';
 import { listPrescriptionFiles, pharmacyMayListRequestFiles } from '../services/files.js';
 import { listMessages, pharmacyReviews, postMessage, reportMessage, reportReview } from '../services/conversations.js';
 import { messageLimiter } from './files.js';
+import { requireFeature } from '../services/settings.js';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 export const pharmacyRouter = Router();
@@ -454,11 +455,16 @@ pharmacyRouter.get('/orders/:id/messages', async (req, res) => {
   const { id } = idParam.parse(req.params);
   res.json({ items: await listMessages(id, 'pharmacy', req.user!.id) });
 });
-pharmacyRouter.post('/orders/:id/messages', messageLimiter, async (req, res) => {
-  const { id } = idParam.parse(req.params);
-  const { body } = messageBody.parse(req.body);
-  res.status(201).json(await postMessage(id, 'pharmacy', req.user!.id, req.user!.actorId ?? req.user!.id, body));
-});
+pharmacyRouter.post(
+  '/orders/:id/messages',
+  requireFeature('messages', 'Messages are switched off for now.'),
+  messageLimiter,
+  async (req, res) => {
+    const { id } = idParam.parse(req.params);
+    const { body } = messageBody.parse(req.body);
+    res.status(201).json(await postMessage(id, 'pharmacy', req.user!.id, req.user!.actorId ?? req.user!.id, body));
+  },
+);
 pharmacyRouter.post('/messages/:id/report', async (req, res) => {
   const { id } = z.object({ id: z.coerce.number().int().positive() }).parse(req.params);
   const { reason } = z.object({ reason: z.string().trim().min(3).max(500) }).parse(req.body);

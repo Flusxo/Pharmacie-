@@ -18,6 +18,8 @@ import { requireStaff } from '../middleware/auth.js';
 import { errorAlertsConfigured } from '../monitoring.js';
 import { mailConfigured } from '../notify.js';
 import { listVerificationFiles } from '../services/files.js';
+import { FLAGS, listFlagDetails, setFlag } from '../services/settings.js';
+import { weeklySummary } from '../services/weekly.js';
 import { latestReviews, reportTargets, setHidden } from '../services/conversations.js';
 import { notify } from '../notify.js';
 import { addRoutes } from '../openapi.js';
@@ -42,6 +44,22 @@ async function audit(db: Db, actorId: string, action: string, target: string, re
 adminRouter.get('/users/:id/files', async (req, res) => {
   const { id } = idParam.parse(req.params);
   res.json({ items: await listVerificationFiles(id) });
+});
+
+/** Feature switches: read by any staff, changed by an admin only, with a reason (audit logged). */
+adminRouter.get('/features', async (_req, res) => {
+  res.json({ items: await listFlagDetails() });
+});
+adminRouter.put('/features/:name', adminOnly, async (req, res) => {
+  const { name } = z.object({ name: z.enum(FLAGS) }).parse(req.params);
+  const { on, reason } = z.object({ on: z.boolean(), reason: reasonField }).parse(req.body);
+  await setFlag(name, on, req.user!.id, reason);
+  res.json({ items: await listFlagDetails() });
+});
+
+/** The last 7 days next to the 7 days before (counts and averages of the whole service, no personal data). */
+adminRouter.get('/weekly-summary', async (_req, res) => {
+  res.json(await weeklySummary());
 });
 
 /** Which optional services are set up. Booleans only: no key, no address, nothing secret. */

@@ -7,6 +7,7 @@ import { PRIMARY_FRONTEND, RULES, config, isTest } from '../config.js';
 import { one, pool, query, tx, type Db } from '../db.js';
 import { HttpError, badRequest, conflict } from '../errors.js';
 import { requireAuth, signToken, type Role } from '../middleware/auth.js';
+import { requireFeature } from '../services/settings.js';
 import type { Request } from 'express';
 import { getProfile } from '../services/profile.js';
 import { emailField, idParam, latitude, longitude, passwordField } from '../validate.js';
@@ -63,7 +64,7 @@ async function createUser(email: string, password: string, role: Role, status: '
 const name = z.string().trim().min(1, 'is required').max(80);
 const language = z.enum(['fr', 'en']).optional();
 
-authRouter.post('/register/patient', registerLimiter, async (req, res) => {
+authRouter.post('/register/patient', requireFeature('signups', 'Sign-ups are closed for now.'), registerLimiter, async (req, res) => {
   const body = z
     .object({
       email: emailField,
@@ -98,7 +99,7 @@ authRouter.post('/register/patient', registerLimiter, async (req, res) => {
   res.status(201).json({ token: signToken({ id, role: 'patient' }, await startSession(req, id)), user: await getProfile(id) });
 });
 
-authRouter.post('/register/doctor', registerLimiter, async (req, res) => {
+authRouter.post('/register/doctor', requireFeature('signups', 'Sign-ups are closed for now.'), registerLimiter, async (req, res) => {
   const body = z
     .object({
       email: emailField,
@@ -126,7 +127,7 @@ authRouter.post('/register/doctor', registerLimiter, async (req, res) => {
   res.status(201).json({ token: signToken({ id, role: 'doctor' }, await startSession(req, id)), user: await getProfile(id) });
 });
 
-authRouter.post('/register/pharmacy', registerLimiter, async (req, res) => {
+authRouter.post('/register/pharmacy', requireFeature('signups', 'Sign-ups are closed for now.'), registerLimiter, async (req, res) => {
   const body = z
     .object({
       email: emailField,

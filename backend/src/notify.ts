@@ -23,6 +23,7 @@ export type NotificationKind =
   | 'review'
   | 'order_slot'
   | 'refill'
+  | 'weekly_summary'
   | 'password_reset';
 
 /** Neutral subjects: never contain medicine names. */
@@ -44,6 +45,7 @@ const SUBJECTS: Record<NotificationKind, string> = {
   review: 'New review of your pharmacy',
   order_slot: 'A time was chosen for an order',
   refill: 'Time to renew a medicine?',
+  weekly_summary: 'Your weekly summary is ready',
   password_reset: 'Reset your password',
 };
 

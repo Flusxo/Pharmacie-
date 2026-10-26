@@ -4,6 +4,7 @@ import { one, query } from '../db.js';
 import { notFound } from '../errors.js';
 import { addRoutes } from '../openapi.js';
 import { pharmacyReviews } from '../services/conversations.js';
+import { getFlags } from '../services/settings.js';
 import {
   MEDICINE_COLUMNS,
   PHARMACY_PUBLIC_COLUMNS,
@@ -74,6 +75,11 @@ publicRouter.get('/medicines/:id/pharmacies', async (req, res) => {
   res.json({ items: await nearbyForMedicine(id, loc.lat, loc.lon, loc.radiusKm) });
 });
 
+/** Which features are on (screens hide the ones that are switched off). */
+publicRouter.get('/features', async (_req, res) => {
+  res.json(await getFlags());
+});
+
 publicRouter.get('/pharmacies/nearby', async (req, res) => {
   const loc = location.parse(req.query);
   res.json({ items: await nearbyPharmacies(loc.lat, loc.lon, loc.radiusKm) });
@@ -105,6 +111,7 @@ addRoutes([
   ['get', '/api/medicines/categories', 'Public', 'Categories with counts'],
   ['get', '/api/medicines/:id', 'Public', 'Medicine details with generics (same substance and dosage)'],
   ['get', '/api/medicines/:id/pharmacies', 'Public', 'Nearby eligible pharmacies with stock for this medicine, sorted by distance'],
+  ['get', '/api/features', 'Public', 'Which features are switched on'],
   ['get', '/api/pharmacies/nearby', 'Public', 'Eligible pharmacies near a point'],
   ['get', '/api/pharmacies/:id/reviews', 'Public', 'Average rating and latest visible reviews (authors never named)'],
   ['get', '/api/pharmacies/:id', 'Public', 'Public pharmacy information'],

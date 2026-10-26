@@ -14,6 +14,7 @@ import {
   saveVerification,
 } from '../services/files.js';
 import { idParam } from '../validate.js';
+import { requireFeature } from '../services/settings.js';
 
 /** Download of a private file, and the applicant's own verification documents. */
 export const filesRouter = Router();
@@ -54,12 +55,18 @@ filesRouter.get('/me/verification-files', requireAuth, async (req, res) => {
   res.json({ items: await listVerificationFiles(req.user!.id) });
 });
 
-filesRouter.post('/me/verification-files', requireAuth, rawUpload, async (req, res) => {
-  applicantOnly(req.user!.role, !!req.user!.pharmacyId);
-  const { buf, type } = readBody(req.body, req.headers['content-type']);
-  const name = cleanFilename(req.header('x-filename'), type);
-  res.status(201).json(await saveVerification(req.user!.id, name, buf, type));
-});
+filesRouter.post(
+  '/me/verification-files',
+  requireAuth,
+  requireFeature('uploads', 'Sending files is switched off for now.'),
+  rawUpload,
+  async (req, res) => {
+    applicantOnly(req.user!.role, !!req.user!.pharmacyId);
+    const { buf, type } = readBody(req.body, req.headers['content-type']);
+    const name = cleanFilename(req.header('x-filename'), type);
+    res.status(201).json(await saveVerification(req.user!.id, name, buf, type));
+  },
+);
 
 filesRouter.delete('/me/verification-files/:id', requireAuth, async (req, res) => {
   applicantOnly(req.user!.role, !!req.user!.pharmacyId);
