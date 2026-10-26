@@ -5,6 +5,7 @@ import { runStockWatchJob } from './services/watches.js';
 import { runFileCleanupJob } from './services/files.js';
 import { runRefillJob } from './services/refills.js';
 import { runWeeklySummaryJob } from './services/weekly.js';
+import { runAccessLogCleanup } from './services/accessLog.js';
 
 /** Scheduled jobs: pharmacy response window (30 min) and request expiry (24 h). Runs every 60 s. */
 export function startJobs(): void {
@@ -41,6 +42,9 @@ export function startJobs(): void {
       .catch((err: Error) => log('error', 'weekly_summary_failed', { err: err.message }));
   void weekly();
   setInterval(() => void weekly(), 30 * 60_000).unref();
+  const accessCleanup = () => runAccessLogCleanup().catch((err: Error) => log('error', 'access_log_cleanup_failed', { err: err.message }));
+  void accessCleanup();
+  setInterval(() => void accessCleanup(), 6 * 3_600_000).unref();
   void cleanup();
   setInterval(() => void cleanup(), 10 * 60_000).unref();
   tick();

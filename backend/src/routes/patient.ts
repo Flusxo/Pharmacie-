@@ -23,6 +23,7 @@ import {
 import { messageLimiter } from './files.js';
 import { cleanFilename, deleteOwnFile, listPrescriptionFiles, readBody, savePrescription } from '../services/files.js';
 import { rawUpload } from './files.js';
+import { listAccessLog } from '../services/accessLog.js';
 import { requireFeature } from '../services/settings.js';
 import { REMINDER_DAYS, createReminder, deleteReminder, listReminders, repeatRequest } from '../services/refills.js';
 import { RELATIONS, addFamilyMember, listFamily, removeFamilyMember } from '../services/family.js';
@@ -195,6 +196,7 @@ patientRouter.get('/export', async (req, res) => {
     followedMedicines: await listFollowed(id),
     familyMembers: await listFamily(id),
     refillReminders: await listReminders(id),
+    accessLog: await listAccessLog(id),
     notifications: await query('SELECT kind, body, read_at AS "readAt", created_at AS "createdAt" FROM notifications WHERE user_id = $1', [
       id,
     ]),
@@ -224,6 +226,7 @@ patientRouter.delete('/account', async (req, res) => {
     await c.query('DELETE FROM notifications WHERE user_id = $1', [id]);
     await c.query('DELETE FROM stock_watches WHERE patient_id = $1', [id]);
     await c.query('DELETE FROM refill_reminders WHERE patient_id = $1', [id]);
+    await c.query('DELETE FROM access_log WHERE patient_id = $1', [id]);
     await c.query('UPDATE requests SET for_member_id = NULL WHERE patient_id = $1', [id]);
     await c.query('DELETE FROM family_members WHERE account_id = $1', [id]);
     await c.query('DELETE FROM private_files WHERE owner_user_id = $1', [id]);
@@ -335,6 +338,11 @@ patientRouter.post('/requests/:id/repeat', async (req, res) => {
   res.status(r.duplicate ? 200 : 201).json(r);
 });
 
+// Who looked at my data (a pharmacy opening my request or order, a doctor I linked, the staff area)
+patientRouter.get('/access-log', async (req, res) => {
+  res.json({ items: await listAccessLog(req.user!.id) });
+});
+
 // Family: people this account makes requests for (a first name and a relation, nothing else)
 patientRouter.get('/family', async (req, res) => {
   res.json({ items: await listFamily(req.user!.id) });
@@ -381,6 +389,7 @@ addRoutes([
   ['post', '/api/patient/orders/:id/review', 'Patient', 'Review a delivered order (1-5 and a short comment)', 'bearer'],
   ['get', '/api/patient/orders/:id/slots', 'Patient', 'Free 30-minute times in the pharmacy opening hours (next 48 hours)', 'bearer'],
   ['put', '/api/patient/orders/:id/slot', 'Patient', 'Choose a pickup or (simulated) delivery time', 'bearer'],
+  ['get', '/api/patient/access-log', 'Patient', 'Who looked at my data (last 12 months)', 'bearer'],
   ['get', '/api/patient/reminders', 'Patient', 'My refill reminders', 'bearer'],
   ['post', '/api/patient/reminders', 'Patient', 'Remind me in 7, 14, 30, 60 or 90 days to renew a medicine I requested', 'bearer'],
   ['delete', '/api/patient/reminders/:id', 'Patient', 'Remove a reminder', 'bearer'],

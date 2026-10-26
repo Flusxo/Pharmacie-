@@ -20,6 +20,7 @@ import { mailConfigured } from '../notify.js';
 import { listVerificationFiles } from '../services/files.js';
 import { FLAGS, listFlagDetails, setFlag } from '../services/settings.js';
 import { weeklySummary } from '../services/weekly.js';
+import { logOrderViews, logPatientViews } from '../services/accessLog.js';
 import { latestReviews, reportTargets, setHidden } from '../services/conversations.js';
 import { notify } from '../notify.js';
 import { addRoutes } from '../openapi.js';
@@ -119,6 +120,11 @@ adminRouter.get('/users', async (req, res) => {
       ORDER BY u.created_at DESC LIMIT $4 OFFSET $5`,
     [q.role ?? null, q.status ?? null, q.q || null, RULES.PAGE_SIZE, (q.page - 1) * RULES.PAGE_SIZE],
   );
+  await logPatientViews(
+    'staff',
+    { role: 'staff', userId: req.user!.id },
+    rows.filter((r) => (r as unknown as { role: string }).role === 'patient').map((r) => (r as unknown as { id: string }).id),
+  );
   res.json({ items: rows.map(({ total: _t, ...r }) => r), total: rows[0]?.total ?? 0, page: q.page, pageSize: RULES.PAGE_SIZE });
 });
 
@@ -172,17 +178,21 @@ adminRouter.get('/orders', async (req, res) => {
   const q = z
     .object({ status: z.enum(['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled']).optional() })
     .parse(req.query);
-  res.json({
-    items: await query(
-      `SELECT o.id, o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt", o.cancel_requested_at AS "cancelRequestedAt",
+  const items = await query<{ id: string }>(
+    `SELECT o.id, o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt", o.cancel_requested_at AS "cancelRequestedAt",
               p.name AS "pharmacyName", pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName",
               (SELECT count(*) FROM request_items ri WHERE ri.request_id = o.request_id)::int AS "itemCount",
               (SELECT status FROM payments pay WHERE pay.order_id = o.id) AS "paymentStatus"
          FROM orders o JOIN pharmacies p ON p.user_id = o.pharmacy_id JOIN patients pt ON pt.user_id = o.patient_id
         WHERE ($1::order_status IS NULL OR o.status = $1) ORDER BY o.created_at DESC LIMIT 200`,
-      [q.status ?? null],
-    ),
-  });
+    [q.status ?? null],
+  );
+  await logOrderViews(
+    'staff',
+    { role: 'staff', userId: req.user!.id },
+    items.map((o) => o.id),
+  );
+  res.json({ items });
 });
 
 adminRouter.get('/reports', async (req, res) => {

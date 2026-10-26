@@ -14,6 +14,7 @@ import {
   saveVerification,
 } from '../services/files.js';
 import { idParam } from '../validate.js';
+import { logRequestViews } from '../services/accessLog.js';
 import { requireFeature } from '../services/settings.js';
 
 /** Download of a private file, and the applicant's own verification documents. */
@@ -35,7 +36,11 @@ export const rawUpload = express.raw({ type: [...ALLOWED_TYPES], limit: MAX_FILE
 filesRouter.get('/files/:id', requireAuth, async (req, res) => {
   const { id } = idParam.parse(req.params);
   const u = req.user!;
-  const f = await readFile(id, u, u.role === 'pharmacy' ? (u.pharmacyId ?? u.id) : null);
+  const pharmacyId = u.role === 'pharmacy' ? (u.pharmacyId ?? u.id) : null;
+  const f = await readFile(id, u, pharmacyId);
+  // A pharmacy opening a patient's prescription is written to that patient's access log.
+  if (f.purpose === 'prescription' && f.request_id && pharmacyId)
+    await logRequestViews('prescription', { role: 'pharmacy', userId: pharmacyId }, [f.request_id]);
   res.setHeader('Content-Type', f.content_type);
   res.setHeader('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(f.filename)}`);
   // Never stored by a browser or a proxy; never run as a page.

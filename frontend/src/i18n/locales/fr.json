@@ -1260,5 +1260,14 @@
   "week.reportsResolved": "Signalements traités",
   "week.reviews": "Avis publiés",
   "week.messages": "Messages échangés",
-  "week.files": "Fichiers envoyés"
+  "week.files": "Fichiers envoyés",
+  "access.title": "Qui a consulté mes données",
+  "access.intro": "Chaque fois qu’une autre personne ouvre vos données, c’est noté ici (les 12 derniers mois). Seules la pharmacie que vous avez choisie, les médecins dont vous avez confirmé le lien et l’équipe de counter. peuvent le faire.",
+  "access.none": "Personne pour le moment.",
+  "access.more": "Voir plus",
+  "access.request": "{who} a consulté votre demande.",
+  "access.order": "{who} a ouvert votre commande.",
+  "access.prescription": "{who} a ouvert l’ordonnance que vous avez jointe.",
+  "access.doctor": "{who} a consulté votre nom et votre date de naissance (vous avez confirmé ce lien).",
+  "access.staff": "L’équipe de counter. a consulté votre compte ou vos commandes pour modérer ou vous aider."
 }

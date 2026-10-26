@@ -25,6 +25,7 @@ import { profileBody } from '../pharmacyProfile.js';
 import { listPrescriptionFiles, pharmacyMayListRequestFiles } from '../services/files.js';
 import { listMessages, pharmacyReviews, postMessage, reportMessage, reportReview } from '../services/conversations.js';
 import { messageLimiter } from './files.js';
+import { logOrderViews, logRequestViews } from '../services/accessLog.js';
 import { requireFeature } from '../services/settings.js';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
@@ -82,7 +83,13 @@ pharmacyRouter.use((req, res, next) => {
 
 // Requests and orders
 pharmacyRouter.get('/incoming', async (req, res) => {
-  res.json({ items: await listIncoming(req.user!.id) });
+  const items = (await listIncoming(req.user!.id)) as { id: string }[];
+  await logRequestViews(
+    'request',
+    { role: 'pharmacy', userId: req.user!.id },
+    items.map((r) => r.id),
+  );
+  res.json({ items });
 });
 
 pharmacyRouter.post('/requests/:id/accept', async (req, res) => {
@@ -104,12 +111,21 @@ pharmacyRouter.post('/requests/:id/substitutions', async (req, res) => {
 
 pharmacyRouter.get('/orders', async (req, res) => {
   const { scope } = z.object({ scope: z.enum(['active', 'all']).default('active') }).parse(req.query);
-  res.json({ items: await listPharmacyOrders(req.user!.id, scope) });
+  const items = (await listPharmacyOrders(req.user!.id, scope)) as { id: string; status: string }[];
+  // Only orders in progress count as "opened": the list of old orders is history, not a fresh look at the patient.
+  await logOrderViews(
+    'order',
+    { role: 'pharmacy', userId: req.user!.id },
+    items.filter((o) => o.status !== 'delivered' && o.status !== 'cancelled').map((o) => o.id),
+  );
+  res.json({ items });
 });
 
 pharmacyRouter.get('/orders/:id', async (req, res) => {
   const { id } = idParam.parse(req.params);
-  res.json({ order: await getPharmacyOrder(id, req.user!.id) });
+  const order = await getPharmacyOrder(id, req.user!.id);
+  await logOrderViews('order', { role: 'pharmacy', userId: req.user!.id }, [id]);
+  res.json({ order });
 });
 
 pharmacyRouter.get('/orders/:id/payment', async (req, res) => {
@@ -441,7 +457,9 @@ const pickupLimiter = rateLimit({
 });
 pharmacyRouter.post('/pickup/check', pickupLimiter, async (req, res) => {
   const b = z.object({ orderId: uuid, code: z.string().trim().min(4).max(20) }).parse(req.body);
-  res.json(await previewPickup(b.orderId, req.user!.id, b.code));
+  const preview = await previewPickup(b.orderId, req.user!.id, b.code);
+  await logOrderViews('order', { role: 'pharmacy', userId: req.user!.id }, [b.orderId]);
+  res.json(preview);
 });
 pharmacyRouter.post('/orders/:id/pickup', pickupLimiter, async (req, res) => {
   const { id } = idParam.parse(req.params);

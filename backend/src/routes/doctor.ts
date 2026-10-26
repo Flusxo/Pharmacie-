@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { logPatientViews } from '../services/accessLog.js';
 import { z } from 'zod';
 import { one, pool, query } from '../db.js';
 import { conflict, notFound } from '../errors.js';
@@ -28,6 +29,12 @@ doctorRouter.get('/patients', async (req, res) => {
       WHERE dp.doctor_id = $1 AND u.deleted_at IS NULL
       ORDER BY dp.confirmed DESC, p.last_name`,
     [req.user!.id],
+  );
+  // The doctor sees name and birth date of patients who confirmed the link: those patients can read that in their log.
+  await logPatientViews(
+    'doctor',
+    { role: 'doctor', userId: req.user!.id },
+    rows.filter((r) => r.confirmed).map((r) => (r as unknown as { id: string }).id),
   );
   res.json({ items: rows.map((r) => ({ ...r, email: r.confirmed ? r.email : maskEmail(r.email) })) });
 });

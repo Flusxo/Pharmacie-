@@ -1260,5 +1260,14 @@
   "week.reportsResolved": "Reports handled",
   "week.reviews": "Reviews published",
   "week.messages": "Messages exchanged",
-  "week.files": "Files sent"
+  "week.files": "Files sent",
+  "access.title": "Who looked at my data",
+  "access.intro": "Every time someone else opens your data, it is written here (last 12 months). Only the pharmacy you chose, the doctors whose link you confirmed and the counter. team can do it.",
+  "access.none": "Nobody yet.",
+  "access.more": "Show more",
+  "access.request": "{who} looked at your request.",
+  "access.order": "{who} opened your order.",
+  "access.prescription": "{who} opened the prescription you attached.",
+  "access.doctor": "{who} looked at your name and birth date (you confirmed this link).",
+  "access.staff": "The counter. team looked at your account or orders to moderate or help."
 }
