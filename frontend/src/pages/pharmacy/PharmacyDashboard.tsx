@@ -17,6 +17,7 @@ import { BarcodeScan } from '../../components/pharmacy/BarcodeScan';
 import { OnboardingTour } from '../../components/Tour';
 import { ProfileTab } from '../../components/pharmacy/ProfileTab';
 import { TodayBoard } from '../../components/pharmacy/TodayBoard';
+import { FileManager } from '../../components/PrivateFiles';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { AnimatedNumber, Pop } from '../../components/motion';
 import { duration, easeOut } from '../../motion';
@@ -47,6 +48,7 @@ interface Incoming {
 }
 interface PharmacyOrder {
   id: string;
+  requestId: string;
   status: OrderStatus;
   createdAt: string;
   cancelRequestedAt: string | null;
@@ -196,6 +198,13 @@ function IncomingTab({ onChange }: { onChange: () => void }) {
                 <CountdownRing until={r.answerBy} />
               )}
             </div>
+            <FileManager
+              readOnly
+              collapsed
+              title={t('files.rxPharmacy')}
+              listPath={`/pharmacy/requests/${r.id}/files`}
+              testId="rx-files-pharmacy"
+            />
             <div className="row" style={{ gap: 6 }}>
               {r.source === 'doctor' && <span className="badge info">{t('dash.fromDoctor')}</span>}
               {r.hasPrescriptionNote && <span className="badge info">{t('dash.prescriptionStated')}</span>}
@@ -349,6 +358,13 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
           </li>
         ))}
       </ul>
+      <FileManager
+        readOnly
+        collapsed
+        title={t('files.rxPharmacy')}
+        listPath={`/pharmacy/requests/${o.requestId}/files`}
+        testId="rx-files-order"
+      />
       {o.instructions && (
         <p className="small">
           <strong>{t('dash.instructions')} :</strong> {o.instructions}

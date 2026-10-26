@@ -14,6 +14,13 @@ export const FR: Record<string, string> = {
   'A medicine you follow is available': 'Un médicament que vous suivez est disponible',
   'This patient has already confirmed the link.': 'Ce patient a déjà confirmé le lien.',
   'A reminder was already sent in the last 24 hours.': 'Un rappel a déjà été envoyé ces dernières 24 heures.',
+  'Send the file itself with its type (JPEG, PNG, WebP or PDF).': 'Envoyez le fichier lui-même avec son type (JPEG, PNG, WebP ou PDF).',
+  'This file is not a JPEG, PNG, WebP or PDF, or its content does not match its type.':
+    'Ce fichier n’est pas un JPEG, PNG, WebP ou PDF, ou son contenu ne correspond pas à son type.',
+  'This request is over: files can no longer be added.': 'Cette demande est terminée : on ne peut plus y ajouter de fichier.',
+  'At most 3 files can be attached to a request.': 'Une demande peut avoir au plus 3 fichiers.',
+  'At most 5 documents can be sent.': 'Au plus 5 documents peuvent être envoyés.',
+  'File not found.': 'Fichier introuvable.',
   'Team member not found.': 'Membre de l’équipe introuvable.',
   'This pickup code does not match an order of this pharmacy.': 'Ce code de retrait ne correspond à aucune commande de cette pharmacie.',
   'This order is not ready for pickup yet.': 'Cette commande n’est pas encore prête pour le retrait.',

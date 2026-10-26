@@ -2,6 +2,7 @@ import { log } from './logger.js';
 import { pool } from './db.js';
 import { runExpiryJob } from './services/lifecycle.js';
 import { runStockWatchJob } from './services/watches.js';
+import { runFileCleanupJob } from './services/files.js';
 
 /** Scheduled jobs: pharmacy response window (30 min) and request expiry (24 h). Runs every 60 s. */
 export function startJobs(): void {
@@ -22,6 +23,12 @@ export function startJobs(): void {
     runStockWatchJob()
       .then((r) => r.notified && log('info', 'stock_alerts_sent', r))
       .catch((err: Error) => log('error', 'stock_watch_job_failed', { err: err.message }));
+  const cleanup = () =>
+    runFileCleanupJob()
+      .then((r) => r.deleted && log('info', 'files_deleted', r))
+      .catch((err: Error) => log('error', 'file_cleanup_failed', { err: err.message }));
+  void cleanup();
+  setInterval(() => void cleanup(), 10 * 60_000).unref();
   tick();
   void breaks();
   void watches();

@@ -19,6 +19,7 @@ import { pharmacyRouter } from './routes/pharmacy.js';
 import { commonRouter } from './routes/common.js';
 import { contactRouter } from './routes/contact.js';
 import { adminRouter } from './routes/admin.js';
+import { filesRouter } from './routes/files.js';
 import { openapiSpec } from './openapi.js';
 
 export function createApp(): Express {
@@ -111,6 +112,7 @@ export function createApp(): Express {
   app.use('/api', publicRouter);
   app.use('/api', contactRouter);
   app.use('/api', commonRouter);
+  app.use('/api', filesRouter);
   if (fakeEnabled()) {
     // Simulated Stripe checkout (development and e2e only; the server refuses to start with it in production).
     app.post('/api/dev/fake-stripe/:sessionId/complete', requireRole('patient'), async (req, res) => {

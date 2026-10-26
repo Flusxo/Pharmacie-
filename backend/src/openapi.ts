@@ -10,6 +10,7 @@ const ROUTES: Route[] = [
   ['post', '/api/auth/register/pharmacy', 'Auth', 'Register a pharmacy (pending until verified)'],
   ['post', '/api/auth/login', 'Auth', 'Log in (all roles)'],
   ['get', '/api/auth/me', 'Auth', 'Current user', 'bearer'],
+  ['get', '/api/admin/users/:id/files', 'Admin', 'Verification documents an applicant sent (staff)', 'bearer'],
   ['get', '/api/admin/integrations', 'Admin', 'Which optional services are set up (booleans only)', 'bearer'],
   ['get', '/api/auth/sessions', 'Auth', 'My logged-in devices', 'bearer'],
   ['delete', '/api/auth/sessions/:id', 'Auth', 'Sign one device out', 'bearer'],

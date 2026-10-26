@@ -11,6 +11,8 @@ import { cancelOrderByPatient, getPatientOrder, listPatientOrders } from '../ser
 import { getPayment, getReceipt, startPayment } from '../services/payments.js';
 import { getProfile } from '../services/profile.js';
 import { followMedicine, listFollowed, unfollowMedicine } from '../services/watches.js';
+import { cleanFilename, deleteOwnFile, listPrescriptionFiles, readBody, savePrescription } from '../services/files.js';
+import { rawUpload } from './files.js';
 import {
   cancelRequest,
   choosePharmacy,
@@ -195,6 +197,7 @@ patientRouter.delete('/account', async (req, res) => {
     await c.query('DELETE FROM doctor_patients WHERE patient_id = $1', [id]);
     await c.query('DELETE FROM notifications WHERE user_id = $1', [id]);
     await c.query('DELETE FROM stock_watches WHERE patient_id = $1', [id]);
+    await c.query('DELETE FROM private_files WHERE owner_user_id = $1', [id]);
     await c.query('UPDATE user_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [id]);
     await c.query(
       `UPDATE patients SET first_name = 'Deleted', last_name = 'user', birth_date = NULL, phone = NULL, address = NULL, latitude = NULL, longitude = NULL WHERE user_id = $1`,
@@ -207,6 +210,24 @@ patientRouter.delete('/account', async (req, res) => {
     await c.query(`UPDATE orders SET share_token = NULL WHERE patient_id = $1`, [id]);
   });
   res.json({ deleted: true });
+});
+
+// Prescription photo or PDF on one of my requests (kept privately; only the pharmacy I chose can open it)
+patientRouter.get('/requests/:id/files', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  if (!(await one('SELECT 1 FROM requests WHERE id = $1 AND patient_id = $2', [id, req.user!.id]))) throw notFound('Request not found.');
+  res.json({ items: await listPrescriptionFiles(id) });
+});
+patientRouter.post('/requests/:id/files', rawUpload, async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const { buf, type } = readBody(req.body, req.headers['content-type']);
+  const meta = await savePrescription(req.user!.id, id, cleanFilename(req.header('x-filename'), type), buf, type);
+  res.status(201).json(meta);
+});
+patientRouter.delete('/files/:id', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  await deleteOwnFile(id, req.user!.id, 'prescription');
+  res.status(204).end();
 });
 
 // "Notify me when it is back in stock"
@@ -225,6 +246,15 @@ patientRouter.delete('/watches/:id', async (req, res) => {
 });
 
 addRoutes([
+  ['get', '/api/patient/requests/:id/files', 'Patient', 'Prescription files attached to my request', 'bearer'],
+  [
+    'post',
+    '/api/patient/requests/:id/files',
+    'Patient',
+    'Attach a prescription (raw JPEG, PNG, WebP or PDF, at most 2 MB, 3 per request; X-Filename header)',
+    'bearer',
+  ],
+  ['delete', '/api/patient/files/:id', 'Patient', 'Remove one of my prescription files', 'bearer'],
   ['get', '/api/patient/watches', 'Patient', 'Medicines I follow for a back-in-stock notice', 'bearer'],
   ['post', '/api/patient/watches', 'Patient', 'Follow a medicine: one notice when a nearby pharmacy has it again', 'bearer'],
   ['delete', '/api/patient/watches/:id', 'Patient', 'Stop following a medicine (id = medicine id)', 'bearer'],

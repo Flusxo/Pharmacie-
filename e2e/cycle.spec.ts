@@ -113,12 +113,21 @@ test.describe('full cycle across roles (Phase 8)', () => {
     await loginWithDemo(page, 'Démo (pending)', 'Pharmacie');
     await expect(page).toHaveURL(/\/waiting$/);
     await expect(page.getByTestId('waiting')).toContainText('En attente de validation');
+    // The applicant sends a document for the verification (a tiny valid PNG).
+    const png = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(40, 1)]);
+    await page.getByTestId('file-input').setInputFiles({ name: 'autorisation.png', mimeType: 'image/png', buffer: png });
+    await expect(page.getByTestId('verification-files').getByTestId('private-file')).toContainText('autorisation.png');
 
     const admin = await newPage(browser);
     await admin.goto('/login/staff');
     await admin.getByTestId('demo-panel').getByRole('button', { name: 'Admin' }).click();
     await admin.getByRole('button', { name: 'Se connecter' }).click();
     const row = admin.getByTestId('verification').filter({ hasText: 'Pharmacie Démo' });
+    // The staff see the document, and cannot approve before the checklist is complete.
+    await row.getByText('Justificatifs envoyés').click();
+    await expect(row.getByTestId('private-file')).toContainText('autorisation.png');
+    await expect(row.getByRole('button', { name: 'Valider' })).toBeDisabled();
+    for (const label of [/format/, /nom correspond/, /lisible/]) await row.getByLabel(label).check();
     await row.getByRole('button', { name: 'Valider' }).click();
     await expect(row).toHaveCount(0);
     await admin.getByRole('tab', { name: 'Journal d’audit' }).click();

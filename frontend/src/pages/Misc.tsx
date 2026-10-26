@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FileManager } from '../components/PrivateFiles';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { homeFor, useAuth } from '../lib/auth';
@@ -34,6 +35,16 @@ export function WaitingPage() {
       <h1>{t('waiting.title')}</h1>
       <p className="muted">{t('waiting.text')}</p>
       {reason && <div className="alert error">{t('waiting.rejected', { reason })}</div>}
+      <div style={{ textAlign: 'left' }}>
+        <FileManager
+          title={t('files.verifTitle')}
+          help={t('files.verifHelp')}
+          listPath="/me/verification-files"
+          uploadPath="/me/verification-files"
+          deletePath={(fid) => `/me/verification-files/${fid}`}
+          testId="verification-files"
+        />
+      </div>
       <button
         type="button"
         className="btn"

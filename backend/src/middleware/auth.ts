@@ -78,7 +78,9 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
     const s = await one<{ id: string }>('SELECT id FROM user_sessions WHERE id = $1 AND user_id = $2 AND revoked_at IS NULL', [sid, sub]);
     if (!s) throw new HttpError(401, 'Your session has expired. Please log in again.', 'session_expired');
     // Seen: refreshed at most once a minute.
-    void pool.query("UPDATE user_sessions SET last_seen_at = now() WHERE id = $1 AND last_seen_at < now() - interval '1 minute'", [sid]).catch(() => {});
+    void pool
+      .query("UPDATE user_sessions SET last_seen_at = now() WHERE id = $1 AND last_seen_at < now() - interval '1 minute'", [sid])
+      .catch(() => {});
   }
   if (row.status === 'suspended') throw new HttpError(401, 'This account is suspended. Contact support.', 'account_suspended');
   req.user = {
@@ -88,10 +90,13 @@ export async function authenticate(req: Request, _res: Response, next: NextFunct
     role: row.role,
     status: row.status,
     staffRole: row.staff_role,
-    verified: row.role === 'doctor' ? !!row.doctor_verified : row.role === 'pharmacy' ? !!(row.member_pharmacy ? row.member_pharmacy_verified : row.pharmacy_verified) : true,
-    ...(row.role === 'pharmacy'
-      ? { memberRole: row.member_role ?? ('owner' as const), pharmacyId: row.member_pharmacy ?? undefined }
-      : {}),
+    verified:
+      row.role === 'doctor'
+        ? !!row.doctor_verified
+        : row.role === 'pharmacy'
+          ? !!(row.member_pharmacy ? row.member_pharmacy_verified : row.pharmacy_verified)
+          : true,
+    ...(row.role === 'pharmacy' ? { memberRole: row.member_role ?? ('owner' as const), pharmacyId: row.member_pharmacy ?? undefined } : {}),
   };
   next();
 }

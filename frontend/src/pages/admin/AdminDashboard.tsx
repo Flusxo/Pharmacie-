@@ -14,6 +14,7 @@ import { duration, easeOut, stagger } from '../../motion';
 import { CardSkeleton, Empty, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { AnalyticsPanel } from '../../components/admin/AnalyticsPanel';
 import { IntegrationsPanel } from '../../components/admin/IntegrationsPanel';
+import { FileManager } from '../../components/PrivateFiles';
 import { MedicineReviews } from '../../components/admin/MedicineReviews';
 
 type Tab =
@@ -124,6 +125,8 @@ export function AdminDashboard() {
   const canModerate = role === 'admin' || role === 'moderator';
   const isAdmin = role === 'admin';
   const [tab, setTab] = useState<Tab>('verify');
+  // The reviewer's checklist per applicant: all three must be ticked before approving.
+  const [ticks, setTicks] = useState<Record<string, { registry?: boolean; name?: boolean; document?: boolean }>>({});
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [dialog, setDialog] = useState<Dialog | null>(null);
@@ -296,12 +299,35 @@ export function AdminDashboard() {
                   {str(v.detail)} · {str(v.email)}
                 </span>
                 {v.rejectionReason ? <span className="badge bad">{str(v.rejectionReason)}</span> : null}
+                <FileManager
+                  readOnly
+                  collapsed
+                  title={t('files.verifStaff')}
+                  listPath={`/admin/users/${str(v.id)}/files`}
+                  testId="verification-docs"
+                />
+                {canModerate && (
+                  <fieldset className="stack" style={{ gap: 4, border: 0, padding: 0, margin: '6px 0 0' }} data-testid="checklist">
+                    <legend className="small muted">{t('adm.checklist')}</legend>
+                    {(['registry', 'name', 'document'] as const).map((k) => (
+                      <label key={k} className="check small">
+                        <input
+                          type="checkbox"
+                          checked={!!ticks[str(v.id)]?.[k]}
+                          onChange={(e) => setTicks((s) => ({ ...s, [str(v.id)]: { ...s[str(v.id)], [k]: e.target.checked } }))}
+                        />
+                        <span>{t(`adm.check.${k}` as MessageKey)}</span>
+                      </label>
+                    ))}
+                  </fieldset>
+                )}
               </span>
               {canModerate && (
                 <span className="row">
                   <button
                     type="button"
                     className="btn small"
+                    disabled={!(ticks[str(v.id)]?.registry && ticks[str(v.id)]?.name && ticks[str(v.id)]?.document)}
                     onClick={() =>
                       void run(
                         () => api(`/admin/verify/${str(v.kind)}/${str(v.id)}`, { method: 'POST', body: { decision: 'approve' } }),

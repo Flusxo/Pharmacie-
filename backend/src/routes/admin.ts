@@ -17,6 +17,7 @@ import { badRequest, conflict, forbidden, notFound } from '../errors.js';
 import { requireStaff } from '../middleware/auth.js';
 import { errorAlertsConfigured } from '../monitoring.js';
 import { mailConfigured } from '../notify.js';
+import { listVerificationFiles } from '../services/files.js';
 import { notify } from '../notify.js';
 import { addRoutes } from '../openapi.js';
 import { MEDICINE_COLUMNS } from '../services/search.js';
@@ -35,6 +36,12 @@ async function audit(db: Db, actorId: string, action: string, target: string, re
 }
 
 // ---------- Read ----------
+
+/** Verification documents an applicant sent (staff only; every opening is written to the audit log). */
+adminRouter.get('/users/:id/files', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json({ items: await listVerificationFiles(id) });
+});
 
 /** Which optional services are set up. Booleans only: no key, no address, nothing secret. */
 adminRouter.get('/integrations', (_req, res) => {

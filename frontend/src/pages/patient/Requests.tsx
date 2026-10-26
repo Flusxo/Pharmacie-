@@ -9,6 +9,7 @@ import type { OptionsResponse, PharmacyOption, RequestDetails, RequestSummary } 
 import { PackImage } from '../../components/PackImage';
 import { CardSkeleton, Empty, ErrorBox, OpenBadge, RxBadge, StatusBadge } from '../../components/ui';
 import { LocationControl } from '../../components/LocationControl';
+import { FileManager } from '../../components/PrivateFiles';
 
 export function RequestsPage() {
   const { t, locale } = useI18n();
@@ -184,6 +185,17 @@ export function RequestDetailsPage() {
           </div>
         )}
       </section>
+
+      {req.status !== 'cancelled' && req.status !== 'expired' && (
+        <FileManager
+          title={t('files.rxTitle')}
+          help={t('files.rxHelp')}
+          listPath={`/patient/requests/${req.id}/files`}
+          uploadPath={`/patient/requests/${req.id}/files`}
+          deletePath={(fid) => `/patient/files/${fid}`}
+          testId="rx-files"
+        />
+      )}
 
       {refused.map((p) => (
         <div key={p.id} className="alert warn">

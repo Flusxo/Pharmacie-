@@ -22,6 +22,7 @@ import { getProfile } from '../services/profile.js';
 import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/requests.js';
 import { emailField, idParam, passwordField, uuid } from '../validate.js';
 import { profileBody } from '../pharmacyProfile.js';
+import { listPrescriptionFiles, pharmacyMayListRequestFiles } from '../services/files.js';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 export const pharmacyRouter = Router();
@@ -444,6 +445,13 @@ pharmacyRouter.post('/orders/:id/pickup', pickupLimiter, async (req, res) => {
   res.json(await confirmPickup(id, req.user!.id, b.code, req.user!.actorId ?? req.user!.id));
 });
 
+/** Prescription files of a request this pharmacy was chosen for (the files themselves: GET /api/files/:id). */
+pharmacyRouter.get('/requests/:id/files', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  if (!(await pharmacyMayListRequestFiles(id, req.user!.id))) throw notFound('Request not found.');
+  res.json({ items: await listPrescriptionFiles(id) });
+});
+
 /** Profile page details: services, languages spoken, accessibility. */
 pharmacyRouter.patch('/profile', async (req, res) => {
   const b = profileBody.parse(req.body);
@@ -519,6 +527,7 @@ pharmacyRouter.get('/activity', async (req, res) => {
 });
 
 addRoutes([
+  ['get', '/api/pharmacy/requests/:id/files', 'Pharmacy', 'Prescription files of a request I was chosen for', 'bearer'],
   ['post', '/api/pharmacy/pickup/check', 'Pharmacy', 'Check a pickup code (from the patient or its QR code) and see the order', 'bearer'],
   ['post', '/api/pharmacy/orders/:id/pickup', 'Pharmacy', 'Confirm pickup with the code: ready -> delivered in one step', 'bearer'],
   ['patch', '/api/pharmacy/profile', 'Pharmacy', 'Services, languages spoken and accessibility shown on my profile page', 'bearer'],
