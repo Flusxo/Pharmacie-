@@ -1211,5 +1211,16 @@
   "family.relation.child": "enfant",
   "family.relation.parent": "parent",
   "family.relation.partner": "conjoint",
-  "family.relation.other": "autre"
+  "family.relation.other": "autre",
+  "refill.title": "Penser à renouveler",
+  "refill.help": "Choisissez une date : nous vous prévenons une seule fois. C’est un simple rappel de date, jamais une indication de dose ni de durée de traitement : en cas de doute, demandez à un pharmacien ou à votre médecin.",
+  "refill.in": "Me rappeler dans",
+  "refill.inDays": "Dans {n} jours",
+  "refill.remind": "Me le rappeler",
+  "refill.set": "Rappel enregistré.",
+  "refill.on": "Rappel le {date}",
+  "refill.remove": "Retirer le rappel",
+  "refill.listTitle": "Mes rappels de renouvellement",
+  "refill.listEmpty": "Aucun rappel. Après une commande livrée, choisissez « Me le rappeler ».",
+  "requests.repeat": "Refaire cette demande"
 }

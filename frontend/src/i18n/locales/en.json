@@ -1211,5 +1211,16 @@
   "family.relation.child": "child",
   "family.relation.parent": "parent",
   "family.relation.partner": "partner",
-  "family.relation.other": "other"
+  "family.relation.other": "other",
+  "refill.title": "Remember to renew",
+  "refill.help": "Pick a date: we tell you once. It is only a date reminder, never an indication of dose or length of treatment: if in doubt, ask a pharmacist or your doctor.",
+  "refill.in": "Remind me in",
+  "refill.inDays": "In {n} days",
+  "refill.remind": "Remind me",
+  "refill.set": "Reminder saved.",
+  "refill.on": "Reminder on {date}",
+  "refill.remove": "Remove the reminder",
+  "refill.listTitle": "My renewal reminders",
+  "refill.listEmpty": "No reminder. After a delivered order, choose “Remind me”.",
+  "requests.repeat": "Request this again"
 }

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefillBlock } from '../../components/RefillBits';
 import { ForBadge } from '../../components/FamilyBits';
 import { Link, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
@@ -256,6 +257,7 @@ export function OrderTrackingPage() {
       <OrderMessages orderId={order.id} side="patient" />
 
       {order.status === 'delivered' && <ReviewForm orderId={order.id} />}
+      {order.status === 'delivered' && <RefillBlock items={order.items} />}
 
       <PaymentCard orderId={order.id} orderStatus={order.status} total={total} />
 

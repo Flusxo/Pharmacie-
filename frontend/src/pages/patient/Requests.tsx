@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ForBadge } from '../../components/FamilyBits';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
 import { usePlace } from '../../lib/location';
@@ -16,6 +16,15 @@ export function RequestsPage() {
   const { t, locale } = useI18n();
   const [items, setItems] = useState<RequestSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const again = async (id: string) => {
+    try {
+      const r = await api<{ id: string }>(`/patient/requests/${id}/repeat`, { method: 'POST' });
+      navigate(`/requests/${r.id}`);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : t('common.error'));
+    }
+  };
   useEffect(() => {
     api<{ items: RequestSummary[] }>('/patient/requests')
       .then((r) => setItems(r.items))
@@ -45,6 +54,17 @@ export function RequestsPage() {
             </span>
             <StatusBadge status={r.orderStatus ?? r.status} />
           </Link>
+          {['delivered', 'cancelled', 'refused', 'expired', 'rejected'].includes(r.orderStatus ?? r.status) && r.items[0] && (
+            <button
+              type="button"
+              className="btn small"
+              style={{ width: 'fit-content' }}
+              onClick={() => void again(r.id)}
+              data-testid="repeat-request"
+            >
+              {t('requests.repeat')}
+            </button>
+          )}
           {['delivered', 'cancelled', 'refused', 'expired', 'rejected'].includes(r.orderStatus ?? r.status) && r.items[0] && (
             <Link
               to={`/search?q=${encodeURIComponent(r.items[0].name)}`}

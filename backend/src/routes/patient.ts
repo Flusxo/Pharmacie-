@@ -23,6 +23,7 @@ import {
 import { messageLimiter } from './files.js';
 import { cleanFilename, deleteOwnFile, listPrescriptionFiles, readBody, savePrescription } from '../services/files.js';
 import { rawUpload } from './files.js';
+import { REMINDER_DAYS, createReminder, deleteReminder, listReminders, repeatRequest } from '../services/refills.js';
 import { RELATIONS, addFamilyMember, listFamily, removeFamilyMember } from '../services/family.js';
 import {
   cancelRequest,
@@ -192,6 +193,7 @@ patientRouter.get('/export', async (req, res) => {
     ),
     followedMedicines: await listFollowed(id),
     familyMembers: await listFamily(id),
+    refillReminders: await listReminders(id),
     notifications: await query('SELECT kind, body, read_at AS "readAt", created_at AS "createdAt" FROM notifications WHERE user_id = $1', [
       id,
     ]),
@@ -220,6 +222,7 @@ patientRouter.delete('/account', async (req, res) => {
     await c.query('DELETE FROM doctor_patients WHERE patient_id = $1', [id]);
     await c.query('DELETE FROM notifications WHERE user_id = $1', [id]);
     await c.query('DELETE FROM stock_watches WHERE patient_id = $1', [id]);
+    await c.query('DELETE FROM refill_reminders WHERE patient_id = $1', [id]);
     await c.query('UPDATE requests SET for_member_id = NULL WHERE patient_id = $1', [id]);
     await c.query('DELETE FROM family_members WHERE account_id = $1', [id]);
     await c.query('DELETE FROM private_files WHERE owner_user_id = $1', [id]);
@@ -294,6 +297,33 @@ patientRouter.put('/orders/:id/slot', async (req, res) => {
   res.json({ ok: true });
 });
 
+// Refill reminders and "request again"
+patientRouter.get('/reminders', async (req, res) => {
+  res.json({ items: await listReminders(req.user!.id) });
+});
+patientRouter.post('/reminders', async (req, res) => {
+  const b = z
+    .object({
+      medicineId: uuid,
+      days: z
+        .number()
+        .int()
+        .refine((d) => (REMINDER_DAYS as readonly number[]).includes(d), 'must be 7, 14, 30, 60 or 90'),
+    })
+    .parse(req.body);
+  res.status(201).json(await createReminder(req.user!.id, b.medicineId, b.days));
+});
+patientRouter.delete('/reminders/:id', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  await deleteReminder(req.user!.id, id);
+  res.status(204).end();
+});
+patientRouter.post('/requests/:id/repeat', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const r = await repeatRequest(req.user!.id, id);
+  res.status(r.duplicate ? 200 : 201).json(r);
+});
+
 // Family: people this account makes requests for (a first name and a relation, nothing else)
 patientRouter.get('/family', async (req, res) => {
   res.json({ items: await listFamily(req.user!.id) });
@@ -340,6 +370,10 @@ addRoutes([
   ['post', '/api/patient/orders/:id/review', 'Patient', 'Review a delivered order (1-5 and a short comment)', 'bearer'],
   ['get', '/api/patient/orders/:id/slots', 'Patient', 'Free 30-minute times in the pharmacy opening hours (next 48 hours)', 'bearer'],
   ['put', '/api/patient/orders/:id/slot', 'Patient', 'Choose a pickup or (simulated) delivery time', 'bearer'],
+  ['get', '/api/patient/reminders', 'Patient', 'My refill reminders', 'bearer'],
+  ['post', '/api/patient/reminders', 'Patient', 'Remind me in 7, 14, 30, 60 or 90 days to renew a medicine I requested', 'bearer'],
+  ['delete', '/api/patient/reminders/:id', 'Patient', 'Remove a reminder', 'bearer'],
+  ['post', '/api/patient/requests/:id/repeat', 'Patient', 'Make the same request again (same medicines, note and person)', 'bearer'],
   ['get', '/api/patient/family', 'Patient', 'People I make requests for (first name and relation only)', 'bearer'],
   ['post', '/api/patient/family', 'Patient', 'Add a person (child, parent, partner, other; at most 6)', 'bearer'],
   ['delete', '/api/patient/family/:id', 'Patient', 'Remove a person from my list', 'bearer'],

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { RemindersList } from '../components/RefillBits';
 import { FamilyPanel } from '../components/FamilyBits';
 import { DevicesPanel } from '../components/DevicesPanel';
 import { FollowedList } from '../components/FollowButton';
@@ -187,6 +188,8 @@ export function ProfilePage() {
       <DevicesPanel />
 
       {isPatient && <FamilyPanel />}
+
+      {isPatient && <RemindersList />}
 
       {isPatient && <FollowedList />}
 

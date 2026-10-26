@@ -42,6 +42,12 @@ export const FR: Record<string, string> = {
   'is too long (500 characters at most)': 'est trop long (500 caractères au plus)',
   'Family member not found.': 'Personne introuvable dans votre liste.',
   'You can add at most 6 people.': 'Vous pouvez ajouter 6 personnes au plus.',
+  'It may be time to renew a medicine you asked for. Open it to request it again, and ask a pharmacist or your doctor if you are unsure.':
+    'Il est peut-être temps de renouveler un médicament demandé. Ouvrez-le pour le redemander, et parlez-en à un pharmacien ou à votre médecin en cas de doute.',
+  'Time to renew a medicine?': 'Faut-il renouveler un médicament ?',
+  'You have not requested this medicine before.': 'Vous n’avez jamais demandé ce médicament.',
+  'You can have at most 20 reminders.': 'Vous pouvez avoir 20 rappels au plus.',
+  'Reminder not found.': 'Rappel introuvable.',
   'Team member not found.': 'Membre de l’équipe introuvable.',
   'This pickup code does not match an order of this pharmacy.': 'Ce code de retrait ne correspond à aucune commande de cette pharmacie.',
   'This order is not ready for pickup yet.': 'Cette commande n’est pas encore prête pour le retrait.',
@@ -233,6 +239,7 @@ export const FR: Record<string, string> = {
   'No open message with this id.': 'Aucun message en attente avec cet identifiant.',
   'please confirm that you are not sending health data': 'confirmez que vous n’envoyez pas de données de santé',
   'must be empty': 'doit rester vide',
+  'must be 7, 14, 30, 60 or 90': 'doit être 7, 14, 30, 60 ou 90',
   'must be at least 3 characters': 'doit contenir au moins 3 caractères',
   'must be at least 10 characters': 'doit contenir au moins 10 caractères',
 
