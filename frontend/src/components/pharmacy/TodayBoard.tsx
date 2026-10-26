@@ -9,6 +9,8 @@ import { CardSkeleton, ErrorBox } from '../ui';
 
 interface BoardOrder {
   id: string;
+  slotStart?: string | null;
+  slotMode?: 'pickup' | 'delivery' | null;
   status: OrderStatus;
   patientName: string;
   items: { id: string; name: string; dosage: string; quantity: number; excluded: boolean; requiresPrescription: boolean }[];
@@ -26,7 +28,7 @@ const COLUMNS: { status: OrderStatus; label: MessageKey; next: OrderStatus | nul
  * Only valid moves are accepted. A prescription item must be confirmed as checked before the order is prepared.
  */
 export function TodayBoard({ incoming }: { incoming: number }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const toast = useToast();
   const [orders, setOrders] = useState<BoardOrder[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +92,10 @@ export function TodayBoard({ incoming }: { incoming: number }) {
           )}
         </section>
         {COLUMNS.map((col) => {
-          const cards = orders.filter((o) => o.status === col.status);
+          // Orders with a chosen time come first, the soonest on top.
+          const cards = orders
+            .filter((o) => o.status === col.status)
+            .sort((a, b) => (a.slotStart ?? '9').localeCompare(b.slotStart ?? '9'));
           const valid = dragging ? COLUMNS.find((c) => c.status === dragging.status)?.next === col.status : false;
           return (
             <section
@@ -115,6 +120,13 @@ export function TodayBoard({ incoming }: { incoming: number }) {
                   data-testid="board-card"
                 >
                   <strong>{o.patientName}</strong>
+                  {o.slotStart && (
+                    <span className="badge info" style={{ width: 'fit-content' }}>
+                      {t(o.slotMode === 'delivery' ? 'slot.badgeDelivery' : 'slot.badgePickup', {
+                        when: new Date(o.slotStart).toLocaleString(locale, { weekday: 'short', hour: '2-digit', minute: '2-digit' }),
+                      })}
+                    </span>
+                  )}
                   <ul className="plain-list small">
                     {o.items
                       .filter((i) => !i.excluded)

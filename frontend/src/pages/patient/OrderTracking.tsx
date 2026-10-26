@@ -9,6 +9,9 @@ import type { OrderDetails, OrderStatus } from '../../lib/types';
 import { PackImage } from '../../components/PackImage';
 import { PaymentCard } from '../../components/PaymentCard';
 import { QrCode } from '../../components/QrCode';
+import { SlotPicker } from '../../components/SlotPicker';
+import { OrderMessages } from '../../components/OrderMessages';
+import { ReviewForm } from '../../components/ReviewBlock';
 import { CardSkeleton, ErrorBox, RxBadge, StatusBadge } from '../../components/ui';
 import { IconCheck } from '../../components/Icons';
 import { LazyMap } from '../../components/map/LazyMap';
@@ -245,6 +248,12 @@ export function OrderTrackingPage() {
           </div>
         </section>
       )}
+
+      <SlotPicker orderId={order.id} status={order.status} />
+
+      <OrderMessages orderId={order.id} side="patient" />
+
+      {order.status === 'delivered' && <ReviewForm orderId={order.id} />}
 
       <PaymentCard orderId={order.id} orderStatus={order.status} total={total} />
 

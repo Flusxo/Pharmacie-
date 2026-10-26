@@ -11,6 +11,16 @@ import { cancelOrderByPatient, getPatientOrder, listPatientOrders } from '../ser
 import { getPayment, getReceipt, startPayment } from '../services/payments.js';
 import { getProfile } from '../services/profile.js';
 import { followMedicine, listFollowed, unfollowMedicine } from '../services/watches.js';
+import {
+  chooseSlot,
+  createReview,
+  getOwnReview,
+  listMessages,
+  postMessage,
+  reportMessage,
+  slotsForOrder,
+} from '../services/conversations.js';
+import { messageLimiter } from './files.js';
 import { cleanFilename, deleteOwnFile, listPrescriptionFiles, readBody, savePrescription } from '../services/files.js';
 import { rawUpload } from './files.js';
 import {
@@ -230,6 +240,45 @@ patientRouter.delete('/files/:id', async (req, res) => {
   res.status(204).end();
 });
 
+// Messages on an order (text only; no medical advice: the pharmacist answers at the counter or by phone)
+const messageBody = z.object({ body: z.string().trim().min(1, 'is empty').max(500, 'is too long (500 characters at most)') });
+patientRouter.get('/orders/:id/messages', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json({ items: await listMessages(id, 'patient', req.user!.id) });
+});
+patientRouter.post('/orders/:id/messages', messageLimiter, async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const { body } = messageBody.parse(req.body);
+  res.status(201).json(await postMessage(id, 'patient', req.user!.id, req.user!.id, body));
+});
+patientRouter.post('/messages/:id/report', async (req, res) => {
+  const { id } = z.object({ id: z.coerce.number().int().positive() }).parse(req.params);
+  const { reason } = z.object({ reason: z.string().trim().min(3).max(500) }).parse(req.body);
+  await reportMessage(id, 'patient', req.user!.id, req.user!.id, reason);
+  res.status(201).json({ ok: true });
+});
+
+// Review of a delivered order, and the time chosen for pickup or (simulated) delivery
+patientRouter.get('/orders/:id/review', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json({ review: await getOwnReview(id, req.user!.id) });
+});
+patientRouter.post('/orders/:id/review', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const b = z.object({ rating: z.number().int().min(1).max(5), comment: z.string().trim().max(300).optional().nullable() }).parse(req.body);
+  res.status(201).json(await createReview(id, req.user!.id, b.rating, b.comment || null));
+});
+patientRouter.get('/orders/:id/slots', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json(await slotsForOrder(id, req.user!.id));
+});
+patientRouter.put('/orders/:id/slot', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const b = z.object({ start: z.string().datetime(), mode: z.enum(['pickup', 'delivery']) }).parse(req.body);
+  await chooseSlot(id, req.user!.id, b.start, b.mode);
+  res.json({ ok: true });
+});
+
 // "Notify me when it is back in stock"
 patientRouter.get('/watches', async (req, res) => {
   res.json({ items: await listFollowed(req.user!.id) });
@@ -255,6 +304,13 @@ addRoutes([
     'bearer',
   ],
   ['delete', '/api/patient/files/:id', 'Patient', 'Remove one of my prescription files', 'bearer'],
+  ['get', '/api/patient/orders/:id/messages', 'Patient', 'Messages of my order', 'bearer'],
+  ['post', '/api/patient/orders/:id/messages', 'Patient', 'Send a message about my order (text, 500 characters, rate limited)', 'bearer'],
+  ['post', '/api/patient/messages/:id/report', 'Patient', 'Report a message', 'bearer'],
+  ['get', '/api/patient/orders/:id/review', 'Patient', 'My review of this order', 'bearer'],
+  ['post', '/api/patient/orders/:id/review', 'Patient', 'Review a delivered order (1-5 and a short comment)', 'bearer'],
+  ['get', '/api/patient/orders/:id/slots', 'Patient', 'Free 30-minute times in the pharmacy opening hours (next 48 hours)', 'bearer'],
+  ['put', '/api/patient/orders/:id/slot', 'Patient', 'Choose a pickup or (simulated) delivery time', 'bearer'],
   ['get', '/api/patient/watches', 'Patient', 'Medicines I follow for a back-in-stock notice', 'bearer'],
   ['post', '/api/patient/watches', 'Patient', 'Follow a medicine: one notice when a nearby pharmacy has it again', 'bearer'],
   ['delete', '/api/patient/watches/:id', 'Patient', 'Stop following a medicine (id = medicine id)', 'bearer'],

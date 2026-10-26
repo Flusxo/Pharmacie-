@@ -334,3 +334,17 @@
     border: 0;
   }
 }
+
+/* Order messages. */
+.message {
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  max-width: 85%;
+}
+.message[data-from='me'] {
+  justify-self: end;
+  background: color-mix(in srgb, var(--brand) 14%, var(--surface));
+}

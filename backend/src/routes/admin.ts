@@ -18,6 +18,7 @@ import { requireStaff } from '../middleware/auth.js';
 import { errorAlertsConfigured } from '../monitoring.js';
 import { mailConfigured } from '../notify.js';
 import { listVerificationFiles } from '../services/files.js';
+import { latestReviews, reportTargets, setHidden } from '../services/conversations.js';
 import { notify } from '../notify.js';
 import { addRoutes } from '../openapi.js';
 import { MEDICINE_COLUMNS } from '../services/search.js';
@@ -168,13 +169,36 @@ adminRouter.get('/orders', async (req, res) => {
 
 adminRouter.get('/reports', async (req, res) => {
   const q = z.object({ status: z.enum(['open', 'resolved']).optional() }).parse(req.query);
+  const rows = await query<Record<string, unknown> & { target_type: string | null; target_id: string | null }>(
+    `SELECT r.id, r.subject, r.message, r.status, r.resolution, r.created_at AS "createdAt", u.role AS "reporterRole", u.email AS "reporterEmail",
+            r.target_type, r.target_id
+       FROM reports r JOIN users u ON u.id = r.reporter_user_id WHERE ($1::text IS NULL OR r.status = $1) ORDER BY r.created_at DESC LIMIT 200`,
+    [q.status ?? null],
+  );
+  // A report about a message or a review carries what it points at (the text only, never the author).
+  const targets = await reportTargets(rows);
   res.json({
-    items: await query(
-      `SELECT r.id, r.subject, r.message, r.status, r.resolution, r.created_at AS "createdAt", u.role AS "reporterRole", u.email AS "reporterEmail"
-         FROM reports r JOIN users u ON u.id = r.reporter_user_id WHERE ($1::text IS NULL OR r.status = $1) ORDER BY r.created_at DESC LIMIT 200`,
-      [q.status ?? null],
-    ),
+    items: rows.map((r) => {
+      const t = r.target_type && r.target_id ? targets.get(`${r.target_type}:${r.target_id}`) : undefined;
+      return { ...r, targetType: r.target_type, targetId: r.target_id, targetText: t?.text ?? null, targetHidden: t?.hidden ?? false };
+    }),
   });
+});
+
+/** Hide (or show again) a reported message or review. Every action is written to the audit log. */
+adminRouter.post('/moderation/:type/:id', canModerate, async (req, res) => {
+  const { type, id } = z.object({ type: z.enum(['message', 'review']), id: z.string().min(1).max(64) }).parse(req.params);
+  const { hidden, reason } = z.object({ hidden: z.boolean(), reason: reasonField }).parse(req.body);
+  await tx(async (c) => {
+    await setHidden(type, id, hidden);
+    await audit(c, req.user!.id, hidden ? `hide_${type}` : `show_${type}`, `${type}:${id}`, reason);
+  });
+  res.json({ ok: true });
+});
+
+/** The latest reviews of every pharmacy, to moderate them without waiting for a report. */
+adminRouter.get('/reviews', async (_req, res) => {
+  res.json({ items: await latestReviews() });
 });
 
 adminRouter.get('/contact-messages', async (req, res) => {
@@ -467,7 +491,9 @@ addRoutes([
   ['get', '/api/admin/doctors', 'Admin', 'Doctors', 'bearer'],
   ['get', '/api/admin/medicines', 'Admin', 'Medicines (q, includeDeleted)', 'bearer'],
   ['get', '/api/admin/orders', 'Admin', 'Orders (status filter)', 'bearer'],
-  ['get', '/api/admin/reports', 'Admin', 'Reports', 'bearer'],
+  ['get', '/api/admin/reports', 'Admin', 'Reports (with the reported message or review)', 'bearer'],
+  ['post', '/api/admin/moderation/:type/:id', 'Admin', 'Hide or show a message or a review, with a reason (admin or moderator)', 'bearer'],
+  ['get', '/api/admin/reviews', 'Admin', 'Latest reviews of every pharmacy', 'bearer'],
   ['get', '/api/admin/contact-messages', 'Admin', 'Messages from the public Contact page (status=open|handled)', 'bearer'],
   ['post', '/api/admin/contact-messages/:id/handle', 'Admin', 'Mark a contact message as handled', 'bearer'],
   ['get', '/api/admin/audit', 'Admin', 'Audit log', 'bearer'],

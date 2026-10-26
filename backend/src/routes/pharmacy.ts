@@ -23,6 +23,8 @@ import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/r
 import { emailField, idParam, passwordField, uuid } from '../validate.js';
 import { profileBody } from '../pharmacyProfile.js';
 import { listPrescriptionFiles, pharmacyMayListRequestFiles } from '../services/files.js';
+import { listMessages, pharmacyReviews, postMessage, reportMessage, reportReview } from '../services/conversations.js';
+import { messageLimiter } from './files.js';
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 export const pharmacyRouter = Router();
@@ -47,7 +49,8 @@ pharmacyRouter.use((req, res, next) => {
   const ownerOnly = p.startsWith('/team') || (write && p === '/settings');
   const assistantMayWrite =
     (req.method === 'PATCH' && /^\/orders\/[^/]+\/status$/.test(p)) ||
-    (req.method === 'POST' && (p === '/pickup/check' || /^\/orders\/[^/]+\/pickup$/.test(p)));
+    (req.method === 'POST' && (p === '/pickup/check' || /^\/orders\/[^/]+\/(pickup|messages)$/.test(p))) ||
+    (req.method === 'POST' && /^\/messages\/\d+\/report$/.test(p));
   const assistantMayRead = !p.startsWith('/team') && !p.startsWith('/activity');
   if ((role !== 'owner' && ownerOnly) || (role === 'assistant' && (write ? !assistantMayWrite : !assistantMayRead))) {
     throw forbidden();
@@ -445,6 +448,33 @@ pharmacyRouter.post('/orders/:id/pickup', pickupLimiter, async (req, res) => {
   res.json(await confirmPickup(id, req.user!.id, b.code, req.user!.actorId ?? req.user!.id));
 });
 
+// Messages with the patient of an order, and reviews of this pharmacy
+const messageBody = z.object({ body: z.string().trim().min(1, 'is empty').max(500, 'is too long (500 characters at most)') });
+pharmacyRouter.get('/orders/:id/messages', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  res.json({ items: await listMessages(id, 'pharmacy', req.user!.id) });
+});
+pharmacyRouter.post('/orders/:id/messages', messageLimiter, async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const { body } = messageBody.parse(req.body);
+  res.status(201).json(await postMessage(id, 'pharmacy', req.user!.id, req.user!.actorId ?? req.user!.id, body));
+});
+pharmacyRouter.post('/messages/:id/report', async (req, res) => {
+  const { id } = z.object({ id: z.coerce.number().int().positive() }).parse(req.params);
+  const { reason } = z.object({ reason: z.string().trim().min(3).max(500) }).parse(req.body);
+  await reportMessage(id, 'pharmacy', req.user!.id, req.user!.actorId ?? req.user!.id, reason);
+  res.status(201).json({ ok: true });
+});
+pharmacyRouter.get('/reviews', async (req, res) => {
+  res.json(await pharmacyReviews(req.user!.id));
+});
+pharmacyRouter.post('/reviews/:id/report', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const { reason } = z.object({ reason: z.string().trim().min(3).max(500) }).parse(req.body);
+  await reportReview(id, req.user!.id, req.user!.actorId ?? req.user!.id, reason);
+  res.status(201).json({ ok: true });
+});
+
 /** Prescription files of a request this pharmacy was chosen for (the files themselves: GET /api/files/:id). */
 pharmacyRouter.get('/requests/:id/files', async (req, res) => {
   const { id } = idParam.parse(req.params);
@@ -527,6 +557,11 @@ pharmacyRouter.get('/activity', async (req, res) => {
 });
 
 addRoutes([
+  ['get', '/api/pharmacy/orders/:id/messages', 'Pharmacy', 'Messages of an order', 'bearer'],
+  ['post', '/api/pharmacy/orders/:id/messages', 'Pharmacy', 'Answer the patient (text, 500 characters, rate limited)', 'bearer'],
+  ['post', '/api/pharmacy/messages/:id/report', 'Pharmacy', 'Report a message', 'bearer'],
+  ['get', '/api/pharmacy/reviews', 'Pharmacy', 'Reviews of my pharmacy', 'bearer'],
+  ['post', '/api/pharmacy/reviews/:id/report', 'Pharmacy', 'Report a review to staff', 'bearer'],
   ['get', '/api/pharmacy/requests/:id/files', 'Pharmacy', 'Prescription files of a request I was chosen for', 'bearer'],
   ['post', '/api/pharmacy/pickup/check', 'Pharmacy', 'Check a pickup code (from the patient or its QR code) and see the order', 'bearer'],
   ['post', '/api/pharmacy/orders/:id/pickup', 'Pharmacy', 'Confirm pickup with the code: ready -> delivered in one step', 'bearer'],

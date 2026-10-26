@@ -137,6 +137,8 @@ export interface OrderDetails {
   shareToken: string | null;
   /** Short code (and QR) to show at the counter; null once the order is delivered or cancelled. */
   pickupCode?: string | null;
+  slotStart?: string | null;
+  slotMode?: 'pickup' | 'delivery' | null;
   createdAt: string;
   updatedAt: string;
   pharmacy: { id: string; name: string; address: string; city: string; phone: string | null; latitude: number; longitude: number };

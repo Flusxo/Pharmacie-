@@ -7,6 +7,7 @@ import type { OpeningHours } from '../../lib/types';
 import { CardSkeleton, ErrorBox, OpenBadge } from '../../components/ui';
 import { SaveButton } from '../../components/SaveButton';
 import { useAuth } from '../../lib/auth';
+import { ReviewList } from '../../components/ReviewBlock';
 
 interface Profile {
   id: string;
@@ -121,6 +122,7 @@ export function PharmacyProfilePage() {
         <Chips title={t('pp.languages')} codes={p.languages} prefix="pp.lang" />
         <Chips title={t('pp.accessibility')} codes={p.accessibility} prefix="pp.access" />
       </section>
+      <ReviewList path={`/pharmacies/${p.id}/reviews`} />
       <p className="alert info small" role="note">
         {t('pp.note')}
       </p>

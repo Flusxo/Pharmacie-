@@ -751,6 +751,35 @@ export function AdminDashboard() {
                 </span>
               </div>
               <p style={{ margin: 0 }}>{str(r.message)}</p>
+              {r.targetText ? (
+                <blockquote className="alert info small" style={{ margin: 0 }} data-testid="report-target">
+                  <strong>{t(r.targetType === 'review' ? 'adm.targetReview' : 'adm.targetMessage')} :</strong> {str(r.targetText)}{' '}
+                  {r.targetHidden ? <span className="badge bad">{t('adm.hidden')}</span> : null}
+                </blockquote>
+              ) : null}
+              {!!r.targetText && canModerate && (
+                <button
+                  type="button"
+                  className="btn secondary small"
+                  style={{ alignSelf: 'flex-start' }}
+                  data-testid="toggle-hidden"
+                  onClick={() =>
+                    ask({
+                      title: `${t(r.targetHidden ? 'adm.show' : 'adm.hide')} — ${str(r.subject)}`,
+                      required: true,
+                      confirm: t(r.targetHidden ? 'adm.show' : 'adm.hide'),
+                      ok: t('adm.moderated'),
+                      action: (reason) =>
+                        api(`/admin/moderation/${str(r.targetType)}/${str(r.targetId)}`, {
+                          method: 'POST',
+                          body: { hidden: !r.targetHidden, reason },
+                        }),
+                    })
+                  }
+                >
+                  {t(r.targetHidden ? 'adm.show' : 'adm.hide')}
+                </button>
+              )}
               <span className="muted small">
                 {str(r.reporterRole)} · {str(r.reporterEmail)} · {formatDateTime(str(r.createdAt), locale)}
               </span>

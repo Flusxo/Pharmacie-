@@ -236,6 +236,7 @@ const ORDER_ITEMS_SQL = `SELECT json_agg(json_build_object('id', ri.id, 'medicin
 export async function getPatientOrder(orderId: string, patientId: string) {
   const o = await one(
     `SELECT o.id, o.request_id AS "requestId", o.status, o.cancel_requested_at AS "cancelRequestedAt", o.share_token AS "shareToken",
+            o.slot_start AS "slotStart", o.slot_mode AS "slotMode",
             o.created_at AS "createdAt", o.updated_at AS "updatedAt",
             json_build_object('id', p.user_id, 'name', p.name, 'address', p.address, 'city', p.city, 'phone', p.phone,
                               'latitude', p.latitude, 'longitude', p.longitude) AS pharmacy,
@@ -273,7 +274,7 @@ export async function listPatientOrders(patientId: string) {
 /** Pharmacy: own orders, patient shown as "First L." only (hard rule 5). */
 export async function listPharmacyOrders(pharmacyId: string, scope: 'active' | 'all') {
   return query(
-    `SELECT o.id, o.request_id AS "requestId", o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt", o.cancel_requested_at AS "cancelRequestedAt",
+    `SELECT o.id, o.request_id AS "requestId", o.slot_start AS "slotStart", o.slot_mode AS "slotMode", o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt", o.cancel_requested_at AS "cancelRequestedAt",
             pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName", r.source, r.instructions,
             r.prescription_note IS NOT NULL AS "hasPrescriptionNote", (${ORDER_ITEMS_SQL}) AS items,
             (SELECT status FROM payments pay WHERE pay.order_id = o.id) AS "paymentStatus",

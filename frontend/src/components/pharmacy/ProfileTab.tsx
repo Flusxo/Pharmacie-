@@ -5,6 +5,7 @@ import { ApiError, api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 import { useToast } from '../../lib/toast';
 import { ErrorBox } from '../ui';
+import { ReviewList } from '../ReviewBlock';
 
 const SERVICES = ['vaccination', 'blood_pressure', 'orthopedics', 'homeopathy', 'baby_corner', 'night_service'];
 const LANGUAGES = ['fr', 'en', 'es', 'ar', 'it', 'de', 'pt'];
@@ -67,15 +68,18 @@ export function ProfileTab() {
     }
   };
   return (
-    <form className="card stack" onSubmit={save} data-testid="profile-form">
-      <p className="muted small">{t('pp.editIntro')}</p>
-      {error && <ErrorBox message={error} />}
-      <Group title={t('pp.services')} codes={SERVICES} prefix="pp.service" value={services} onChange={setServices} />
-      <Group title={t('pp.languages')} codes={LANGUAGES} prefix="pp.lang" value={languages} onChange={setLanguages} />
-      <Group title={t('pp.accessibility')} codes={ACCESSIBILITY} prefix="pp.access" value={access} onChange={setAccess} />
-      <button className="btn" type="submit">
-        {t('pp.save')}
-      </button>
-    </form>
+    <div className="stack" style={{ gap: 16 }}>
+      <form className="card stack" onSubmit={save} data-testid="profile-form">
+        <p className="muted small">{t('pp.editIntro')}</p>
+        {error && <ErrorBox message={error} />}
+        <Group title={t('pp.services')} codes={SERVICES} prefix="pp.service" value={services} onChange={setServices} />
+        <Group title={t('pp.languages')} codes={LANGUAGES} prefix="pp.lang" value={languages} onChange={setLanguages} />
+        <Group title={t('pp.accessibility')} codes={ACCESSIBILITY} prefix="pp.access" value={access} onChange={setAccess} />
+        <button className="btn" type="submit">
+          {t('pp.save')}
+        </button>
+      </form>
+      <ReviewList path="/pharmacy/reviews" reportPath={(id) => `/pharmacy/reviews/${id}/report`} />
+    </div>
   );
 }

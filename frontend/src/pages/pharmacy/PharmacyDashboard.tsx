@@ -18,6 +18,7 @@ import { OnboardingTour } from '../../components/Tour';
 import { ProfileTab } from '../../components/pharmacy/ProfileTab';
 import { TodayBoard } from '../../components/pharmacy/TodayBoard';
 import { FileManager } from '../../components/PrivateFiles';
+import { OrderMessages } from '../../components/OrderMessages';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { AnimatedNumber, Pop } from '../../components/motion';
 import { duration, easeOut } from '../../motion';
@@ -48,6 +49,8 @@ interface Incoming {
 }
 interface PharmacyOrder {
   id: string;
+  slotStart?: string | null;
+  slotMode?: 'pickup' | 'delivery' | null;
   requestId: string;
   status: OrderStatus;
   createdAt: string;
@@ -329,6 +332,11 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
         <div className="stack" style={{ gap: 2 }}>
           <strong>{o.patientName}</strong>
           <span className="muted small">{formatDateTime(o.createdAt, locale)}</span>
+          {o.slotStart && (
+            <span className="badge info" data-testid="order-slot">
+              {t(o.slotMode === 'delivery' ? 'slot.badgeDelivery' : 'slot.badgePickup', { when: formatDateTime(o.slotStart, locale) })}
+            </span>
+          )}
         </div>
         <span className="row" style={{ gap: 8 }}>
           {o.paymentStatus && (
@@ -365,6 +373,7 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
         listPath={`/pharmacy/requests/${o.requestId}/files`}
         testId="rx-files-order"
       />
+      <OrderMessages orderId={o.id} side="pharmacy" collapsed />
       {o.instructions && (
         <p className="small">
           <strong>{t('dash.instructions')} :</strong> {o.instructions}

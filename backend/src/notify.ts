@@ -19,6 +19,9 @@ export type NotificationKind =
   | 'cancel_request'
   | 'medicine_review'
   | 'stock_alert'
+  | 'order_message'
+  | 'review'
+  | 'order_slot'
   | 'password_reset';
 
 /** Neutral subjects: never contain medicine names. */
@@ -36,6 +39,9 @@ const SUBJECTS: Record<NotificationKind, string> = {
   cancel_request: 'Update on an order',
   medicine_review: 'Update on your medicine proposal',
   stock_alert: 'A medicine you follow is available',
+  order_message: 'New message about an order',
+  review: 'New review of your pharmacy',
+  order_slot: 'A time was chosen for an order',
   password_reset: 'Reset your password',
 };
 
