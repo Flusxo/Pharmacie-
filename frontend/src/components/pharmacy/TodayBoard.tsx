@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, type DragEvent } from 'react';
+import { ForBadge, type ForMember } from '../FamilyBits';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n';
@@ -9,6 +10,7 @@ import { CardSkeleton, ErrorBox } from '../ui';
 
 interface BoardOrder {
   id: string;
+  forMember?: ForMember | null;
   slotStart?: string | null;
   slotMode?: 'pickup' | 'delivery' | null;
   status: OrderStatus;
@@ -120,6 +122,7 @@ export function TodayBoard({ incoming }: { incoming: number }) {
                   data-testid="board-card"
                 >
                   <strong>{o.patientName}</strong>
+                  <ForBadge member={o.forMember} />
                   {o.slotStart && (
                     <span className="badge info" style={{ width: 'fit-content' }}>
                       {t(o.slotMode === 'delivery' ? 'slot.badgeDelivery' : 'slot.badgePickup', {

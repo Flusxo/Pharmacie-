@@ -40,6 +40,8 @@ export const FR: Record<string, string> = {
   'This time is not available: choose one from the list.': 'Cet horaire n’est pas disponible : choisissez-en un dans la liste.',
   'Too many messages. Please wait a minute.': 'Trop de messages. Patientez une minute.',
   'is too long (500 characters at most)': 'est trop long (500 caractères au plus)',
+  'Family member not found.': 'Personne introuvable dans votre liste.',
+  'You can add at most 6 people.': 'Vous pouvez ajouter 6 personnes au plus.',
   'Team member not found.': 'Membre de l’équipe introuvable.',
   'This pickup code does not match an order of this pharmacy.': 'Ce code de retrait ne correspond à aucune commande de cette pharmacie.',
   'This order is not ready for pickup yet.': 'Cette commande n’est pas encore prête pour le retrait.',

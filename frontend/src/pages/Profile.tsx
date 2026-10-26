@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FamilyPanel } from '../components/FamilyBits';
 import { DevicesPanel } from '../components/DevicesPanel';
 import { FollowedList } from '../components/FollowButton';
 import { useNavigate } from 'react-router-dom';
@@ -184,6 +185,8 @@ export function ProfilePage() {
       </section>
 
       <DevicesPanel />
+
+      {isPatient && <FamilyPanel />}
 
       {isPatient && <FollowedList />}
 

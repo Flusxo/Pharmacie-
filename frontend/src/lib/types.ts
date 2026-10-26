@@ -137,6 +137,7 @@ export interface OrderDetails {
   shareToken: string | null;
   /** Short code (and QR) to show at the counter; null once the order is delivered or cancelled. */
   pickupCode?: string | null;
+  forMember?: { firstName: string; relation: 'child' | 'parent' | 'partner' | 'other' } | null;
   slotStart?: string | null;
   slotMode?: 'pickup' | 'delivery' | null;
   createdAt: string;
@@ -149,6 +150,7 @@ export interface OrderDetails {
 
 export interface RequestSummary {
   id: string;
+  forMember?: { firstName: string; relation: 'child' | 'parent' | 'partner' | 'other' } | null;
   status: string;
   source: 'patient' | 'doctor';
   createdAt: string;
@@ -160,6 +162,7 @@ export interface RequestSummary {
 
 export interface RequestDetails {
   id: string;
+  forMember?: { firstName: string; relation: 'child' | 'parent' | 'partner' | 'other' } | null;
   status: string;
   source: 'patient' | 'doctor';
   prescriptionNote: string | null;

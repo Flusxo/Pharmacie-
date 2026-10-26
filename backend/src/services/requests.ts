@@ -8,6 +8,7 @@ import { RULES } from '../config.js';
 import { one, query, tx } from '../db.js';
 import { HttpError, badRequest, conflict, forbidden, notFound } from '../errors.js';
 import { notify } from '../notify.js';
+import { FOR_MEMBER_SQL, ownsMember } from './family.js';
 import { newPickupCode } from './orders.js';
 
 export interface ItemInput {
@@ -39,13 +40,15 @@ export async function createRequest(input: {
   items: ItemInput[];
   prescriptionNote?: string | null;
   instructions?: string | null;
+  /** The family member the request is for (the account's own person); null = the account holder. */
+  forMemberId?: string | null;
 }): Promise<{ id: string; duplicate: boolean }> {
   const items = mergeItems(input.items);
   const source = input.doctorId ? 'doctor' : 'patient';
   const note = input.prescriptionNote?.trim() || null;
   const key = crypto
     .createHash('sha256')
-    .update(JSON.stringify({ source, doctor: input.doctorId ?? null, items }))
+    .update(JSON.stringify({ source, doctor: input.doctorId ?? null, items, member: input.forMemberId ?? null }))
     .digest('hex');
 
   return tx(async (c) => {
@@ -59,6 +62,7 @@ export async function createRequest(input: {
         throw forbidden('You can only send requests for patients who have confirmed the link with you.');
       }
     }
+    if (input.forMemberId && !(await ownsMember(input.patientId, input.forMemberId))) throw notFound('Family member not found.');
     const patient = await one(
       'SELECT 1 FROM patients p JOIN users u ON u.id = p.user_id WHERE p.user_id = $1 AND u.deleted_at IS NULL',
       [input.patientId],
@@ -93,9 +97,9 @@ export async function createRequest(input: {
     if (existing) return { id: existing.id, duplicate: true };
 
     const r = await one<{ id: string }>(
-      `INSERT INTO requests (patient_id, doctor_id, source, prescription_note, instructions, idempotency_key)
-       VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
-      [input.patientId, input.doctorId ?? null, source, note, input.instructions?.trim() || null, key],
+      `INSERT INTO requests (patient_id, doctor_id, source, prescription_note, instructions, idempotency_key, for_member_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+      [input.patientId, input.doctorId ?? null, source, note, input.instructions?.trim() || null, key, input.forMemberId ?? null],
       c,
     );
     for (const i of items) {
@@ -469,7 +473,8 @@ export async function cancelRequest(requestId: string, patientId: string) {
 export async function getPatientRequest(requestId: string, patientId: string) {
   const r = await one(
     `SELECT r.id, r.status, r.source, r.prescription_note AS "prescriptionNote", r.instructions, r.created_at AS "createdAt",
-            r.updated_at AS "updatedAt", d.first_name || ' ' || d.last_name AS "doctorName", o.id AS "orderId", o.status AS "orderStatus"
+            r.updated_at AS "updatedAt", d.first_name || ' ' || d.last_name AS "doctorName", o.id AS "orderId", o.status AS "orderStatus",
+            ${FOR_MEMBER_SQL} AS "forMember"
        FROM requests r
        LEFT JOIN doctors d ON d.user_id = r.doctor_id
        LEFT JOIN orders o ON o.request_id = r.id
@@ -501,7 +506,7 @@ export async function getPatientRequest(requestId: string, patientId: string) {
 
 export async function listPatientRequests(patientId: string) {
   return query(
-    `SELECT r.id, r.status, r.source, r.created_at AS "createdAt", r.updated_at AS "updatedAt",
+    `SELECT r.id, r.status, r.source, r.created_at AS "createdAt", r.updated_at AS "updatedAt", ${FOR_MEMBER_SQL} AS "forMember",
             o.id AS "orderId", o.status AS "orderStatus",
             (SELECT p.name FROM request_pharmacies rp JOIN pharmacies p ON p.user_id = rp.pharmacy_id
               WHERE rp.request_id = r.id AND rp.response IN ('pending', 'accepted') ORDER BY rp.sent_at DESC LIMIT 1) AS "pharmacyName",

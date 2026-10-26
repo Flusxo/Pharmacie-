@@ -3,6 +3,8 @@
  * Never a purchase: the pharmacy confirms and hands over the medicine.
  */
 import { useEffect, useRef, useState } from 'react';
+import type { MessageKey } from '../i18n';
+import { useFamily, type FamilyMember } from './FamilyBits';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, m as motion } from 'framer-motion';
 import { duration, easeOut } from '../motion';
@@ -25,6 +27,8 @@ interface Props {
 export function RequestSheet({ medicine, pharmacies, initialPharmacyId, onClose }: Props) {
   const { t, locale } = useI18n();
   const [qty, setQty] = useState(1);
+  const { items: family } = useFamily();
+  const [forMemberId, setForMemberId] = useState('');
   const eligible = pharmacies.filter((p) => p.inStock && (p.quantity ?? 0) >= qty);
   const [pharmacyId, setPharmacyId] = useState<string | null>(initialPharmacyId ?? null);
   const [step, setStep] = useState(initialPharmacyId ? 2 : 1);
@@ -58,6 +62,7 @@ export function RequestSheet({ medicine, pharmacies, initialPharmacyId, onClose 
         body: {
           items: [{ medicineId: medicine.id, quantity: qty }],
           prescriptionNote: medicine.requiresPrescription ? t('flow.prescriptionNote') : undefined,
+          forMemberId: forMemberId || undefined,
         },
       });
       setRequestId(r.id);
@@ -94,6 +99,26 @@ export function RequestSheet({ medicine, pharmacies, initialPharmacyId, onClose 
             {t('common.close')}
           </button>
         </div>
+
+        {step < 3 && (family?.length ?? 0) > 0 && (
+          <div className="field" style={{ maxWidth: 260 }}>
+            <label htmlFor="for-member">{t('family.whoFor')}</label>
+            <select
+              id="for-member"
+              className="input"
+              value={forMemberId}
+              onChange={(e) => setForMemberId(e.target.value)}
+              data-testid="for-member-select"
+            >
+              <option value="">{t('family.me')}</option>
+              {family!.map((m: FamilyMember) => (
+                <option key={m.id} value={m.id}>
+                  {m.firstName} ({t(`family.relation.${m.relation}` as MessageKey)})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <AnimatePresence mode="wait" initial={false}>
           <motion.div

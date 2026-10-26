@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { ForBadge, type ForMember } from '../../components/FamilyBits';
 import { Link, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
@@ -6,6 +7,7 @@ import { ErrorBox } from '../../components/ui';
 
 interface Preview {
   orderId: string;
+  forMember?: ForMember | null;
   patientName: string;
   items: { id: string; name: string; dosage: string; quantity: number; excluded: boolean }[];
 }
@@ -78,6 +80,7 @@ export function PickupPage() {
             {t('pickup.for')}
           </p>
           <strong style={{ fontSize: '1.4rem' }}>{preview.patientName}</strong>
+          <ForBadge member={preview.forMember} />
           <ul className="plain-list">
             {preview.items
               .filter((i) => !i.excluded)

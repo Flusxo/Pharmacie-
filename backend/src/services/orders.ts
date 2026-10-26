@@ -5,6 +5,7 @@ import { RULES } from '../config.js';
 import { one, query, tx } from '../db.js';
 import { HttpError, conflict, notFound } from '../errors.js';
 import { notify } from '../notify.js';
+import { FOR_MEMBER_SQL } from './family.js';
 import { onOrderCancelled, onOrderReady } from './payments.js';
 
 export const ORDER_FLOW = ['accepted', 'preparing', 'ready', 'out_for_delivery', 'delivered'] as const;
@@ -144,9 +145,9 @@ async function updateOrderStatusTx(orderId: string, pharmacyId: string, to: Orde
  * another pharmacy's order and an order that is not ready.
  */
 export async function previewPickup(orderId: string, pharmacyId: string, code: string) {
-  const o = await one<{ pickup_code: string | null; status: OrderStatus; name: string; items: unknown }>(
-    `SELECT o.pickup_code, o.status, pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS name, (${ORDER_ITEMS_SQL}) AS items
-       FROM orders o JOIN patients pt ON pt.user_id = o.patient_id
+  const o = await one<{ pickup_code: string | null; status: OrderStatus; name: string; items: unknown; forMember: unknown }>(
+    `SELECT o.pickup_code, o.status, pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS name, ${FOR_MEMBER_SQL} AS "forMember", (${ORDER_ITEMS_SQL}) AS items
+       FROM orders o JOIN patients pt ON pt.user_id = o.patient_id JOIN requests r ON r.id = o.request_id
       WHERE o.id = $1 AND o.pharmacy_id = $2`,
     [orderId, pharmacyId],
   );
@@ -155,7 +156,7 @@ export async function previewPickup(orderId: string, pharmacyId: string, code: s
     !!o?.pickup_code && given.length === o.pickup_code.length && crypto.timingSafeEqual(Buffer.from(given), Buffer.from(o.pickup_code));
   if (!o || !ok) throw new HttpError(400, 'This pickup code does not match an order of this pharmacy.', 'invalid_pickup_code');
   if (o.status !== 'ready') throw conflict('This order is not ready for pickup yet.', 'not_ready');
-  return { orderId, patientName: o.name, items: o.items };
+  return { orderId, patientName: o.name, forMember: o.forMember, items: o.items };
 }
 
 export async function confirmPickup(orderId: string, pharmacyId: string, code: string, actorId: string) {
@@ -236,7 +237,7 @@ const ORDER_ITEMS_SQL = `SELECT json_agg(json_build_object('id', ri.id, 'medicin
 export async function getPatientOrder(orderId: string, patientId: string) {
   const o = await one(
     `SELECT o.id, o.request_id AS "requestId", o.status, o.cancel_requested_at AS "cancelRequestedAt", o.share_token AS "shareToken",
-            o.slot_start AS "slotStart", o.slot_mode AS "slotMode",
+            o.slot_start AS "slotStart", o.slot_mode AS "slotMode", (SELECT json_build_object('firstName', fm.first_name, 'relation', fm.relation) FROM family_members fm JOIN requests rq ON rq.for_member_id = fm.id WHERE rq.id = o.request_id) AS "forMember",
             o.created_at AS "createdAt", o.updated_at AS "updatedAt",
             json_build_object('id', p.user_id, 'name', p.name, 'address', p.address, 'city', p.city, 'phone', p.phone,
                               'latitude', p.latitude, 'longitude', p.longitude) AS pharmacy,
@@ -275,7 +276,7 @@ export async function listPatientOrders(patientId: string) {
 export async function listPharmacyOrders(pharmacyId: string, scope: 'active' | 'all') {
   return query(
     `SELECT o.id, o.request_id AS "requestId", o.slot_start AS "slotStart", o.slot_mode AS "slotMode", o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt", o.cancel_requested_at AS "cancelRequestedAt",
-            pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName", r.source, r.instructions,
+            pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName", ${FOR_MEMBER_SQL} AS "forMember", r.source, r.instructions,
             r.prescription_note IS NOT NULL AS "hasPrescriptionNote", (${ORDER_ITEMS_SQL}) AS items,
             (SELECT status FROM payments pay WHERE pay.order_id = o.id) AS "paymentStatus",
             (SELECT json_agg(json_build_object('status', h.status, 'changedAt', h.changed_at) ORDER BY h.changed_at, h.id)
@@ -291,7 +292,7 @@ export async function listPharmacyOrders(pharmacyId: string, scope: 'active' | '
 export async function getPharmacyOrder(orderId: string, pharmacyId: string) {
   const o = await one(
     `SELECT o.id, o.status, o.created_at AS "createdAt", o.updated_at AS "updatedAt",
-            pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName", r.source, r.instructions,
+            pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName", ${FOR_MEMBER_SQL} AS "forMember", r.source, r.instructions,
             r.prescription_note IS NOT NULL AS "hasPrescriptionNote",
             json_build_object('id', p.user_id, 'name', p.name, 'address', p.address, 'city', p.city, 'phone', p.phone) AS pharmacy,
             (${ORDER_ITEMS_SQL}) AS items,
@@ -311,7 +312,7 @@ export async function listIncoming(pharmacyId: string) {
   return query(
     `SELECT r.id, r.status, r.source, r.instructions, r.prescription_note IS NOT NULL AS "hasPrescriptionNote", r.prescription_note AS "prescriptionNote",
             r.created_at AS "createdAt", rp.sent_at AS "sentAt", rp.sent_at + make_interval(mins => $2) AS "answerBy",
-            pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName",
+            pt.first_name || ' ' || left(pt.last_name, 1) || '.' AS "patientName", ${FOR_MEMBER_SQL} AS "forMember",
             (SELECT json_agg(json_build_object('id', ri.id, 'medicineId', m.id, 'name', m.name, 'dosage', m.dosage, 'form', m.form,
                      'category', m.category, 'activeSubstance', m.active_substance, 'requiresPrescription', m.requires_prescription,
                      'quantity', ri.quantity, 'excluded', ri.excluded, 'inStock', coalesce(i.quantity, 0)) ORDER BY m.name)

@@ -1196,5 +1196,20 @@
   "adm.hidden": "Hidden",
   "adm.hide": "Hide",
   "adm.show": "Show again",
-  "adm.moderated": "Moderation saved."
+  "adm.moderated": "Moderation saved.",
+  "family.title": "My family",
+  "family.privacy": "Make a request for a child or a parent. We keep only their first name and how they relate to you: no last name, no birth date, no address. The pharmacy sees “for Léa (child)” and your “First L.”; nobody else sees this list.",
+  "family.none": "Nobody yet.",
+  "family.firstName": "First name",
+  "family.relation": "Relation",
+  "family.add": "Add",
+  "family.added": "Person added.",
+  "family.remove": "Remove",
+  "family.whoFor": "Who is it for?",
+  "family.me": "For me",
+  "family.for": "For {name} ({relation})",
+  "family.relation.child": "child",
+  "family.relation.parent": "parent",
+  "family.relation.partner": "partner",
+  "family.relation.other": "other"
 }

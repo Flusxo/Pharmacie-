@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { ForBadge } from '../../components/FamilyBits';
 import { Link, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n';
@@ -190,6 +191,7 @@ export function OrderTrackingPage() {
       <p className="muted small">
         {formatDateTime(order.createdAt, locale)} · {t('order.refresh')}
       </p>
+      <ForBadge member={order.forMember} />
       {error && <ErrorBox message={error} />}
       {order.status === 'cancelled' && <div className="alert error">{t('order.cancelledBanner')}</div>}
       {order.cancelRequestedAt && order.status !== 'cancelled' && <div className="alert warn">{t('order.cancelRequested')}</div>}

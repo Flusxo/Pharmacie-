@@ -23,6 +23,7 @@ import {
 import { messageLimiter } from './files.js';
 import { cleanFilename, deleteOwnFile, listPrescriptionFiles, readBody, savePrescription } from '../services/files.js';
 import { rawUpload } from './files.js';
+import { RELATIONS, addFamilyMember, listFamily, removeFamilyMember } from '../services/family.js';
 import {
   cancelRequest,
   choosePharmacy,
@@ -43,8 +44,19 @@ export const itemsSchema = z
   .max(20, 'at most 20 different medicines');
 
 patientRouter.post('/requests', async (req, res) => {
-  const body = z.object({ items: itemsSchema, prescriptionNote: z.string().trim().max(500).optional().nullable() }).parse(req.body);
-  const r = await createRequest({ patientId: req.user!.id, items: body.items, prescriptionNote: body.prescriptionNote });
+  const body = z
+    .object({
+      items: itemsSchema,
+      prescriptionNote: z.string().trim().max(500).optional().nullable(),
+      forMemberId: uuid.optional().nullable(),
+    })
+    .parse(req.body);
+  const r = await createRequest({
+    patientId: req.user!.id,
+    items: body.items,
+    prescriptionNote: body.prescriptionNote,
+    forMemberId: body.forMemberId ?? null,
+  });
   res.status(r.duplicate ? 200 : 201).json(r);
 });
 
@@ -179,6 +191,7 @@ patientRouter.get('/export', async (req, res) => {
       [id],
     ),
     followedMedicines: await listFollowed(id),
+    familyMembers: await listFamily(id),
     notifications: await query('SELECT kind, body, read_at AS "readAt", created_at AS "createdAt" FROM notifications WHERE user_id = $1', [
       id,
     ]),
@@ -207,6 +220,8 @@ patientRouter.delete('/account', async (req, res) => {
     await c.query('DELETE FROM doctor_patients WHERE patient_id = $1', [id]);
     await c.query('DELETE FROM notifications WHERE user_id = $1', [id]);
     await c.query('DELETE FROM stock_watches WHERE patient_id = $1', [id]);
+    await c.query('UPDATE requests SET for_member_id = NULL WHERE patient_id = $1', [id]);
+    await c.query('DELETE FROM family_members WHERE account_id = $1', [id]);
     await c.query('DELETE FROM private_files WHERE owner_user_id = $1', [id]);
     await c.query('UPDATE user_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL', [id]);
     await c.query(
@@ -279,6 +294,20 @@ patientRouter.put('/orders/:id/slot', async (req, res) => {
   res.json({ ok: true });
 });
 
+// Family: people this account makes requests for (a first name and a relation, nothing else)
+patientRouter.get('/family', async (req, res) => {
+  res.json({ items: await listFamily(req.user!.id) });
+});
+patientRouter.post('/family', async (req, res) => {
+  const b = z.object({ firstName: z.string().trim().min(1, 'is required').max(40), relation: z.enum(RELATIONS) }).parse(req.body);
+  res.status(201).json(await addFamilyMember(req.user!.id, b.firstName, b.relation));
+});
+patientRouter.delete('/family/:id', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  await removeFamilyMember(req.user!.id, id);
+  res.status(204).end();
+});
+
 // "Notify me when it is back in stock"
 patientRouter.get('/watches', async (req, res) => {
   res.json({ items: await listFollowed(req.user!.id) });
@@ -311,6 +340,9 @@ addRoutes([
   ['post', '/api/patient/orders/:id/review', 'Patient', 'Review a delivered order (1-5 and a short comment)', 'bearer'],
   ['get', '/api/patient/orders/:id/slots', 'Patient', 'Free 30-minute times in the pharmacy opening hours (next 48 hours)', 'bearer'],
   ['put', '/api/patient/orders/:id/slot', 'Patient', 'Choose a pickup or (simulated) delivery time', 'bearer'],
+  ['get', '/api/patient/family', 'Patient', 'People I make requests for (first name and relation only)', 'bearer'],
+  ['post', '/api/patient/family', 'Patient', 'Add a person (child, parent, partner, other; at most 6)', 'bearer'],
+  ['delete', '/api/patient/family/:id', 'Patient', 'Remove a person from my list', 'bearer'],
   ['get', '/api/patient/watches', 'Patient', 'Medicines I follow for a back-in-stock notice', 'bearer'],
   ['post', '/api/patient/watches', 'Patient', 'Follow a medicine: one notice when a nearby pharmacy has it again', 'bearer'],
   ['delete', '/api/patient/watches/:id', 'Patient', 'Stop following a medicine (id = medicine id)', 'bearer'],

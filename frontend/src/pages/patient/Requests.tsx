@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { ForBadge } from '../../components/FamilyBits';
 import { Link, useParams } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { ApiError, api } from '../../lib/api';
@@ -35,6 +36,7 @@ export function RequestsPage() {
           >
             <span className="stack" style={{ gap: 2 }}>
               <strong>{r.items.map((i) => `${i.quantity} × ${i.name}`).join(', ')}</strong>
+              <ForBadge member={r.forMember} />
               <span className="muted small">
                 {formatDateTime(r.createdAt, locale)}
                 {r.pharmacyName ? ` · ${r.pharmacyName}` : ''}
@@ -154,6 +156,7 @@ export function RequestDetailsPage() {
       <Link to="/requests" className="small">
         ← {t('requests.title')}
       </Link>
+      <ForBadge member={req.forMember} />
       <div className="row between">
         <h1 style={{ margin: 0 }}>{t('flow.title')}</h1>
         <StatusBadge status={req.status} />

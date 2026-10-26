@@ -1196,5 +1196,20 @@
   "adm.hidden": "Masqué",
   "adm.hide": "Masquer",
   "adm.show": "Afficher de nouveau",
-  "adm.moderated": "Modération enregistrée."
+  "adm.moderated": "Modération enregistrée.",
+  "family.title": "Mes proches",
+  "family.privacy": "Faites une demande pour un enfant ou un parent. Nous ne gardons que son prénom et le lien avec vous : ni nom, ni date de naissance, ni adresse. La pharmacie voit « pour Léa (enfant) » et votre « Prénom N. » ; personne d’autre ne voit cette liste.",
+  "family.none": "Personne pour le moment.",
+  "family.firstName": "Prénom",
+  "family.relation": "Lien",
+  "family.add": "Ajouter",
+  "family.added": "Personne ajoutée.",
+  "family.remove": "Retirer",
+  "family.whoFor": "Pour qui ?",
+  "family.me": "Pour moi",
+  "family.for": "Pour {name} ({relation})",
+  "family.relation.child": "enfant",
+  "family.relation.parent": "parent",
+  "family.relation.partner": "conjoint",
+  "family.relation.other": "autre"
 }

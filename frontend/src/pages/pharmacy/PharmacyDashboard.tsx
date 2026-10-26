@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { ForBadge, type ForMember } from '../../components/FamilyBits';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import type { MessageKey } from '../../i18n';
@@ -37,6 +38,7 @@ interface IncomingItem {
 }
 interface Incoming {
   id: string;
+  forMember?: ForMember | null;
   status: string;
   source: 'patient' | 'doctor';
   instructions: string | null;
@@ -49,6 +51,7 @@ interface Incoming {
 }
 interface PharmacyOrder {
   id: string;
+  forMember?: ForMember | null;
   slotStart?: string | null;
   slotMode?: 'pickup' | 'delivery' | null;
   requestId: string;
@@ -191,6 +194,7 @@ function IncomingTab({ onChange }: { onChange: () => void }) {
             <div className="row between">
               <div className="stack" style={{ gap: 2 }}>
                 <strong>{r.patientName}</strong>
+                <ForBadge member={r.forMember} />
                 <span className="muted small">
                   {formatDateTime(r.sentAt, locale)} · {t('ph.answerIn', { time: formatTime(r.answerBy, locale) })}
                 </span>
@@ -331,6 +335,7 @@ function OrderCard({ o, onDone }: { o: PharmacyOrder; onDone: () => void }) {
       <div className="row between">
         <div className="stack" style={{ gap: 2 }}>
           <strong>{o.patientName}</strong>
+          <ForBadge member={o.forMember} />
           <span className="muted small">{formatDateTime(o.createdAt, locale)}</span>
           {o.slotStart && (
             <span className="badge info" data-testid="order-slot">
