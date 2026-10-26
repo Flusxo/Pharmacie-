@@ -54,9 +54,10 @@ async function week(from: string, to: string): Promise<WeekNumbers> {
   };
 }
 
-export async function weeklySummary(now = new Date()) {
+/** `now` defaults to the DATABASE clock: rows are stamped by it, and the app server's clock can differ by a few milliseconds. */
+export async function weeklySummary(now?: Date) {
   const day = 86_400_000;
-  const end = new Date(now);
+  const end = new Date(now ?? (await one<{ n: Date }>('SELECT now() AS n'))!.n);
   const mid = new Date(end.getTime() - 7 * day);
   const start = new Date(end.getTime() - 14 * day);
   return {
