@@ -186,3 +186,9 @@ Each entry: what was chosen and why.
 - **Reviews are visible at once** and moderated after the fact (report or staff list), not held back: a pharmacy cannot be unfairly hidden by a queue, and staff can hide any review with a reason. Authors are never named.
 - **Slots:** 30-minute steps, computed on the server from the opening hours in Europe/Paris (an on-duty day is open all day), from 30 minutes ahead to 48 hours; the chosen time must be one the server offers. Delivery stays labelled "Simulated".
 - **Messages** are text only, 500 characters, 100 per order, 10 a minute per person; the other side gets a neutral notification without the text; a message removed by moderation is shown as removed to both sides.
+
+## 2026-10-26 — Family profiles, refill reminders, feature switches, weekly summary
+- **Family members are labels, not accounts.** A first name and a relation, nothing else, so the pharmacy gets what it needs ("for Léa, child") and the service stores as little as possible about someone who never agreed to an account. They never log in and no one but the account holder and the chosen pharmacy sees them.
+- **A reminder is a date.** No dose, no frequency, no "how long": the notice only says it may be time to renew and sends the person to a pharmacist or doctor. Only for medicines the person already requested.
+- **Switches live in the database** (`app_settings`, 5 s cache) so an admin can react without a deployment. Off means: hidden in the screens, new actions refused with 503 `feature_off`, existing data readable. Every change is audited with a reason.
+- **The weekly summary has no personal data and is announced, not emailed in full:** a staff admin gets one neutral notice on Monday morning pointing to the Statistics tab; the numbers themselves never leave the app.

@@ -14,7 +14,15 @@ test.setTimeout(30 * 60_000);
 test.use({ actionTimeout: 5000 });
 
 const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(300, 7)]);
-const EMAILS = ['emma@pharmacie.test', 'bruno@pharmacie.test', 'david@pharmacie.test', 'pharmacie.tournon@pharmacie.test', 'pharmacie.demo@pharmacie.test', 'admin@pharmacie.test'];
+const EMAILS = [
+  'camille@pharmacie.test',
+  'emma@pharmacie.test',
+  'bruno@pharmacie.test',
+  'david@pharmacie.test',
+  'pharmacie.tournon@pharmacie.test',
+  'pharmacie.demo@pharmacie.test',
+  'admin@pharmacie.test',
+];
 
 async function makeOrder(patientEmail: string, upTo: 'request' | 'accepted' | 'delivered') {
   const patient = await apiAs(patientEmail);
@@ -26,7 +34,8 @@ async function makeOrder(patientEmail: string, upTo: 'request' | 'accepted' | 'd
   if (upTo === 'request') return { requestId: req.id, patient, tournon };
   const { orderId } = await tournon.call<{ orderId: string }>('POST', `/pharmacy/requests/${req.id}/accept`);
   if (upTo === 'delivered') {
-    for (const status of ['preparing', 'ready']) await tournon.call('PATCH', `/pharmacy/orders/${orderId}/status`, { status, prescriptionChecked: true });
+    for (const status of ['preparing', 'ready'])
+      await tournon.call('PATCH', `/pharmacy/orders/${orderId}/status`, { status, prescriptionChecked: true });
     const o = await patient.call<{ order: { pickupCode: string } }>('GET', `/patient/orders/${orderId}`);
     await tournon.call('POST', `/pharmacy/orders/${orderId}/pickup`, { code: o.order.pickupCode });
   }
@@ -44,7 +53,10 @@ test('screenshots of the new screens', async ({ browser }) => {
     const { ctx } = await apiAs(email);
     const login = await ctx.post(`${API}/auth/login`, { data: { email, password: 'Password123!' } });
     const { token } = (await login.json()) as { token: string };
-    await ctx.post(`${API}${p}`, { data: PNG, headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'image/png', 'X-Filename': name } });
+    await ctx.post(`${API}${p}`, {
+      data: PNG,
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'image/png', 'X-Filename': name },
+    });
   };
   await upload('bruno@pharmacie.test', `/patient/requests/${waiting.requestId}/files`, 'ordonnance.png');
   await upload('pharmacie.demo@pharmacie.test', '/me/verification-files', 'autorisation.png');
@@ -52,20 +64,44 @@ test('screenshots of the new screens', async ({ browser }) => {
   const accepted = await makeOrder('emma@pharmacie.test', 'accepted');
   await accepted.tournon.call('PATCH', '/pharmacy/profile', { services: ['vaccination'], languages: ['fr'], accessibility: [] });
   const offer = await accepted.patient.call<{ slots: string[] }>('GET', `/patient/orders/${accepted.orderId}/slots`);
-  if (offer.slots[4]) await accepted.patient.call('PUT', `/patient/orders/${accepted.orderId}/slot`, { start: offer.slots[4], mode: 'pickup' });
+  if (offer.slots[4])
+    await accepted.patient.call('PUT', `/patient/orders/${accepted.orderId}/slot`, { start: offer.slots[4], mode: 'pickup' });
   await accepted.patient.call('POST', `/patient/orders/${accepted.orderId}/messages`, { body: 'Bonjour, je passe en fin de journée.' });
   await accepted.tournon.call('POST', `/pharmacy/orders/${accepted.orderId}/messages`, { body: 'Très bien, votre commande sera prête.' });
-  const thread = await accepted.patient.call<{ items: { id: number; senderRole: string }[] }>('GET', `/patient/orders/${accepted.orderId}/messages`);
+  const thread = await accepted.patient.call<{ items: { id: number; senderRole: string }[] }>(
+    'GET',
+    `/patient/orders/${accepted.orderId}/messages`,
+  );
   const theirs = thread.items.find((m) => m.senderRole === 'pharmacy')!;
   await accepted.patient.call('POST', `/patient/messages/${theirs.id}/report`, { reason: 'Hors sujet' });
 
   const delivered = await makeOrder('david@pharmacie.test', 'delivered');
-  await delivered.patient.call('POST', `/patient/orders/${delivered.orderId}/review`, { rating: 5, comment: 'Retrait rapide, équipe aimable.' });
+  await delivered.patient.call('POST', `/patient/orders/${delivered.orderId}/review`, {
+    rating: 5,
+    comment: 'Retrait rapide, équipe aimable.',
+  });
+  // A child, a request for her, and a refill reminder on the delivered order.
+  const camille = await apiAs('camille@pharmacie.test');
+  const lea = await camille.call<{ id: string }>('POST', '/patient/family', { firstName: 'Léa', relation: 'child' });
+  const meds = await camille.call<{ items: { id: string }[] }>('GET', '/medicines?q=Doliprane');
+  const forLea = await camille.call<{ id: string }>('POST', '/patient/requests', {
+    items: [{ medicineId: meds.items[0].id, quantity: 1 }],
+    forMemberId: lea.id,
+  });
+  await camille.call('POST', `/patient/requests/${forLea.id}/choose`, {
+    pharmacyId: (await accepted.tournon.call<{ user: { id: string } }>('GET', '/auth/me')).user.id,
+  });
+  await delivered.patient.call('POST', '/patient/reminders', { medicineId: meds.items[0].id, days: 30 });
   const tournonId = (await accepted.tournon.call<{ user: { id: string } }>('GET', '/auth/me')).user.id;
   const pendingApplicant = (await (await apiAs('pharmacie.demo@pharmacie.test')).call<{ user: { id: string } }>('GET', '/auth/me')).user.id;
   void pendingApplicant;
 
-  const screens: { name: string; email: string | null; path: string; before?: (p: import('@playwright/test').Page, lang: string) => Promise<void> }[] = [
+  const screens: {
+    name: string;
+    email: string | null;
+    path: string;
+    before?: (p: import('@playwright/test').Page, lang: string) => Promise<void>;
+  }[] = [
     { name: 'rx-patient', email: 'bruno@pharmacie.test', path: `/requests/${waiting.requestId}` },
     {
       name: 'rx-pharmacy',
@@ -74,12 +110,27 @@ test('screenshots of the new screens', async ({ browser }) => {
       before: async (p) => {
         const d = p.getByText(/Ordonnance jointe par le patient|Prescription attached by the patient/).first();
         await d.click();
-        await p.getByRole('button', { name: /^(Voir|View)$/ }).first().click();
+        await p
+          .getByRole('button', { name: /^(Voir|View)$/ })
+          .first()
+          .click();
         await p.waitForTimeout(800);
       },
     },
     { name: 'verification-waiting', email: 'pharmacie.demo@pharmacie.test', path: '/waiting' },
     { name: 'order-slot-messages', email: 'emma@pharmacie.test', path: `/orders/${accepted.orderId}` },
+    { name: 'family-account', email: 'camille@pharmacie.test', path: '/profile' },
+    { name: 'family-request-pharmacy', email: 'pharmacie.tournon@pharmacie.test', path: '/pharmacy' },
+    { name: 'reminders-account', email: 'david@pharmacie.test', path: '/profile' },
+    {
+      name: 'staff-weekly-switches',
+      email: 'admin@pharmacie.test',
+      path: '/admin',
+      before: async (p, lang) => {
+        await p.getByRole('tab', { name: lang === 'fr' ? /Statistiques/ : /Analytics/ }).click({ timeout: 5000 });
+        await p.waitForTimeout(1200);
+      },
+    },
     { name: 'order-review', email: 'david@pharmacie.test', path: `/orders/${delivered.orderId}` },
     { name: 'pharmacy-reviews-public', email: null, path: `/pharmacies/${tournonId}` },
     {
@@ -87,7 +138,10 @@ test('screenshots of the new screens', async ({ browser }) => {
       email: 'admin@pharmacie.test',
       path: '/admin',
       before: async (p) => {
-        await p.getByText(/Justificatifs envoyés|Documents sent/).first().click();
+        await p
+          .getByText(/Justificatifs envoyés|Documents sent/)
+          .first()
+          .click();
         await p.waitForTimeout(500);
       },
     },

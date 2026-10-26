@@ -4,6 +4,19 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Status (2026-10-23) — what works, what is simulated, what is not verified
 
+### Update 2026-10-26 (fifth round, payments untouched)
+
+Done and pushed (migration 013 applied to Neon after a backup; three new tables and one nullable column):
+- **Family profiles:** an account can add up to 6 people (child, parent, partner, other) and choose "for whom" when it sends a request. Only a first name and the relation are stored (no last name, birth date or address). The pharmacy sees "For Léa (child)" next to the account holder's "First L."; nobody else sees the list. The label shows for the patient, on the pharmacy's incoming requests, orders, Today board and pickup page. Removing a person hides them from the list but past requests keep their label; the data export includes them; deleting the account deletes them.
+- **Refill reminders:** after a delivered order the patient picks a date (7, 14, 30, 60 or 90 days); one neutral notice is sent when it is due (no medicine name in the notice or the email subject). It is a date, never a dose or a length of treatment, and says to ask a pharmacist or doctor when unsure. A "Request this again" button on finished requests makes a new request with the same medicines, note and person.
+- **Feature switches** (staff, Statistics tab): messages, reviews, file uploads, time slots, new sign-ups. Any staff can read; only an admin can change, with a reason that goes to the audit log. A switched-off feature is hidden in the screens and refused by the API with a clear message; what already exists stays readable; logins keep working when sign-ups are closed.
+- **Weekly summary** (staff, Statistics tab): the last 7 days next to the 7 days before (requests, delivered orders, acceptance rate, response time, new accounts, reports, reviews, messages, files), whole-service numbers only. Staff admins get a notice on Monday from 08:00 Paris time, once per Monday (and an email only if an email service is configured).
+- Screenshots of these screens: docs/screenshots/new-b (`SHOTS=1 npm run e2e -- e2e/new-screens.spec.ts`).
+
+Checks: build, lint, 183 backend and 94 frontend unit tests and the speed budget pass; the last full e2e run (once, at the end) had 82 passed, 1 skipped (the on-demand screenshots) and 0 failed. The e2e harness occasionally times out starting its servers (90 s) right after a heavy run; running it again fixes it.
+
+Not built yet (priority order): (1) web push (needs a service worker, deliberately absent); (2) a "who looked at my data" log for patients; (3) expiry alerts (no expiry data in the stock); (4) the how-it-works page keeps its 5-step diagram; (5) 3D category tiles and a camera move between pages; (6) a pharmacy reply to a review; (7) per-person refill reminders are tied to the last request for that medicine, there is no schedule or dosage by design.
+
 ### Update 2026-10-26 (fourth round, payments untouched)
 
 Done and pushed (migrations 011 and 012 applied to Neon after a backup; only tables and columns added):

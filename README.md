@@ -141,6 +141,7 @@ The API is an Express app under `/api`. The full list (80 routes, with who may c
 - **Pharmacies:** team accounts (owner, pharmacist, assistant) with an activity log, a "Today" board (drag or button, valid steps only), pickup confirmation by QR link or code, breaks that end by themselves, a profile page editor, a low-stock list with a CSV reorder export.
 - **Staff:** a style guide page (`/admin/design`), an "Optional services" panel (what is configured), a CSV download of the aggregated analytics.
 - **Files, messages, reviews, time slots:** prescription photos or PDFs attached to a request (private, only the chosen pharmacy opens them, deleted automatically), verification documents with a staff checklist, text messages on an order, reviews of delivered orders with staff moderation, and a pickup or simulated delivery time chosen inside the pharmacy's opening hours.
+- **Family, reminders, switches:** requests for a child or parent (first name and relation only), renewal reminders (a date, never a dose) and a "request again" button, staff feature switches with a reason, and a weekly summary for staff.
 - **Optional services** (email, error alerts, uptime, storage choices, staging, backup and recovery): see **DEPLOY.md**. Without keys each one shows "not configured" and everything else works.
 - **Speed budget:** `npm run budget` and `.github/workflows/ci.yml` fail the build when the bundles grow (docs/PERF.md).
 
