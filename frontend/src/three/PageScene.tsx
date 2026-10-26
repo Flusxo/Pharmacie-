@@ -248,17 +248,23 @@ function ItemView({
   const ref = useRef<THREE.Group>(null);
   const [split, setSplit] = useState(0);
   const hero = it.pos[1] > -3;
+  const { size } = useThree();
   // Portrait phones: the hero cluster moves to the top centre, side items come closer.
   const base = useMemo<[number, number, number]>(() => {
     const [x, y, z] = it.pos;
+    if (it.screen) {
+      // By screen position: x is a fraction of the half width, y the pixels from the top (the camera sees 5.675 units at z = 0).
+      const ppu = size.height / 5.675;
+      return [(x * size.width) / 2 / ppu, (size.height / 2 - y) / ppu, z];
+    }
     if (!portrait) return [x, y, z];
     // A story object sits at the top centre of a phone (the text cards pass below it).
     if (it.story !== undefined) return [(x - 3.0) * 0.4, y * 0.5 + 1.5, z];
     // Set pieces (room, route) stay centred behind everything.
     if (it.kind === 'interior' || it.kind === 'route') return [x * 0.3, y, z];
     return hero ? [(x - heroX) * 0.42, y * 0.62 + 1.3, z] : [Math.sign(x) * 1.5, y, z - 0.5];
-  }, [it.pos, portrait, hero, heroX]);
-  const scale = (it.scale ?? 1) * (portrait ? 0.62 : 1);
+  }, [it.pos, it.screen, size.width, size.height, portrait, hero, heroX]);
+  const scale = (it.scale ?? 1) * (portrait && !it.screen ? 0.62 : 1);
   const presence = useRef(0);
   useFrame((state, dt) => {
     const g = ref.current;
@@ -329,7 +335,7 @@ function Layer({
   });
   return (
     <group ref={ref} scale={rest.reduced ? 1 : 0.0001}>
-      {comp.items.map((it, i) =>
+      {(rest.portrait && comp.portrait ? comp.portrait : comp.items).map((it, i) =>
         it.kind === 'field' ? (
           <FieldView
             key={i}

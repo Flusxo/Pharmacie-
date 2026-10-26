@@ -124,7 +124,7 @@ export function PublicHome() {
               [30, 'pub.home.statMinutes'],
             ] as const
           ).map(([n, k], i) => (
-            <Reveal key={k} index={i} className="stat glass">
+            <Reveal key={k} index={i} className="stat">
               <strong>
                 <AnimatedNumber value={n} />
               </strong>

@@ -1,5 +1,6 @@
 /** Building blocks of the public pages: hero, feature grid, numbered steps, FAQ, call to action. */
 import type { ReactNode } from 'react';
+import { FxHeadline } from '../FxText';
 import { Link } from 'react-router-dom';
 import { useI18n, type MessageKey } from '../../i18n';
 import { Reveal } from '../motion';
@@ -22,9 +23,9 @@ export function PublicHero({
 }) {
   return (
     <section className="pub-hero" aria-labelledby={id}>
-      <div className="pub-hero-copy glass">
+      <div className="pub-hero-copy open-copy">
         <span className="eyebrow">{eyebrow}</span>
-        <h1 id={id}>{title}</h1>
+        <FxHeadline id={id} text={title} />
         <p className="lead">{lead}</p>
         {actions && <div className="row pub-hero-actions">{actions}</div>}
       </div>
@@ -81,7 +82,7 @@ export function Steps({ items }: { items: { title?: MessageKey; text: MessageKey
   return (
     <ol className="pub-steps">
       {items.map((s, i) => (
-        <Reveal as="li" key={s.text} index={i} className="pub-step glass">
+        <Reveal as="li" key={s.text} index={i} className="pub-step">
           <span className="pub-step-n" aria-hidden="true">
             {i + 1}
           </span>
@@ -101,7 +102,7 @@ export function Faq({ items, id = 'faq' }: { items: { q: MessageKey; a: MessageK
   return (
     <div className="faq" id={id}>
       {items.map((f) => (
-        <details key={f.q} className="faq-item glass">
+        <details key={f.q} className="faq-item">
           <summary>{t(f.q)}</summary>
           <p>{t(f.a)}</p>
         </details>

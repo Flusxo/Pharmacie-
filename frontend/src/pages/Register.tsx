@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { Points } from '../components/Points';
+import { FxHeadline } from '../components/FxText';
 import { useFeatures } from '../lib/features';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useI18n } from '../i18n';
@@ -149,69 +151,76 @@ export function RegisterPage() {
   );
 
   return (
-    <div className="card stack" style={{ maxWidth: 640, margin: '0 auto' }}>
-      <h1>{t('register.title')}</h1>
-      <div className="tabs" role="tablist">
-        {(['patient', 'doctor', 'pharmacy'] as const).map((r) => (
-          <button key={r} type="button" role="tab" aria-selected={role === r} onClick={() => setRole(r)}>
-            {t(r === 'patient' ? 'register.asPatient' : r === 'doctor' ? 'register.asDoctor' : 'register.asPharmacy')}
-          </button>
-        ))}
-      </div>
-      {role !== 'patient' && <div className="alert info">{t('register.proNotice')}</div>}
-      {!features.signups && (
-        <p className="alert warn" role="status" data-testid="signups-closed">
-          {t('feat.signupsOff')}
-        </p>
-      )}
-      <form className="stack" onSubmit={submit} noValidate>
-        {role === 'pharmacy' ? (
-          <>
-            {input('name', t('register.pharmacyName'), 'text', { required: true })}
-            {input('finess', t('register.finess'), 'text', { inputMode: 'numeric', required: true })}
-          </>
-        ) : (
-          <div className="grid cols-2">
-            {input('firstName', t('register.firstName'), 'text', { autoComplete: 'given-name', required: true })}
-            {input('lastName', t('register.lastName'), 'text', { autoComplete: 'family-name', required: true })}
-          </div>
-        )}
-        {role === 'doctor' && (
-          <div className="grid cols-2">
-            {input('rpps', t('register.rpps'), 'text', { inputMode: 'numeric', required: true })}
-            {input('speciality', t('register.speciality'))}
-          </div>
-        )}
-        {role === 'patient' && input('birthDate', t('register.birthDate'), 'date')}
-        {role !== 'doctor' && <AddressField value={addr} onPick={setAddr} required={role === 'pharmacy'} />}
-        {role !== 'doctor' && input('phone', t('register.phone'), 'tel', { autoComplete: 'tel' })}
-        {input('email', t('login.email'), 'email', { autoComplete: 'email', required: true })}
-        <div className="field">
-          <label htmlFor="password">{t('login.password')}</label>
-          <input
-            id="password"
-            className="input"
-            type="password"
-            autoComplete="new-password"
-            value={f.password ?? ''}
-            onChange={set('password')}
-            minLength={10}
-            required
-          />
-          <span className="muted small">{t('register.passwordHint')}</span>
+    <div className="auth-wrap">
+      <section className="auth-hero open-copy">
+        <FxHeadline text={t('register.heroTitle')} />
+        <p className="auth-lead">{t('register.heroLead')}</p>
+        <Points items={[t('register.heroPoint1'), t('register.heroPoint2'), t('register.heroPoint3')]} />
+      </section>
+      <div className="card stack">
+        <h2>{t('register.title')}</h2>
+        <div className="tabs" role="tablist">
+          {(['patient', 'doctor', 'pharmacy'] as const).map((r) => (
+            <button key={r} type="button" role="tab" aria-selected={role === r} onClick={() => setRole(r)}>
+              {t(r === 'patient' ? 'register.asPatient' : r === 'doctor' ? 'register.asDoctor' : 'register.asPharmacy')}
+            </button>
+          ))}
         </div>
-        {error && (
-          <div className="alert error" role="alert">
-            {error}
-          </div>
+        {role !== 'patient' && <div className="alert info">{t('register.proNotice')}</div>}
+        {!features.signups && (
+          <p className="alert warn" role="status" data-testid="signups-closed">
+            {t('feat.signupsOff')}
+          </p>
         )}
-        <button className="btn block" type="submit" disabled={busy}>
-          {t('register.submit')}
-        </button>
-      </form>
-      <p className="small">
-        {t('register.haveAccount')} <Link to="/login">{t('login.submit')}</Link>
-      </p>
+        <form className="stack" onSubmit={submit} noValidate>
+          {role === 'pharmacy' ? (
+            <>
+              {input('name', t('register.pharmacyName'), 'text', { required: true })}
+              {input('finess', t('register.finess'), 'text', { inputMode: 'numeric', required: true })}
+            </>
+          ) : (
+            <div className="grid cols-2">
+              {input('firstName', t('register.firstName'), 'text', { autoComplete: 'given-name', required: true })}
+              {input('lastName', t('register.lastName'), 'text', { autoComplete: 'family-name', required: true })}
+            </div>
+          )}
+          {role === 'doctor' && (
+            <div className="grid cols-2">
+              {input('rpps', t('register.rpps'), 'text', { inputMode: 'numeric', required: true })}
+              {input('speciality', t('register.speciality'))}
+            </div>
+          )}
+          {role === 'patient' && input('birthDate', t('register.birthDate'), 'date')}
+          {role !== 'doctor' && <AddressField value={addr} onPick={setAddr} required={role === 'pharmacy'} />}
+          {role !== 'doctor' && input('phone', t('register.phone'), 'tel', { autoComplete: 'tel' })}
+          {input('email', t('login.email'), 'email', { autoComplete: 'email', required: true })}
+          <div className="field">
+            <label htmlFor="password">{t('login.password')}</label>
+            <input
+              id="password"
+              className="input"
+              type="password"
+              autoComplete="new-password"
+              value={f.password ?? ''}
+              onChange={set('password')}
+              minLength={10}
+              required
+            />
+            <span className="muted small">{t('register.passwordHint')}</span>
+          </div>
+          {error && (
+            <div className="alert error" role="alert">
+              {error}
+            </div>
+          )}
+          <button className="btn block" type="submit" disabled={busy}>
+            {t('register.submit')}
+          </button>
+        </form>
+        <p className="small">
+          {t('register.haveAccount')} <Link to="/login">{t('login.submit')}</Link>
+        </p>
+      </div>
     </div>
   );
 }

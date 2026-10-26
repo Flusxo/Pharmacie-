@@ -1269,5 +1269,11 @@
   "access.order": "{who} a ouvert votre commande.",
   "access.prescription": "{who} a ouvert l’ordonnance que vous avez jointe.",
   "access.doctor": "{who} a consulté votre nom et votre date de naissance (vous avez confirmé ce lien).",
-  "access.staff": "L’équipe de counter. a consulté votre compte ou vos commandes pour modérer ou vous aider."
+  "access.staff": "L’équipe de counter. a consulté votre compte ou vos commandes pour modérer ou vous aider.",
+  "login.heroLead": "Connectez-vous pour retrouver vos demandes là où vous les avez laissées.",
+  "register.heroTitle": "Rejoignez counter. en deux minutes.",
+  "register.heroLead": "Un compte patient pour chercher et suivre vos demandes. Les comptes médecin et pharmacie sont vérifiés par notre équipe.",
+  "register.heroPoint1": "Gratuit, sans carte bancaire.",
+  "register.heroPoint2": "Vous choisissez toujours votre pharmacie.",
+  "register.heroPoint3": "Données de démonstration : aucune donnée réelle."
 }

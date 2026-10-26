@@ -72,6 +72,8 @@ export interface Item {
   field?: FieldInstance[];
   /** tied to step N of a scroll story: flies in when that step is read, out when another is (see story.ts) */
   story?: number;
+  /** placed by screen position: pos = [x as a fraction of the half width (-1..1), y in px from the top of the screen, z] */
+  screen?: boolean;
 }
 
 export interface Composition {
@@ -82,6 +84,8 @@ export interface Composition {
   travel: [number, number, number];
   /** where the hero cluster is centred (used to recentre it on phones) */
   heroX: number;
+  /** portrait screens: these objects replace the items (placed by screen position, see Item.screen) */
+  portrait?: Item[];
 }
 
 export type CompositionName =
@@ -383,45 +387,62 @@ export const COMPOSITIONS: Record<CompositionName, Composition> = {
       ...depth(131, [TEAL, SKY]),
     ],
   },
+  // Login, sign-up and recovery: the text (headline, lead, points) fills the left column from the top and only the form is
+  // glass. So the objects sit in the free band under the text at the lower left, and in the right margin beside the form
+  // (never behind either). On portrait screens they sit in the gap above the headline (see `portrait`).
   auth: {
     heroX: -2.9,
     travel: [0, -3, 0],
-    // Below the login heading (the text block stays clear), plus a few items on the far right.
     items: [
-      { kind: 'amber', pos: [-3.0, -2.05, 0], rot: [0.05, 0.15, -0.05], scale: 1.55, label: APAISA, float: 0.6 },
-      { kind: 'pillbottle', pos: [-4.7, -1.75, -0.9], rot: [0.05, 0.3, 0.08], scale: 1.25, label: VITALIS, float: 0.7 },
-      { kind: 'blister', pos: [-1.2, -1.75, 0.3], rot: [0.3, 0.5, -0.4], scale: 1.0, label: CALMORA, float: 0.9 },
-      { kind: 'capsule', pos: [-1.2, -2.35, 1.0], rot: [1.2, 0.2, 0.3], scale: 2.8, colors: TEAL, split: true, float: 1.2 },
-      { kind: 'capsule', pos: [-4.6, -2.45, 0.8], rot: [0.4, 0.2, 0.9], scale: 2.4, colors: GREEN, split: true, float: 1 },
-      { kind: 'tablet', pos: [-2.3, -2.7, 1.2], rot: [1.1, 0.3, 0], scale: 2.1, float: 1.1 },
-      { kind: 'tablet', pos: [-0.4, -2.4, 1.4], rot: [0.6, 1.2, 0.2], scale: 1.8, float: 0.9 },
-      { kind: 'cross', pos: [4.9, 2.1, -2.2], rot: [0.1, -0.5, 0], scale: 0.5, float: 0.7 },
-      { kind: 'capsule', pos: [4.8, 0.6, -2.5], rot: [0.4, 0.2, 0.9], scale: 2.2, colors: SKY, float: 1 },
-      { kind: 'tablet', pos: [4.6, -2.2, -2], rot: [1.1, 0.3, 0], scale: 2, float: 1 },
+      { kind: 'amber', pos: [-3.3, -2.55, 0], rot: [0.05, 0.15, -0.05], scale: 0.78, label: APAISA, float: 0.6 },
+      { kind: 'pillbottle', pos: [-4.5, -2.45, -0.4], rot: [0.05, 0.3, 0.08], scale: 0.62, label: VITALIS, float: 0.7 },
+      { kind: 'blister', pos: [-1.7, -2.3, 0.3], rot: [0.3, 0.5, -0.4], scale: 0.6, label: CALMORA, float: 0.9 },
+      { kind: 'capsule', pos: [-2.3, -3.1, 1.0], rot: [1.2, 0.2, 0.3], scale: 1.5, colors: TEAL, split: true, float: 1.2 },
+      { kind: 'tablet', pos: [-0.7, -2.95, 1.2], rot: [0.6, 1.2, 0.2], scale: 1.3, float: 0.9 },
+      { kind: 'cross', pos: [5.4, 2.0, -2.2], rot: [0.1, -0.5, 0], scale: 0.45, float: 0.7 },
+      { kind: 'capsule', pos: [5.3, 0.4, -2.5], rot: [0.4, 0.2, 0.9], scale: 1.5, colors: SKY, float: 1 },
+      { kind: 'tablet', pos: [5.2, -2.0, -2], rot: [1.1, 0.3, 0], scale: 1.4, float: 1 },
+    ],
+    portrait: [
+      { kind: 'amber', screen: true, pos: [-0.12, 248, 0], rot: [0.05, 0.15, -0.05], scale: 0.5, label: APAISA, float: 0.6 },
+      { kind: 'blister', screen: true, pos: [0.42, 215, 0], rot: [0.3, 0.5, -0.4], scale: 0.4, label: CALMORA, float: 0.9 },
+      { kind: 'capsule', screen: true, pos: [-0.55, 215, 0.4], rot: [1.2, 0.2, 0.3], scale: 1.0, colors: TEAL, split: true, float: 1.2 },
+      { kind: 'tablet', screen: true, pos: [0.1, 262, 0.6], rot: [0.6, 1.2, 0.2], scale: 0.9, float: 0.9 },
     ],
   },
   register: {
     heroX: -2.9,
     travel: [0, -3, 0],
     items: [
-      { kind: 'clipboard', pos: [-3.2, -2.0, 0], rot: [0.1, 0.4, -0.06], scale: 1.1, float: 0.6 },
-      { kind: 'figure-pharmacist', pos: [-5.3, -2.3, -1.2], rot: [0, 0.4, 0], scale: 0.7, float: 0.3 },
-      { kind: 'phone', pos: [-1.3, -1.9, 0.3], rot: [0.12, 0.45, 0.08], scale: 0.9, float: 0.7 },
-      { kind: 'capsule', pos: [-2.2, -2.8, 1.1], rot: [1.2, 0.2, 0.3], scale: 2.6, colors: GREEN, split: true, float: 1.2 },
-      { kind: 'tablet', pos: [-4.2, -2.9, 1.0], rot: [0.6, 1.2, 0.2], scale: 1.9, float: 0.9 },
-      { kind: 'cross', pos: [4.9, 2.1, -2.2], rot: [0.1, -0.5, 0], scale: 0.5, float: 0.7 },
-      { kind: 'capsule', pos: [4.8, 0.2, -2.5], rot: [0.4, 0.2, 0.9], scale: 2.2, colors: AMBER, float: 1 },
+      { kind: 'clipboard', pos: [-3.4, -2.75, 0], rot: [0.1, 0.4, -0.06], scale: 0.7, float: 0.6 },
+      { kind: 'figure-pharmacist', pos: [-4.7, -2.9, -0.8], rot: [0, 0.4, 0], scale: 0.55, float: 0.3 },
+      { kind: 'phone', pos: [-1.8, -2.45, 0.3], rot: [0.12, 0.45, 0.08], scale: 0.6, float: 0.7 },
+      { kind: 'capsule', pos: [-2.6, -3.1, 1.1], rot: [1.2, 0.2, 0.3], scale: 1.4, colors: GREEN, split: true, float: 1.2 },
+      { kind: 'tablet', pos: [-0.8, -2.95, 1.0], rot: [0.6, 1.2, 0.2], scale: 1.2, float: 0.9 },
+      { kind: 'cross', pos: [5.4, 2.0, -2.2], rot: [0.1, -0.5, 0], scale: 0.45, float: 0.7 },
+      { kind: 'capsule', pos: [5.3, 0.2, -2.5], rot: [0.4, 0.2, 0.9], scale: 1.5, colors: AMBER, float: 1 },
+    ],
+    portrait: [
+      { kind: 'clipboard', screen: true, pos: [-0.2, 250, 0], rot: [0.1, 0.4, -0.06], scale: 0.42, float: 0.6 },
+      { kind: 'phone', screen: true, pos: [0.4, 248, 0.3], rot: [0.12, 0.45, 0.08], scale: 0.4, float: 0.7 },
+      { kind: 'capsule', screen: true, pos: [-0.6, 215, 0.4], rot: [1.2, 0.2, 0.3], scale: 1.0, colors: GREEN, split: true, float: 1.2 },
+      { kind: 'tablet', screen: true, pos: [0.08, 262, 0.6], rot: [0.6, 1.2, 0.2], scale: 0.9, float: 0.9 },
     ],
   },
   recover: {
     heroX: -2.9,
     travel: [0, -3, 0],
     items: [
-      { kind: 'envelope', pos: [-3.0, -2.0, 0], rot: [0.1, 0.45, 0.08], scale: 1.2, float: 0.8 },
-      { kind: 'cross', pos: [-1.2, -2.0, 0.4], rot: [0.1, 0.4, 0], scale: 0.55, float: 0.7 },
-      { kind: 'capsule', pos: [-4.4, -2.5, 0.9], rot: [0.4, 0.2, 0.9], scale: 2.4, colors: SKY, split: true, float: 1 },
-      { kind: 'tablet', pos: [-2.2, -2.9, 1.2], rot: [1.1, 0.3, 0], scale: 2.0, float: 1.1 },
-      { kind: 'blob', pos: [4.7, 1.0, -2.4], scale: 1.1, color: '#a7f3d0', blob: 'pill', rot: [0.3, 0, 0.9], spin: 2, float: 0.8 },
+      { kind: 'envelope', pos: [-3.2, -2.5, 0], rot: [0.1, 0.45, 0.08], scale: 0.8, float: 0.8 },
+      { kind: 'cross', pos: [-1.6, -2.5, 0.4], rot: [0.1, 0.4, 0], scale: 0.4, float: 0.7 },
+      { kind: 'capsule', pos: [-4.4, -3.0, 0.9], rot: [0.4, 0.2, 0.9], scale: 1.5, colors: SKY, split: true, float: 1 },
+      { kind: 'tablet', pos: [-2.4, -3.1, 1.2], rot: [1.1, 0.3, 0], scale: 1.3, float: 1.1 },
+      { kind: 'blob', pos: [5.3, 1.0, -2.4], scale: 0.8, color: '#a7f3d0', blob: 'pill', rot: [0.3, 0, 0.9], spin: 2, float: 0.8 },
+    ],
+    portrait: [
+      { kind: 'envelope', screen: true, pos: [-0.1, 250, 0], rot: [0.1, 0.45, 0.08], scale: 0.6, float: 0.8 },
+      { kind: 'capsule', screen: true, pos: [-0.6, 215, 0.4], rot: [0.4, 0.2, 0.9], scale: 1.0, colors: SKY, split: true, float: 1 },
+      { kind: 'tablet', screen: true, pos: [0.5, 255, 0.6], rot: [1.1, 0.3, 0], scale: 0.9, float: 1.1 },
     ],
   },
 };

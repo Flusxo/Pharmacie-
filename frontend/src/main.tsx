@@ -7,6 +7,7 @@ import './styles/public.css';
 import './styles/pictures.css';
 import './styles/glass.css';
 import './styles/polish.css';
+import './styles/type.css';
 import { App } from './App';
 import { warmUp } from './lib/apiBase';
 

@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react';
+import { Points } from '../components/Points';
+import { FxHeadline } from '../components/FxText';
 import { Link, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { homeFor, useAuth } from '../lib/auth';
@@ -80,15 +82,10 @@ export function LoginPage({ staff = false }: { staff?: boolean }) {
 
   return (
     <div className="auth-wrap">
-      <section className="auth-hero" aria-hidden={false}>
-        <h1>{staff ? t('login.staffTitle') : t('login.heroTitle')}</h1>
-        {!staff && (
-          <ul>
-            <li>{t('login.heroPoint1')}</li>
-            <li>{t('login.heroPoint2')}</li>
-            <li>{t('login.heroPoint3')}</li>
-          </ul>
-        )}
+      <section className="auth-hero open-copy" aria-hidden={false}>
+        <FxHeadline text={staff ? t('login.staffTitle') : t('login.heroTitle')} />
+        {!staff && <p className="auth-lead">{t('login.heroLead')}</p>}
+        {!staff && <Points items={[t('login.heroPoint1'), t('login.heroPoint2'), t('login.heroPoint3')]} />}
       </section>
 
       <section className="card stack" aria-labelledby="login-title">

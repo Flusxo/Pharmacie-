@@ -1,25 +1,5 @@
 /* Interaction polish. Motion only on transform/opacity; everything is off with "Reduce animations" and on touch where noted. */
 
-/* Soft glow that follows the mouse (fine pointers only; see components/CursorGlow.tsx). */
-.cursor-glow {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 360px;
-  height: 360px;
-  margin: -180px 0 0 -180px;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  background: radial-gradient(circle, color-mix(in srgb, var(--mint, #a7f3d0) 38%, transparent) 0, transparent 65%);
-  transition: opacity var(--dur-slow, 0.4s) ease-out;
-  will-change: transform;
-}
-.cursor-glow.on {
-  opacity: 0.4;
-}
-
 /* Button ripple from the pressed point. */
 .btn {
   position: relative;
@@ -107,7 +87,6 @@
   }
 }
 
-:root[data-reduce-motion='true'] .cursor-glow,
 :root[data-reduce-motion='true'] .btn::after {
   display: none;
 }
@@ -115,11 +94,6 @@
 :root[data-reduce-motion='true'] .check-draw path {
   animation: none;
   stroke-dashoffset: 0;
-}
-@media (pointer: coarse) {
-  .cursor-glow {
-    display: none;
-  }
 }
 
 /* Saved-pharmacy heart. */

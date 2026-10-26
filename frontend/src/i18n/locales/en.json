@@ -1269,5 +1269,11 @@
   "access.order": "{who} opened your order.",
   "access.prescription": "{who} opened the prescription you attached.",
   "access.doctor": "{who} looked at your name and birth date (you confirmed this link).",
-  "access.staff": "The counter. team looked at your account or orders to moderate or help."
+  "access.staff": "The counter. team looked at your account or orders to moderate or help.",
+  "login.heroLead": "Log in to pick up your requests where you left them.",
+  "register.heroTitle": "Join counter. in two minutes.",
+  "register.heroLead": "A patient account to search and follow your requests. Doctor and pharmacy accounts are checked by our team.",
+  "register.heroPoint1": "Free, no bank card.",
+  "register.heroPoint2": "You always choose your pharmacy.",
+  "register.heroPoint3": "Demonstration data: no real data."
 }

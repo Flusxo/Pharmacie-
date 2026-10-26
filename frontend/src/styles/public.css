@@ -861,12 +861,8 @@
   }
 }
 @media (max-width: 899px) {
+  /* Room above the heading for the 3D objects; the text sits on the page over a soft shade (styles/type.css). */
   .pub-app .auth-hero {
-    background: var(--glass);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
     margin-top: 150px;
   }
 }

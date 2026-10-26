@@ -13,7 +13,7 @@ import type { Role } from './lib/types';
 import { Layout } from './components/Layout';
 import { WakingBanner } from './components/WakingBanner';
 import { OfflineBanner } from './components/OfflineBanner';
-import { CursorGlow } from './components/CursorGlow';
+import { CursorFx } from './components/CursorFx';
 import { CommandPalette } from './components/CommandPalette';
 import { ConsentBanner } from './components/ConsentBanner';
 import { PageMeta } from './components/PageMeta';
@@ -307,7 +307,7 @@ export function App() {
                     <RootStage />
                     <WakingBanner />
                     <OfflineBanner />
-                    <CursorGlow />
+                    <CursorFx />
                     <CommandPalette />
                     <PageMeta />
                     <ConsentBanner />

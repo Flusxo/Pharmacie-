@@ -181,7 +181,7 @@ export function ContactPage() {
             </button>
           </form>
         )}
-        <aside className="card glass stack contact-details" aria-labelledby="contact-details-title">
+        <aside className="stack contact-details open-copy" aria-labelledby="contact-details-title">
           <CutOut id="cut-envelope" className="contact-cutout" />
           <h2 id="contact-details-title">{t('pub.contact.detailsTitle')}</h2>
           <p className="row" style={{ gap: 10, flexWrap: 'nowrap', alignItems: 'flex-start' }}>

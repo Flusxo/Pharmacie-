@@ -45,7 +45,6 @@
 .pub-footer,
 .pub-menu,
 .tour-card,
-.pub-app .auth-hero,
 .pub-app .auth-wrap > .card,
 .pub-app .pub-main > .card,
 .pub-app .pub-main > form.card {
@@ -101,7 +100,6 @@
 :root[data-glass='flat'] .topbar,
 :root[data-glass='flat'] .pub-menu,
 :root[data-glass='flat'] .tour-card,
-:root[data-glass='flat'] .pub-app .auth-hero,
 :root[data-glass='flat'] .pub-footer {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
