@@ -5,7 +5,7 @@ test('who looked at my data: the pharmacy that opens a request appears on the pa
   const patient = await apiAs('emma@pharmacie.test');
   const tournon = await apiAs('pharmacie.tournon@pharmacie.test');
   const me = await tournon.call<{ user: { id: string } }>('GET', '/auth/me');
-  const meds = await patient.call<{ items: { id: string }[] }>('GET', '/medicines?q=Doliprane');
+  const meds = await patient.call<{ items: { id: string }[] }>('GET', '/medicines?q=Biafine');
   const req = await patient.call<{ id: string }>('POST', '/patient/requests', { items: [{ medicineId: meds.items[0].id, quantity: 1 }] });
   await patient.call('POST', `/patient/requests/${req.id}/choose`, { pharmacyId: me.user.id, acceptPartial: false });
   for (let i = 0; i < 3; i++) await tournon.call('GET', '/pharmacy/incoming');
