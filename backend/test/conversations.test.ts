@@ -115,6 +115,48 @@ describe('reviews', () => {
   });
 });
 
+describe('review replies', () => {
+  it('one reply by the pharmacy, shown under the review, reportable by the patient, hidden by staff', async () => {
+    const done = await orderFor('emma', 'delivered');
+    const review = await api().post(`/api/patient/orders/${done.orderId}/review`).set(auth(done.pt)).send({ rating: 3, comment: 'Correct' });
+    expect(review.status).toBe(201);
+    const reply = (t: string, text = 'Merci pour votre retour.') => api().post(`/api/pharmacy/reviews/${review.body.id}/reply`).set(auth(t)).send({ text });
+
+    // Only the pharmacy the review is about, with a text of 2 to 300 characters, and once.
+    expect((await reply(await login('pharmacie.valence'))).status).toBe(404);
+    expect((await reply(done.ph, 'a')).status).toBe(400);
+    expect((await reply(done.ph, 'x'.repeat(301))).status).toBe(400);
+    expect((await reply(done.ph)).status).toBe(201);
+    expect((await reply(done.ph, 'Une autre réponse')).status).toBe(409);
+
+    // The patient is told (neutral text) and sees it; the public page shows it, still without the author.
+    const own = await api().get(`/api/patient/orders/${done.orderId}/review`).set(auth(done.pt));
+    expect(own.body.review.reply).toBe('Merci pour votre retour.');
+    const notes = await api().get('/api/notifications').set(auth(done.pt));
+    expect(notes.body.items.some((n: { kind: string }) => n.kind === 'review_reply')).toBe(true);
+    const pub = await api().get(`/api/pharmacies/${TOURNON}/reviews`);
+    const shown = pub.body.items.find((r: { id: string }) => r.id === review.body.id);
+    expect(shown.reply).toBe('Merci pour votre retour.');
+    expect(JSON.stringify(pub.body)).not.toMatch(/Emma|emma@/);
+
+    // Only the patient who wrote the review can report the reply; staff hide it and nobody sees it any more.
+    expect((await api().post(`/api/patient/orders/${done.orderId}/review/reply/report`).set(auth(await login('alice'))).send({ reason: 'Hors sujet' })).status).toBe(404);
+    expect((await api().post(`/api/patient/orders/${done.orderId}/review/reply/report`).set(auth(done.pt)).send({ reason: 'Réponse déplacée' })).status).toBe(201);
+    const admin = await login('admin');
+    const reports = await api().get('/api/admin/reports').set(auth(admin));
+    const rep = reports.body.items.find((r: { targetType: string; targetId: string }) => r.targetType === 'review_reply' && r.targetId === review.body.id);
+    expect(rep.targetText).toBe('Merci pour votre retour.');
+    expect((await api().post(`/api/admin/moderation/review_reply/${review.body.id}`).set(auth(admin)).send({ hidden: true, reason: 'Réponse inappropriée' })).status).toBe(200);
+    const after = await api().get(`/api/pharmacies/${TOURNON}/reviews`);
+    expect(after.body.items.find((r: { id: string }) => r.id === review.body.id).reply).toBeNull();
+    expect((await api().get(`/api/patient/orders/${done.orderId}/review`).set(auth(done.pt))).body.review.reply).toBeNull();
+
+    // The pharmacy can take its reply back, then answer again.
+    expect((await api().delete(`/api/pharmacy/reviews/${review.body.id}/reply`).set(auth(done.ph))).status).toBe(200);
+    expect((await reply(done.ph, 'Nouvelle réponse')).status).toBe(201);
+  });
+});
+
 describe('time slots', () => {
   it('computes 30-minute slots inside the opening hours only', () => {
     // Monday 2026-10-26 09:00 Paris time (08:00 UTC): the pharmacy opens 08:30-12:30 and 14:00-19:30 on weekdays.

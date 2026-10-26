@@ -184,6 +184,9 @@ export function ProfilePage() {
           />
           <span>{t('profile.emailNotifications')}</span>
         </label>
+        <p className="muted small" style={{ margin: 0 }} data-testid="push-unavailable">
+          {t('profile.pushNote')}
+        </p>
       </section>
 
       <DevicesPanel />

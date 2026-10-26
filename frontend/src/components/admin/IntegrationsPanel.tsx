@@ -7,7 +7,7 @@ interface Integrations {
   email: { configured: boolean };
   errorAlerts: { configured: boolean };
   payments: { configured: boolean };
-  push: { built: boolean };
+  push: { configured: boolean; built: boolean };
   storage: { built: boolean };
 }
 
@@ -21,11 +21,11 @@ export function IntegrationsPanel() {
       .catch(() => setData(null));
   }, []);
   if (!data) return null;
-  const rows: { key: string; label: MessageKey; state: 'on' | 'off' | 'unbuilt' }[] = [
+  const rows: { key: string; label: MessageKey; state: 'on' | 'off' | 'unbuilt' | 'keys' }[] = [
     { key: 'email', label: 'integ.email', state: data.email.configured ? 'on' : 'off' },
     { key: 'errors', label: 'integ.errorAlerts', state: data.errorAlerts.configured ? 'on' : 'off' },
     { key: 'payments', label: 'integ.payments', state: data.payments.configured ? 'on' : 'off' },
-    { key: 'push', label: 'integ.push', state: 'unbuilt' },
+    { key: 'push', label: 'integ.push', state: data.push.configured ? 'keys' : 'off' },
     { key: 'storage', label: 'integ.storage', state: 'unbuilt' },
   ];
   return (
@@ -39,11 +39,16 @@ export function IntegrationsPanel() {
           <li key={r.key} className="row between">
             <span>{t(r.label)}</span>
             <span className={`badge ${r.state === 'on' ? 'ok' : 'neutral'}`}>
-              {t(r.state === 'on' ? 'integ.on' : r.state === 'off' ? 'integ.off' : 'integ.unbuilt')}
+              {t(
+                r.state === 'on' ? 'integ.on' : r.state === 'off' ? 'integ.off' : r.state === 'keys' ? 'integ.pushKeys' : 'integ.unbuilt',
+              )}
             </span>
           </li>
         ))}
       </ul>
+      <p className="muted small" style={{ margin: 0 }} data-testid="push-note">
+        {t('integ.pushNote')}
+      </p>
     </section>
   );
 }

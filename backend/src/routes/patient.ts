@@ -15,6 +15,7 @@ import {
   chooseSlot,
   createReview,
   getOwnReview,
+  reportReply,
   listMessages,
   postMessage,
   reportMessage,
@@ -295,6 +296,14 @@ patientRouter.get('/orders/:id/review', async (req, res) => {
   const { id } = idParam.parse(req.params);
   res.json({ review: await getOwnReview(id, req.user!.id) });
 });
+patientRouter.post('/orders/:id/review/reply/report', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const { reason } = z.object({ reason: z.string().trim().min(3).max(500) }).parse(req.body);
+  const review = await getOwnReview(id, req.user!.id);
+  if (!review) throw notFound('Reply not found.');
+  await reportReply(review.id, req.user!.id, reason);
+  res.status(201).json({ ok: true });
+});
 patientRouter.post('/orders/:id/review', requireFeature('reviews', 'Reviews are switched off for now.'), async (req, res) => {
   const { id } = idParam.parse(req.params);
   const b = z.object({ rating: z.number().int().min(1).max(5), comment: z.string().trim().max(300).optional().nullable() }).parse(req.body);
@@ -386,6 +395,7 @@ addRoutes([
   ['post', '/api/patient/orders/:id/messages', 'Patient', 'Send a message about my order (text, 500 characters, rate limited)', 'bearer'],
   ['post', '/api/patient/messages/:id/report', 'Patient', 'Report a message', 'bearer'],
   ['get', '/api/patient/orders/:id/review', 'Patient', 'My review of this order', 'bearer'],
+  ['post', '/api/patient/orders/:id/review/reply/report', 'Patient', 'Report the pharmacy reply to my review', 'bearer'],
   ['post', '/api/patient/orders/:id/review', 'Patient', 'Review a delivered order (1-5 and a short comment)', 'bearer'],
   ['get', '/api/patient/orders/:id/slots', 'Patient', 'Free 30-minute times in the pharmacy opening hours (next 48 hours)', 'bearer'],
   ['put', '/api/patient/orders/:id/slot', 'Patient', 'Choose a pickup or (simulated) delivery time', 'bearer'],

@@ -79,7 +79,11 @@ export function ProfileTab() {
           {t('pp.save')}
         </button>
       </form>
-      <ReviewList path="/pharmacy/reviews" reportPath={(id) => `/pharmacy/reviews/${id}/report`} />
+      <ReviewList
+        path="/pharmacy/reviews"
+        reportPath={(id) => `/pharmacy/reviews/${id}/report`}
+        replyPath={(id) => `/pharmacy/reviews/${id}/reply`}
+      />
     </div>
   );
 }

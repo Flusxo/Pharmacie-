@@ -87,8 +87,10 @@ export async function createReview(orderId: string, patientId: string, rating: n
 export async function getOwnReview(orderId: string, patientId: string) {
   await partyOrder(orderId, 'patient', patientId);
   return (
-    (await one<{ id: string; rating: number; comment: string | null; status: string }>(
-      'SELECT id, rating, comment, status FROM reviews WHERE order_id = $1',
+    (await one<{ id: string; rating: number; comment: string | null; status: string; reply: string | null; replyAt: string | null }>(
+      `SELECT id, rating, comment, status,
+              CASE WHEN reply_hidden THEN NULL ELSE reply END AS reply, CASE WHEN reply_hidden THEN NULL ELSE reply_at END AS "replyAt"
+         FROM reviews WHERE order_id = $1`,
       [orderId],
     )) ?? null
   );
@@ -100,8 +102,10 @@ export async function pharmacyReviews(pharmacyId: string) {
     "SELECT count(*)::int AS count, round(avg(rating)::numeric, 1)::float AS average FROM reviews WHERE pharmacy_id = $1 AND status = 'visible'",
     [pharmacyId],
   );
-  const items = await query<{ id: string; rating: number; comment: string | null; createdAt: string }>(
-    `SELECT id, rating, comment, created_at AS "createdAt" FROM reviews
+  const items = await query<{ id: string; rating: number; comment: string | null; createdAt: string; reply: string | null; replyAt: string | null }>(
+    `SELECT id, rating, comment, created_at AS "createdAt",
+            CASE WHEN reply_hidden THEN NULL ELSE reply END AS reply, CASE WHEN reply_hidden THEN NULL ELSE reply_at END AS "replyAt"
+       FROM reviews
       WHERE pharmacy_id = $1 AND status = 'visible' ORDER BY created_at DESC LIMIT 20`,
     [pharmacyId],
   );
@@ -118,6 +122,39 @@ export async function reportReview(reviewId: string, pharmacyId: string, reporte
   );
 }
 
+export const MAX_REPLY = 300;
+
+/** The pharmacy answers a visible review of its own: one reply, shown under the review, which the patient can report. */
+export async function replyToReview(reviewId: string, pharmacyId: string, text: string) {
+  const r = await one<{ patient_id: string; order_id: string; reply: string | null }>(
+    "SELECT patient_id, order_id, reply FROM reviews WHERE id = $1 AND pharmacy_id = $2 AND status = 'visible'",
+    [reviewId, pharmacyId],
+  );
+  if (!r) throw notFound('Review not found.');
+  if (r.reply) throw conflict('You already replied to this review.', 'already_replied');
+  await pool.query('UPDATE reviews SET reply = $2, reply_at = now(), reply_hidden = false WHERE id = $1', [reviewId, text]);
+  await notify(r.patient_id, 'review_reply', 'The pharmacy replied to your review.', `/orders/${r.order_id}`);
+}
+
+/** The pharmacy takes its reply back (a hidden reply can be deleted too). */
+export async function deleteReply(reviewId: string, pharmacyId: string) {
+  const r = await pool.query(
+    'UPDATE reviews SET reply = NULL, reply_at = NULL, reply_hidden = false WHERE id = $1 AND pharmacy_id = $2 AND reply IS NOT NULL',
+    [reviewId, pharmacyId],
+  );
+  if (!r.rowCount) throw notFound('Reply not found.');
+}
+
+/** The patient who wrote the review reports the pharmacy's reply. */
+export async function reportReply(reviewId: string, patientId: string, reason: string) {
+  const r = await one('SELECT 1 FROM reviews WHERE id = $1 AND patient_id = $2 AND reply IS NOT NULL', [reviewId, patientId]);
+  if (!r) throw notFound('Reply not found.');
+  await pool.query(
+    "INSERT INTO reports (reporter_user_id, subject, message, target_type, target_id) VALUES ($1,'Review reply reported',$2,'review_reply',$3)",
+    [patientId, reason, reviewId],
+  );
+}
+
 // ---------- Moderation (staff) ----------
 
 /** What a report points at, for the staff inbox (the text of the message or review, and who it belongs to by role only). */
@@ -131,6 +168,9 @@ export async function reportTargets(reportRows: { target_type: string | null; ta
         [Number(r.target_id)],
       );
       if (m) out.set(`message:${r.target_id}`, { text: m.body, hidden: m.hidden });
+    } else if (r.target_type === 'review_reply') {
+      const m = await one<{ reply: string | null; hidden: boolean }>('SELECT reply, reply_hidden AS hidden FROM reviews WHERE id = $1', [r.target_id]);
+      if (m) out.set(`review_reply:${r.target_id}`, { text: m.reply ?? '', hidden: m.hidden });
     } else {
       const m = await one<{ comment: string | null; rating: number; hidden: boolean }>(
         "SELECT comment, rating, status = 'hidden' AS hidden FROM reviews WHERE id = $1",
@@ -142,17 +182,19 @@ export async function reportTargets(reportRows: { target_type: string | null; ta
   return out;
 }
 
-export async function setHidden(type: 'message' | 'review', id: string, hidden: boolean): Promise<void> {
+export async function setHidden(type: 'message' | 'review' | 'review_reply', id: string, hidden: boolean): Promise<void> {
   const r =
     type === 'message'
       ? await pool.query('UPDATE order_messages SET hidden_at = CASE WHEN $2 THEN now() ELSE NULL END WHERE id = $1', [Number(id), hidden])
-      : await pool.query("UPDATE reviews SET status = CASE WHEN $2 THEN 'hidden' ELSE 'visible' END WHERE id = $1", [id, hidden]);
+      : type === 'review_reply'
+        ? await pool.query('UPDATE reviews SET reply_hidden = $2 WHERE id = $1 AND reply IS NOT NULL', [id, hidden])
+        : await pool.query("UPDATE reviews SET status = CASE WHEN $2 THEN 'hidden' ELSE 'visible' END WHERE id = $1", [id, hidden]);
   if (!r.rowCount) throw notFound('Nothing to moderate with this id.');
 }
 
 export async function latestReviews() {
   return query(
-    `SELECT r.id, r.rating, r.comment, r.status, r.created_at AS "createdAt", p.name AS "pharmacyName"
+    `SELECT r.id, r.rating, r.comment, r.status, r.created_at AS "createdAt", p.name AS "pharmacyName", r.reply, r.reply_hidden AS "replyHidden"
        FROM reviews r JOIN pharmacies p ON p.user_id = r.pharmacy_id ORDER BY r.created_at DESC LIMIT 100`,
   );
 }

@@ -87,6 +87,20 @@ test('reviews: after delivery the patient reviews once; it shows on the pharmacy
   await expect(reviews).toContainText('Retrait rapide, équipe aimable.');
   await expect(reviews).not.toContainText('David');
 
+  // The pharmacy answers (in its own list, through the screen's endpoint); the answer shows under the review and the patient can report it.
+  const own = await tournon.call<{ items: { id: string; comment: string }[] }>('GET', '/pharmacy/reviews');
+  const theirs = own.items.find((r) => r.comment === 'Retrait rapide, équipe aimable.')!;
+  await tournon.call('POST', `/pharmacy/reviews/${theirs.id}/reply`, { text: 'Merci, à bientôt !' });
+  await page.reload();
+  await expect(page.getByTestId('reviews').getByTestId('review-reply')).toContainText('Merci, à bientôt !');
+  await page.goto(`/orders/${orderId}`);
+  const answer = page.getByTestId('review-block').getByTestId('review-reply');
+  await expect(answer).toContainText('Réponse de la pharmacie');
+  page.once('dialog', (d) => void d.accept('Hors sujet'));
+  await answer.getByRole('button', { name: 'Signaler cette réponse' }).click();
+  await expect(page.getByText('Merci, l’équipe va regarder cette réponse.')).toBeVisible();
+  await page.goto(`/pharmacies/${me.user.id}`);
+
   // Staff hide it from the reviews list of the reports tab (with a reason), and the public page no longer shows it.
   const staff = await apiAs('admin@pharmacie.test');
   const list = await staff.call<{ items: { id: string; comment: string }[] }>('GET', '/admin/reviews');

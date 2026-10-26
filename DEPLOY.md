@@ -147,9 +147,22 @@ You chose Neon (the database itself) for private files, so there is **no new acc
 - Limits to know: the free Neon database holds 0.5 GB, so about 250 files of 2 MB at the most at one time; the backup script saves only the file list (names, sizes, dates), never the contents, so prescriptions are not copied into `backups/`; Neon's own restore does include them; this is not a certified health-data host (HDS): use fake documents only.
 - If you outgrow this, the code that reads and writes files is one file (`backend/src/services/files.ts`); moving to Cloudflare R2, Supabase or Backblaze means replacing its insert and read functions.
 
-### Push notifications (NOT built yet)
+### Push notifications (not configured, sending NOT built)
 
-Web push needs a service worker, a subscription per device and VAPID keys. The site deliberately has no service worker today (so a new build can never be served stale). It is shown as "Not built yet" in the staff panel. If you want it, ask: the keys are free (generated locally with `npx web-push generate-vapid-keys`).
+State today: the staff panel shows **Push notifications: Not configured**, and the patient profile says "not available yet". Nothing is sent. With the keys below the panel says "Keys found, sending not built yet": the keys alone change nothing, because the part that sends is not written.
+
+What exists and what does not:
+
+- Exists: the three optional settings `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (read only to show "keys found").
+- Does not exist, on purpose: a **service worker** (the site has none, so a new build can never be served stale), a **subscription per device** (a table and two endpoints) and the **sender** (the `web-push` package). Without these a browser cannot receive anything.
+
+Exact steps to prepare the keys (free, nothing leaves your PC):
+
+1. On your PC, in the project folder: `npx web-push generate-vapid-keys`. It prints a public key and a private key (long base64 strings). Do not paste them in chat, in code or in git.
+2. Render > your service > Environment, add three variables: `VAPID_PUBLIC_KEY` = the public key, `VAPID_PRIVATE_KEY` = the private key (mark it secret), `VAPID_SUBJECT` = `mailto:you@your-domain.com` (an address that reaches you). Render redeploys.
+3. For local use put the same three names in the ignored root `.env` (see `.env.example`).
+4. Check: the staff panel (Statistiques > Optional services) shows "Keys found, sending not built yet".
+5. To actually send, the next piece of work is: a service worker file served with `Cache-Control: no-cache`, a `push_subscriptions` table (additive migration), `POST/DELETE /api/patient/push`, the `web-push` dependency, a send step next to `notify()` that only sends the neutral subject (never a medicine name), and an opt-in switch on the patient profile. Ask for it when you want it.
 
 ## Staging (a safe copy to try changes)
 

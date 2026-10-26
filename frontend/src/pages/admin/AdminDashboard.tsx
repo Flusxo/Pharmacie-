@@ -757,7 +757,9 @@ export function AdminDashboard() {
               <p style={{ margin: 0 }}>{str(r.message)}</p>
               {r.targetText ? (
                 <blockquote className="alert info small" style={{ margin: 0 }} data-testid="report-target">
-                  <strong>{t(r.targetType === 'review' ? 'adm.targetReview' : 'adm.targetMessage')} :</strong> {str(r.targetText)}{' '}
+                  <strong>
+                    {t(r.targetType === 'review' ? 'adm.targetReview' : r.targetType === 'review_reply' ? 'adm.targetReply' : 'adm.targetMessage')} :
+                  </strong> {str(r.targetText)}{' '}
                   {r.targetHidden ? <span className="badge bad">{t('adm.hidden')}</span> : null}
                 </blockquote>
               ) : null}

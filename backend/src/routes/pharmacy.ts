@@ -23,7 +23,15 @@ import { acceptRequest, proposeSubstitution, refuseRequest } from '../services/r
 import { emailField, idParam, passwordField, uuid } from '../validate.js';
 import { profileBody } from '../pharmacyProfile.js';
 import { listPrescriptionFiles, pharmacyMayListRequestFiles } from '../services/files.js';
-import { listMessages, pharmacyReviews, postMessage, reportMessage, reportReview } from '../services/conversations.js';
+import {
+  deleteReply,
+  listMessages,
+  pharmacyReviews,
+  postMessage,
+  replyToReview,
+  reportMessage,
+  reportReview,
+} from '../services/conversations.js';
 import { messageLimiter } from './files.js';
 import { logOrderViews, logRequestViews } from '../services/accessLog.js';
 import { requireFeature } from '../services/settings.js';
@@ -499,6 +507,21 @@ pharmacyRouter.post('/reviews/:id/report', async (req, res) => {
   res.status(201).json({ ok: true });
 });
 
+// One reply per review, by an owner or a pharmacist (the team rule above keeps assistants out of every write).
+pharmacyRouter.post('/reviews/:id/reply', requireFeature('reviews', 'Reviews are switched off for now.'), async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  const { text } = z
+    .object({ text: z.string().trim().min(2, 'is too short').max(300, 'is too long (300 characters at most)') })
+    .parse(req.body);
+  await replyToReview(id, req.user!.id, text);
+  res.status(201).json({ ok: true });
+});
+pharmacyRouter.delete('/reviews/:id/reply', async (req, res) => {
+  const { id } = idParam.parse(req.params);
+  await deleteReply(id, req.user!.id);
+  res.json({ ok: true });
+});
+
 /** Prescription files of a request this pharmacy was chosen for (the files themselves: GET /api/files/:id). */
 pharmacyRouter.get('/requests/:id/files', async (req, res) => {
   const { id } = idParam.parse(req.params);
@@ -586,6 +609,8 @@ addRoutes([
   ['post', '/api/pharmacy/messages/:id/report', 'Pharmacy', 'Report a message', 'bearer'],
   ['get', '/api/pharmacy/reviews', 'Pharmacy', 'Reviews of my pharmacy', 'bearer'],
   ['post', '/api/pharmacy/reviews/:id/report', 'Pharmacy', 'Report a review to staff', 'bearer'],
+  ['post', '/api/pharmacy/reviews/:id/reply', 'Pharmacy', 'Reply once to a review (300 characters; owner or pharmacist)', 'bearer'],
+  ['delete', '/api/pharmacy/reviews/:id/reply', 'Pharmacy', 'Take my reply back', 'bearer'],
   ['get', '/api/pharmacy/requests/:id/files', 'Pharmacy', 'Prescription files of a request I was chosen for', 'bearer'],
   ['post', '/api/pharmacy/pickup/check', 'Pharmacy', 'Check a pickup code (from the patient or its QR code) and see the order', 'bearer'],
   ['post', '/api/pharmacy/orders/:id/pickup', 'Pharmacy', 'Confirm pickup with the code: ready -> delivered in one step', 'bearer'],

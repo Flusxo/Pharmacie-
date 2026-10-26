@@ -4,6 +4,18 @@ Tick a phase only when its checks pass (run and seen). **New session: read `CLAU
 
 ## Status (2026-10-23) — what works, what is simulated, what is not verified
 
+### Update 2026-10-26 (sixth round, payments untouched)
+
+Done and pushed (migration 014 applied to Neon after a backup; one new table, three nullable columns, one widened check):
+- **Who looked at my data** (patients, Profile): a plain-language log of pharmacies, doctors and staff opening your requests, orders, prescription files or doctor link. One line per viewer and item per hour, kept 12 months, staff shown only as "the counter. team", removed with the account, part of the data export.
+- **Pharmacy reply to a review:** the owner or a pharmacist answers a visible review once (2 to 300 characters, can take it back and answer again); it shows under the review on the public page, in the pharmacy dashboard and to the patient, who gets a neutral notice and can report the reply; staff see it in the reports tab and can hide it with a reason (audit logged). Assistants cannot reply. Switching "reviews" off also stops replies.
+- **Web push: documented "not configured".** Optional `VAPID_*` names exist; the staff panel says "Not configured" or "Keys found, sending not built yet"; the patient profile says push is not available yet. DEPLOY.md has the exact steps and the list of what sending still needs. Nothing is sent.
+- **Design pass on the login, sign-up and public pages:** headline, lead and points sit directly on the background (soft fading scrim, no box); glass only on the form, cards, menus and bars; serif headline, calm body, icons instead of bullets, quieter forms and role tabs; 3D objects kept out of the text (lower-left band and right margin on wide screens, a row above the headline on tablets and phones); larger cursor effects (210 px glow with a three-dot trail, letter spotlight on headlines, magnetic buttons) behind one pointer listener and one animation loop, off on touch, Low tier, reduced motion and in form fields. Screenshots: `docs/screenshots/design` (login, sign-up, home, patient dashboard; 1440 / 768 / 390 px; light and dark; fr and en; cursor over a headline and a button), made with `node scripts/shots-auth.mjs`.
+
+Not verified: the cursor effects and the 3D placement on real hardware (checked with Chromium on this PC through the GPU, graphics Medium); the dashboard (patient home) keeps its older glass cards and objects behind them (only login, sign-up and public pages were reworked).
+
+Not built yet (priority order): (1) web push sending (service worker, subscriptions, sender); (2) expiry alerts (no expiry data in the stock); (3) the how-it-works page keeps its 5-step diagram; (4) 3D category tiles and a camera move between pages; (5) reply to a review has no thread (one reply, no back and forth) by design.
+
 ### Update 2026-10-26 (fifth round, payments untouched)
 
 Done and pushed (migration 013 applied to Neon after a backup; three new tables and one nullable column):
@@ -15,7 +27,7 @@ Done and pushed (migration 013 applied to Neon after a backup; three new tables 
 
 Checks: build, lint, 183 backend and 94 frontend unit tests and the speed budget pass; the last full e2e run (once, at the end) had 82 passed, 1 skipped (the on-demand screenshots) and 0 failed. The e2e harness occasionally times out starting its servers (90 s) right after a heavy run; running it again fixes it.
 
-Not built yet (priority order): (1) web push (needs a service worker, deliberately absent); (2) a "who looked at my data" log for patients; (3) expiry alerts (no expiry data in the stock); (4) the how-it-works page keeps its 5-step diagram; (5) 3D category tiles and a camera move between pages; (6) a pharmacy reply to a review; (7) per-person refill reminders are tied to the last request for that medicine, there is no schedule or dosage by design.
+Not built yet (priority order, as of the fifth round; see the sixth round above for what was done since): (1) web push (needs a service worker, deliberately absent); (2) a "who looked at my data" log for patients; (3) expiry alerts (no expiry data in the stock); (4) the how-it-works page keeps its 5-step diagram; (5) 3D category tiles and a camera move between pages; (6) a pharmacy reply to a review; (7) per-person refill reminders are tied to the last request for that medicine, there is no schedule or dosage by design.
 
 ### Update 2026-10-26 (fourth round, payments untouched)
 

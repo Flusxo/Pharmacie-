@@ -426,3 +426,17 @@
     transform: none;
   }
 }
+
+/* A pharmacy's reply sits under the review it answers: indented, one accent line. */
+.review-reply {
+  display: grid;
+  gap: 2px;
+  margin-top: 4px;
+  padding: 6px 0 6px 12px;
+  border-left: 2px solid var(--brand);
+}
+.review-reply-form {
+  display: grid;
+  gap: 6px;
+  max-width: 520px;
+}

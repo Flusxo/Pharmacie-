@@ -30,6 +30,13 @@ const schema = z.object({
   /** Optional error alert: a webhook URL that takes {"text": "..."} (Discord, Slack, ...). */
   ERROR_WEBHOOK_URL: z.string().url().optional(),
   RESEND_API_KEY: z.string().optional(),
+  /**
+   * Optional web push keys (VAPID). Only read to tell staff "keys found": the sending itself is NOT built (it needs a service
+   * worker and a subscription per device, see DEPLOY.md). Nothing is ever sent with them.
+   */
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().optional(),
   MAIL_FROM: z.string().optional(),
   /** Login attempts per 15 minutes per network (the e2e suite logs in far more often than a person). */
   LOGIN_RATE_LIMIT: z.coerce.number().int().positive().default(60),
@@ -44,6 +51,9 @@ if (!parsed.success) {
 }
 
 export const config = parsed.data;
+/** Both VAPID keys are set (a pair generated with `npx web-push generate-vapid-keys`). Says nothing about sending: that is not built. */
+export const pushKeysPresent = (c: { VAPID_PUBLIC_KEY?: string; VAPID_PRIVATE_KEY?: string } = config) =>
+  !!c.VAPID_PUBLIC_KEY?.trim() && !!c.VAPID_PRIVATE_KEY?.trim();
 /** Addresses allowed by CORS, without trailing slash. */
 export const FRONTEND_ORIGINS = config.FRONTEND_URL.split(',')
   .map((s) => s.trim().replace(/\/+$/, ''))

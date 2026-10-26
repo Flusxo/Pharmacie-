@@ -11,7 +11,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import type pg from 'pg';
-import { RULES, config } from '../config.js';
+import { RULES, config, pushKeysPresent } from '../config.js';
 import { one, query, tx, type Db } from '../db.js';
 import { badRequest, conflict, forbidden, notFound } from '../errors.js';
 import { requireStaff } from '../middleware/auth.js';
@@ -69,7 +69,7 @@ adminRouter.get('/integrations', (_req, res) => {
     email: { configured: mailConfigured() },
     errorAlerts: { configured: errorAlertsConfigured() },
     payments: { configured: !!config.STRIPE_SECRET_KEY && !!config.STRIPE_WEBHOOK_SECRET, mode: 'test' },
-    push: { built: false },
+    push: { configured: pushKeysPresent(), built: false },
     storage: { built: false },
   });
 });
@@ -215,7 +215,7 @@ adminRouter.get('/reports', async (req, res) => {
 
 /** Hide (or show again) a reported message or review. Every action is written to the audit log. */
 adminRouter.post('/moderation/:type/:id', canModerate, async (req, res) => {
-  const { type, id } = z.object({ type: z.enum(['message', 'review']), id: z.string().min(1).max(64) }).parse(req.params);
+  const { type, id } = z.object({ type: z.enum(['message', 'review', 'review_reply']), id: z.string().min(1).max(64) }).parse(req.params);
   const { hidden, reason } = z.object({ hidden: z.boolean(), reason: reasonField }).parse(req.body);
   await tx(async (c) => {
     await setHidden(type, id, hidden);

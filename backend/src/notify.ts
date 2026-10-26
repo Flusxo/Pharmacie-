@@ -21,6 +21,7 @@ export type NotificationKind =
   | 'stock_alert'
   | 'order_message'
   | 'review'
+  | 'review_reply'
   | 'order_slot'
   | 'refill'
   | 'weekly_summary'
@@ -43,6 +44,7 @@ const SUBJECTS: Record<NotificationKind, string> = {
   stock_alert: 'A medicine you follow is available',
   order_message: 'New message about an order',
   review: 'New review of your pharmacy',
+  review_reply: 'The pharmacy replied to your review',
   order_slot: 'A time was chosen for an order',
   refill: 'Time to renew a medicine?',
   weekly_summary: 'Your weekly summary is ready',
