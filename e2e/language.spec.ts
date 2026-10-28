@@ -29,11 +29,14 @@ test.describe('language switch', () => {
       await loginByToken(page, `${p.who}@pharmacie.test`);
       await page.goto(p.path);
       await expect(page.locator('main')).toContainText(p.fr);
+      const me = await apiAs(`${p.who}@pharmacie.test`);
+      const account = () => me.call<{ user: { language: string } }>('GET', '/auth/me').then((r) => r.user.language);
       await switchAndCheck(page, 'en', p.en);
+      // Wait for the account to follow before switching back: two saves in flight can land in the wrong order.
+      await expect.poll(account).toBe('en');
       await switchAndCheck(page, 'fr', p.fr);
       // The account follows the switch; wait until it is back to French so other tests start in French.
-      const me = await apiAs(`${p.who}@pharmacie.test`);
-      await expect.poll(async () => (await me.call<{ user: { language: string } }>('GET', '/auth/me')).user.language).toBe('fr');
+      await expect.poll(account).toBe('fr');
       await me.ctx.dispose();
     });
   }
