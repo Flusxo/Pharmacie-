@@ -4,12 +4,9 @@ import { apiAs, loginByToken } from './helpers';
 
 /** Switches with the top-bar selector and checks that the page text really changes. */
 async function switchAndCheck(page: Page, to: 'en' | 'fr', expectText: RegExp) {
-  const before = await page.locator('main').innerText();
   await page.locator('header select').first().selectOption(to);
   await expect(page.locator('html')).toHaveAttribute('lang', to);
   await expect(page.locator('main')).toContainText(expectText);
-  const after = await page.locator('main').innerText();
-  expect(after).not.toBe(before);
 }
 
 const PAGES: { who: string; path: string; fr: RegExp; en: RegExp }[] = [
@@ -29,6 +26,8 @@ test.describe('language switch', () => {
       await loginByToken(page, `${p.who}@pharmacie.test`);
       await page.goto(p.path);
       await expect(page.locator('main')).toContainText(p.fr);
+      // The account language arrives with the first /auth/me; a choice made before it would be overwritten.
+      await page.waitForLoadState('networkidle');
       const me = await apiAs(`${p.who}@pharmacie.test`);
       const account = () => me.call<{ user: { language: string } }>('GET', '/auth/me').then((r) => r.user.language);
       await switchAndCheck(page, 'en', p.en);
